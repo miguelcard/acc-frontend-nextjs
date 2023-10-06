@@ -1,0 +1,80 @@
+'use client';
+import { FormValues, initialValues } from "@/components/auth/SignupForms/constants";
+import SignupFirstForm from "@/components/auth/SignupForms/signup-first-form";
+import SignupSecondForm from "@/components/auth/SignupForms/signup-second-form";
+import { signUp } from "@/lib/actions";
+import signupValidationSchemas from "@/lib/form-validation-schemas";
+import { useFormik } from "formik";
+import { useRouter  } from "next/navigation";
+import { NextResponse } from "next/server";
+import { useEffect, useState } from "react";
+import secureLocalStorage from "react-secure-storage";
+
+export default function SignUp() {
+
+    const [step, setStep] = useState<number>(1);
+    const [formValues, setFormValues] = useState<FormValues>(initialValues);
+    const [isLastStep, setIsLastStep] = useState<boolean>(false);
+    const router = useRouter();
+
+    const formik = useFormik({
+        initialValues: initialValues,
+        validationSchema: signupValidationSchemas[step - 1],
+        onSubmit: (values: FormValues, { setSubmitting }: any) => {
+            handleFormsSubmit(values);
+            setSubmitting(false);
+        },
+    });
+
+    const handleFormsSubmit = (values: FormValues) => {
+        switch (step) {
+            case 1:
+                setFormValues(values);
+                setStep(2);
+                break;
+            case 2:
+                setFormValues({ ...formValues, ...values }); // use state in react is Asynchronous! meaning that if you send the request right after you can send the old form values before the new ones are given! 
+                setIsLastStep(true);
+                break;
+        }
+    }
+
+    // We use the useEffect hook before sending the request to ensure the latest formValues are sent
+    useEffect(() => {
+        async function registerUser() {
+            if (isLastStep) {
+                    const formData = new FormData();
+                    formData.append('name', formValues.name);
+                    formData.append('email', formValues.email);
+                    formData.append('username', formValues.username);
+                    formData.append('password', formValues.password);
+                    // we send the same password twice because the backend expects 2 matching passwords and to keep the frontend form simple, we only ask for the password once
+                    formData.append('password2', formValues.password);
+
+                    const res: NextResponse | any = await signUp(formData);
+
+                // To improve, instead of doing this, see if you can return the whole request object from the 
+                // server actions and check that the status was Ok
+                if (res.authorization && res.authorization.token) {
+                    secureLocalStorage.setItem('token', res.authorization.token);
+                    router.push('/home')
+                } else {
+                    // else TODO handle possible sign up errors
+                    console.warn('A Signup Error occured');
+                }
+            }
+        }
+
+        registerUser();
+
+    }, [formValues, isLastStep]);
+
+    return (
+        <>
+            {step === 1 && <SignupFirstForm formik={formik} />}
+            {step === 2 && (
+                <SignupSecondForm formik={formik} />
+            )}
+        </>
+    )
+}

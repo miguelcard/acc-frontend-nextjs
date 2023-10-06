@@ -1,0 +1,18 @@
+/* Common classes for authentication forms (login / signup) */
+
+.auth__action-text {
+    font-size: 1.8em;
+
+    /* Override Margins set by default by MUI */
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
+
+.auth__form-button {
+    /* button properties */
+    padding:8px 14px;
+
+    /* font properties */
+    font-weight: 700;
+    font-size: 1.1em;
+}

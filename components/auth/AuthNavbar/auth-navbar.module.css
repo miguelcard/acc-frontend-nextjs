@@ -1,0 +1,30 @@
+
+@media (max-width: 900px) {
+    .responsive-action-text {
+        display: flex;
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 600px) {
+    .responsive-action-text {
+        display: flex;
+        font-size: 0.75em;
+    }
+}
+
+@media (max-width: 500px) {
+    .responsive-action-text {
+        display: none;
+    }
+}
+
+.register-header__action-elements__button--primary {
+    /* button properties */
+    margin-top: 7px;
+    margin-bottom: 7px;
+
+    /* font properties */
+    font-weight: 700;
+    font-size: 1.1em;
+}

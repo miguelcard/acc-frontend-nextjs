@@ -1,4 +1,14 @@
-:root {
+/* These are global styles for the whole app, you can import these styles in ANY layout or page (here in app/layout.tsx for all pages to apply the styles to every route in the application) */
+
+/* deletes default eye icon shown in password field in ms-edge browser */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+
+/* To delete if not needed: */
+/* :root {
   --max-width: 1100px;
   --border-radius: 12px;
   --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
@@ -104,4 +114,4 @@ a {
   html {
     color-scheme: dark;
   }
-}
+} */
