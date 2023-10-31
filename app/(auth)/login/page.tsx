@@ -16,37 +16,28 @@ import { useState } from 'react';
 import { experimental_useFormStatus as useFormStatus } from 'react-dom';
 import { login } from '@/lib/actions';
 import styles from '../auth.module.css';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { NextResponse } from 'next/server';
-import secureLocalStorage from 'react-secure-storage';
 
 
 export default function Login() {
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [loginError, setLoginError] = useState<string>();
+    const router = useRouter();
 
     /**
      * Submits the form login data to the backend API using server actions
      */
     async function handleFormAction(formData: FormData) {
 
-        // this just returns the response body. No status or oder fields
         const res: NextResponse | any = await login(formData);
-
-        // To improve, instead of doing this, see if you can return the whole request object from the 
-        // server actions and check that the status was Ok
-        if (res.authorization && res.authorization.token) {
-            secureLocalStorage.setItem('token', res.authorization.token);
-            redirect(`/home`);
+        if (res?.error) {
+            setLoginError(res.error);
+            return;
         }
-
-        if (Array.isArray(res)) {
-            setLoginError(res[0]);
-        } else {
-            setLoginError('An unkown error ocurred');
-            console.warn(loginError + ': ' + res);
-        }
+        
+        router.push(`/home`);
     }
 
     return (
@@ -116,13 +107,13 @@ export default function Login() {
                         }}
                     />
                     {loginError ?
-                         <Typography
-                                width='100%'
-                                display='inline-flex'
-                                justifyContent='center'
-                                color='error.light'
-                                children={loginError}
-                            />
+                        <Typography
+                            width='100%'
+                            display='inline-flex'
+                            justifyContent='center'
+                            color='error.light'
+                            children={loginError}
+                        />
                         : null}
                     <SubmitButton />
                     <Box

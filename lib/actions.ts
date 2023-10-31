@@ -1,7 +1,8 @@
-'use server'
-
+'use server';
+import 'server-only';
 import { revalidatePath } from "next/cache";
-import { fetcher, isJsonString } from "./utils";
+import { fetcher, getAuthCookie, getErrorMessage, isJsonString, setAuthCookie } from "./utils";
+import { FormikValues } from "formik";
 
 // for now all server actions will be included here, later we can opt out for more modularity, i.e. separating them in different files.
 type FormBodyObject = {
@@ -9,15 +10,16 @@ type FormBodyObject = {
 };
 
 const API = process.env.NEXT_PUBLIC_API;
+const GENERIC_ERROR_MESSAGE = "An unknown error occurred, please refresh the page or try again later.";
+
 
 /**
- * Calls login api with the data sent in the form
+ * Calls login api with the data sent in the form and sets the http-only cookie with the authorization token
  * @param formData 
  * @returns 
  */
 export async function login(formData: FormData) {
   const loginUrl: string = `${API}/v1/login/`;
-
   // create the request body using the formData
   const reqBody: FormBodyObject = formDataToReqBody(formData);
 
@@ -30,25 +32,33 @@ export async function login(formData: FormData) {
   };
 
   try {
-    const responseData = await fetcher(loginUrl, requestOptions);
-      // revalidatePath('/login') // necessary? I think so, test
-    return responseData;
-  } catch (error: any) {
-    if (isJsonString(error.message)) {
-      const res = JSON.parse(error.message);
-      console.warn(res.non_field_errors);
-      return res.non_field_errors; // in case we want to show them to the client
-    } else {
-      console.warn(error.message);
-      return error.message;
+    const res: Response = await fetch(loginUrl, requestOptions);
+
+    if (String(res.status)[0] === '4') { // if error code begins with 4
+      return { error: 'email or password are incorrect' };
     }
+
+    if (!res.ok) {
+      const errorResp = await res.json();
+      console.warn('Login server action Error: ' + getErrorMessage(errorResp));
+      console.warn(JSON.stringify(errorResp));
+      return { error: GENERIC_ERROR_MESSAGE };
+    }
+
+    setAuthCookie(res);
+    return await res.json();
+
+  } catch (error) {
+    console.warn('Login server action Error: ', getErrorMessage(error));
+    return { error: GENERIC_ERROR_MESSAGE };
   }
 }
+
 
 /**
  * Calls sign up api with the data sent in the form
  * @param formData 
- * @returns 
+ * @returns user data
  */
 export async function signUp(formData: FormData) {
   const signupUrl: string = `${API}/v1/register/`;
@@ -63,20 +73,61 @@ export async function signUp(formData: FormData) {
   };
 
   try {
-    const responseData = await fetcher(signupUrl, requestOptions);
-    //   revalidatePath('/signup') // necessary? I think so, test
-    return responseData;
-  } catch (error: any) {
-    if (isJsonString(error.message)) {
-      const res = JSON.parse(error.message);
-      console.warn(res.non_field_errors);
-      return res.non_field_errors; // in case we want to show them to the client
-    } else {
-      console.warn(error.message);
-      return error.message;
+    const res: Response = await fetch(signupUrl, requestOptions);
+    
+    if (!res.ok) {
+      const errorResp = await res.json();
+      console.warn('Signup server action error: ' + getErrorMessage(errorResp));
+      console.warn(JSON.stringify(errorResp));
+      return { error: GENERIC_ERROR_MESSAGE };
     }
+
+    setAuthCookie(res);
+    return res.json();
+
+  } catch (error: any) {
+    console.warn('Signup server action error: ', getErrorMessage(error));
+    return { error: GENERIC_ERROR_MESSAGE };
   }
 }
+
+
+/**
+ * Server action to call the create space endpoint
+ * @param formData 
+ * @returns space information
+ */
+export async function createSpace(formData: FormikValues) {
+  const createSpaceUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/spaces/`;
+
+  const requestOptions: RequestInit = {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      'Cookie': `${getAuthCookie()}`,
+    },
+    body: JSON.stringify(formData),
+  };
+
+  try {
+    const res = await fetch(createSpaceUrl, requestOptions);
+
+    if (!res.ok) {
+      const errorResp = await res.json();
+      console.warn('createSpace server action Error: ' + getErrorMessage(errorResp));
+      console.warn(JSON.stringify(errorResp));
+      return { error: GENERIC_ERROR_MESSAGE };
+    }
+
+    revalidatePath('/home');
+    return await res.json();
+
+  } catch (error) {
+    console.warn('createSpace server action Error: ', getErrorMessage(error));
+    return { error: GENERIC_ERROR_MESSAGE };
+  }
+}
+
 
 /**
  * Helper function to turn a formData object to a request body object

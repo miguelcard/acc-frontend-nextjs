@@ -1,0 +1,108 @@
+'use client';
+import Box from '@mui/material/Box';
+import { Field, FormikValues } from 'formik';
+import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/formik-stepper';
+import React, { useState } from 'react';
+import { object, string } from 'yup';
+import { TextField as TextFieldFormikMui } from 'formik-mui';
+import TextField from '@mui/material/TextField';
+import { createSpace } from '@/lib/actions';
+import { useRouter } from "next/navigation";
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import Typography from '@mui/material/Typography';
+
+
+async function submitCreateSpace(values: FormikValues, router: AppRouterInstance | string[], setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>) {
+
+    const space = await createSpace(values);
+    if (space?.error) {
+        setErrorMessage(space.error)
+        console.log('error message: ', space.error);
+
+        return;
+    }
+
+    router.push(`/space/${space.id}`);
+}
+
+interface CreateSpaceFormProps {
+    step?: number | undefined;
+    setStep?: undefined | React.Dispatch<React.SetStateAction<number>>
+}
+
+export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps) {
+    const router = useRouter();
+    const [errorMessage, setErrorMessage] = useState<string>();
+
+    return (
+        <Box
+            sx={{
+                width: '100%'
+            }}
+        >
+            <FormikStepper
+                initialValues={{
+                    name: '',
+                    description: ''
+                }}
+                onSubmit={async (values) => submitCreateSpace(values, router, setErrorMessage)}
+                step={step === undefined ? 0 : step}
+                setStep={setStep === undefined ? () => console.warn("setStep is undefined!") : setStep}
+            >
+
+                <FormikStep
+                    validationSchema={object({
+                        name: string()
+                            .required('Space name is required'),
+                    })}
+                >
+                    <Box paddingBottom={2}>
+                        <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant='standard' />
+                    </Box>
+                </FormikStep>
+                <FormikStep
+                    validationSchema={object({
+                        description: string()
+                            .max(220, 'A maximum of 220 characters is allowed'),
+                    })}
+                >
+                    <Box paddingBottom={2}>
+                        {/* for this field the normal MUI TextField is used in order to allow validation on change, which was not supported out of the box from the formik-mui library */}
+                        <Field name="description">
+                            {({ field, form, meta }: any) => (
+                                <TextField
+                                    {...field}
+                                    fullWidth
+                                    type="text"
+                                    name="description"
+                                    label="Description"
+                                    placeholder="A description for your space"
+                                    autoComplete='null'
+                                    spellCheck='false'
+                                    onFocus={() => form.setFieldTouched(field.name, true)}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    onBlur={field.onBlur}
+                                    error={meta.touched && Boolean(meta.error)}
+                                    helperText={meta.touched && meta.error}
+                                    multiline maxRows={6}
+                                />
+                            )}
+                        </Field>
+                    </Box>
+                </FormikStep>
+                {/* TODO step to add other users to your space by UN /  PW */}
+            </FormikStepper>
+            {errorMessage ?
+                <Typography
+                    width='100%'
+                    display='inline-flex'
+                    justifyContent='center'
+                    color='error.light'
+                    children={errorMessage}
+                />
+                : null}
+        </Box>
+    );
+}
+
