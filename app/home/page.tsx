@@ -1,22 +1,15 @@
-import React from 'react';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import GroupsIcon from '@mui/icons-material/Groups';
+import 'server-only';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import DialogModal from '@/components/shared/DialogModal/dialog-modal';
-import planet from '@/public/images/spaces/planet.png';
-import Image from 'next/image';
-import CreateSpaceForm from '@/components/home/create-space-form';
+import CreateSpaceModal from '@/components/home/CreateSpaceModal/create-space-modal';
+import SpacesOverview from '@/components/home/SpacesOverview/spaces-overview';
 
-
-export default function Home() {
+export default async function Home() {
 
   return (
     <>
-      <Container component="section" maxWidth="xs" >
+      <Container component="section" maxWidth="lg" >
         <CssBaseline />
         <Box
           display="flex"
@@ -24,46 +17,15 @@ export default function Home() {
           alignItems="center"
           flexDirection="column"
         >
-          <DialogModal button={<NewSpaceButton />} childrenTitle={<CreateSpaceDialogTitle />} childrenBody={<CreateSpaceForm />} />
+          {/* // Here on top goes the dashboard showing some meaningful (main) habits, motivating data for user to see first
+          // or something the user can see first that is novel / makes him crave going back... */}
+
+          {/* // retrieve your spaces here,
+          // if no spaces are found just show a message that no spaces are found and prompt to create a new one */}
+          <SpacesOverview />
+          <CreateSpaceModal />
         </Box>
       </Container>
     </>
   );
-}
-
-
-const NewSpaceButton = () => {
-  return (
-    <Button variant="outlined" color="secondary"
-      startIcon={<><AddIcon /><GroupsIcon /></>}
-    >
-      <Typography fontWeight={600}>
-        New Space
-      </Typography>
-    </Button>
-  );
-}
-
-const CreateSpaceDialogTitle = () => {
-  return (
-    <>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        flexDirection="column"
-      >
-        <Image
-          src={planet}
-          width={130}
-          height={0}
-          alt="logo"
-        // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
-        />
-        <Typography fontWeight={600} fontSize='1.1em' pb={2}>
-          Create new Space
-        </Typography>
-      </Box>
-    </>
-  )
 }

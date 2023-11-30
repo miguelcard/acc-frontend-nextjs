@@ -10,9 +10,10 @@ import Toolbar from "@mui/material/Toolbar";
 import NextLink from "next/link";
 import Image from "next/image";
 import logo from '@/public/images/headers/avidhabits.png';
-import { getTokenFromStorage, removeTokenFromStorage } from '@/lib/utils-client';
+import { getTokenFromStorage, removeTokenFromStorage } from '@/lib/utils-client-todelete';
 
 // You'll have to put this in a separate Layout component for sure, if you want to use data Dynamically in this Navbar
+// with this I mean setting the right user profile picture for example, or operations where you have to pass props to this navbar I think
 export default function HomeLayout({
     children,
 }: {

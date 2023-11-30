@@ -1,8 +1,9 @@
 'use server';
 import 'server-only';
 import { revalidatePath } from "next/cache";
-import { fetcher, getAuthCookie, getErrorMessage, isJsonString, setAuthCookie } from "./utils";
+import { getAuthCookie, getErrorMessage, setAuthCookie } from "./utils";
 import { FormikValues } from "formik";
+import { GENERIC_ERROR_MESSAGE } from './types-and-constants';
 
 // for now all server actions will be included here, later we can opt out for more modularity, i.e. separating them in different files.
 type FormBodyObject = {
@@ -10,8 +11,6 @@ type FormBodyObject = {
 };
 
 const API = process.env.NEXT_PUBLIC_API;
-const GENERIC_ERROR_MESSAGE = "An unknown error occurred, please refresh the page or try again later.";
-
 
 /**
  * Calls login api with the data sent in the form and sets the http-only cookie with the authorization token

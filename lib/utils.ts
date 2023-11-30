@@ -62,6 +62,7 @@ export const setAuthCookie = (res: Response): void => {
 export const getAuthCookie = (): string => {
     const authCookie = cookies().get('auth_token');
     if (authCookie === undefined) {
+        console.info("Authentication cookie is undefined");
         return '';
     }
 
@@ -108,8 +109,14 @@ export const getErrorMessage = (error: unknown): string => {
 
     if (error instanceof Error) {
         message = error.message;
-    } else if (error && typeof error === "object" && "message" in error) {
-        message = String(error.message);
+    } else if (error && typeof error === "object") {
+        if ("message" in error) {
+            message = String(error.message);
+        } else if ("detail" in error) {
+            message = String(error.detail);
+        } else {
+            message = "Something went wrong"
+        }
     } else if (typeof error === "string") {
         message = error;
     } else {

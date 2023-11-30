@@ -8,7 +8,6 @@ import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { NextResponse } from "next/server";
 import { useEffect, useState } from "react";
-import { setTokenToStorage } from "@/lib/utils-client";
 import Typography from "@mui/material/Typography";
 
 export default function SignUp() {

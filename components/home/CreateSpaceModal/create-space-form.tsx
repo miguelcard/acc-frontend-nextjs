@@ -22,7 +22,7 @@ async function submitCreateSpace(values: FormikValues, router: AppRouterInstance
         return;
     }
 
-    router.push(`/space/${space.id}`);
+    router.push(`/spaces/${space.id}`);
 }
 
 interface CreateSpaceFormProps {
