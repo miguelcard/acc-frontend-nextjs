@@ -3,18 +3,19 @@ import { FormValues, initialValues } from "@/components/auth/SignupForms/constan
 import SignupFirstForm from "@/components/auth/SignupForms/signup-first-form";
 import SignupSecondForm from "@/components/auth/SignupForms/signup-second-form";
 import { signUp } from "@/lib/actions";
-import signupValidationSchemas from "@/lib/form-validation-schemas";
+import signupValidationSchemas from "@/components/auth/SignupForms/form-validation-schemas";
 import { useFormik } from "formik";
-import { useRouter  } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { NextResponse } from "next/server";
 import { useEffect, useState } from "react";
-import secureLocalStorage from "react-secure-storage";
+import Typography from "@mui/material/Typography";
 
 export default function SignUp() {
 
     const [step, setStep] = useState<number>(1);
     const [formValues, setFormValues] = useState<FormValues>(initialValues);
     const [isLastStep, setIsLastStep] = useState<boolean>(false);
+    const [signupError, setSignupError] = useState<string>();
     const router = useRouter();
 
     const formik = useFormik({
@@ -43,24 +44,18 @@ export default function SignUp() {
     useEffect(() => {
         async function registerUser() {
             if (isLastStep) {
-                    const formData = new FormData();
-                    formData.append('name', formValues.name);
-                    formData.append('email', formValues.email);
-                    formData.append('username', formValues.username);
-                    formData.append('password', formValues.password);
-                    // we send the same password twice because the backend expects 2 matching passwords and to keep the frontend form simple, we only ask for the password once
-                    formData.append('password2', formValues.password);
+                const formData = new FormData();
+                formData.append('name', formValues.name);
+                formData.append('email', formValues.email);
+                formData.append('username', formValues.username);
+                formData.append('password', formValues.password);
+                // we send the same password twice because the backend expects 2 matching passwords and to keep the frontend form simple, we only ask for the password once
+                formData.append('password2', formValues.password);
 
-                    const res: NextResponse | any = await signUp(formData);
-
-                // To improve, instead of doing this, see if you can return the whole request object from the 
-                // server actions and check that the status was Ok
-                if (res.authorization && res.authorization.token) {
-                    secureLocalStorage.setItem('token', res.authorization.token);
-                    router.push('/home')
-                } else {
-                    // else TODO handle possible sign up errors
-                    console.warn('A Signup Error occured');
+                const res: NextResponse | any = await signUp(formData);
+                if (res?.error) {
+                    setSignupError(res.error);
+                    // sue user id to fetch users data and redirect to users page...
                 }
             }
         }
@@ -75,6 +70,16 @@ export default function SignUp() {
             {step === 2 && (
                 <SignupSecondForm formik={formik} />
             )}
+            {signupError ?
+                <Typography
+                    sx={{ p: 3 }}
+                    width='100%'
+                    display='inline-flex'
+                    justifyContent='center'
+                    color='error.light'
+                    children={signupError}
+                />
+                : null}
         </>
     )
 }

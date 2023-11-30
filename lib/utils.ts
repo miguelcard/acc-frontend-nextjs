@@ -1,13 +1,18 @@
+import 'server-only';
 import { ReadonlyURLSearchParams } from 'next/navigation';
-import secureLocalStorage from 'react-secure-storage';
+import { cookies } from 'next/headers';
 
-// utility function to fetch data 
+/**
+ * Utility function to fetch data 
+ * @param input path
+ * @param init request options
+ * @returns JSON formated response body
+ */
 export async function fetcher<JSON = any>(
     input: RequestInfo,
     init?: RequestInit
 ): Promise<JSON> {
-    const res = await fetch(input, init);
-
+    const res: Response = await fetch(input, init);
     if (!res.ok) {
         const json = await res.json();
         if (json.error) {
@@ -20,18 +25,66 @@ export async function fetcher<JSON = any>(
             throw new Error(JSON.stringify(json));
         }
     }
-    
-    return res.json();
+
+    return await res.json();
+}
+
+/**
+ * Takes the cookie from a response and sets the cookie in the backend and also sets it to the client (browser)
+ * @param authToken 
+ */
+export const setAuthCookie = (res: Response): void => {
+    const cookie = require('cookie');
+    const authToken: string = cookie.parse(res.headers.getSetCookie().find((c) => c.startsWith('auth_token')) || 'token not found').auth_token;
+
+    if (authToken === undefined) {
+        console.warn('Token was not found in the response cookie!');
+        return;
+    }
+
+    //This also sets the 'Set-Cookie' automatically to the client, but if we need to send it from client components we have to enable CORS in the backend
+    cookies().set({
+        name: 'auth_token',
+        value: authToken,
+        httpOnly: true,
+        path: '/',
+        domain: '.localhost', // put enviroment variable here
+        secure: process.env.NODE_ENV !== "development",
+        maxAge: 60 * 60 * 24 * 5, // seconds
+        // sameSite: "strict",
+    });
 }
 
 
-// utility function to create a URL, delete this one if not needed / used
+/**
+ * Retrieves the authentication token from the cookie and serializes it in a string to be able to send it in a header
+*/
+export const getAuthCookie = (): string => {
+    const authCookie = cookies().get('auth_token');
+    if (authCookie === undefined) {
+        console.info("Authentication cookie is undefined");
+        return '';
+    }
+
+    const cookie = require('cookie');
+    const serializedAuthCookie = `${cookie.serialize(authCookie?.name, authCookie?.value,
+        // {other cookie options} 
+    )}`;
+
+    return serializedAuthCookie;
+}
+
+
+/**
+ * Utility function to create a URL, delete this one if not needed / used
+ */
 export const createUrl = (pathname: string, params: URLSearchParams | ReadonlyURLSearchParams) => {
     const paramsString = params.toString();
     const queryString = `${paramsString.length ? '?' : ''}${paramsString}`;
 
     return `${pathname}${queryString}`;
 };
+
 
 /**
  * Helper function to check if a string is a JSON object
@@ -47,18 +100,28 @@ export function isJsonString(str: string): boolean {
 }
 
 
-// utility function to retrieve token from the local storage
-export function getTokenFromStorage() {
-    return secureLocalStorage.getItem('token') as string;
-}
+/**
+ * Extracts the error message from different possible types of errors, useful when catching errors
+ * @param error message
+ */
+export const getErrorMessage = (error: unknown): string => {
+    let message: string;
 
-// utility function which removes the token from the local storage
-export function removeTokenFromStorage() {
-    secureLocalStorage.removeItem('token');
-}
+    if (error instanceof Error) {
+        message = error.message;
+    } else if (error && typeof error === "object") {
+        if ("message" in error) {
+            message = String(error.message);
+        } else if ("detail" in error) {
+            message = String(error.detail);
+        } else {
+            message = "Something went wrong"
+        }
+    } else if (typeof error === "string") {
+        message = error;
+    } else {
+        message = "Something went wrong";
+    }
 
-// utility function to chekc in the local storage if there is a present token
-export const isAuthenticated = () => {
-    let token = secureLocalStorage.getItem('token') as string;
-    return token !== null;
+    return message;
 }

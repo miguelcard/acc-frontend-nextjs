@@ -1,10 +1,17 @@
-import localFont from 'next/font/local'
-import { Inter } from 'next/font/google'
+import localFont from 'next/font/local';
+import { Inter, Ubuntu } from 'next/font/google';
 
 // Common place to define the application's fonts
 
 export const inter = Inter({
     variable: "--font-inter",
+    weight: ['300', '400', '500', '700'],
+    subsets: ['latin'],
+    display: 'swap',
+});
+
+export const ubuntu = Ubuntu({
+    variable: "--font-ubuntu",
     weight: ['300', '400', '500', '700'],
     subsets: ['latin'],
     display: 'swap',
