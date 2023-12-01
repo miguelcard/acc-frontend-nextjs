@@ -100,9 +100,9 @@ export default async function SpacesOverview() {
                                         space.description ?
                                             space.description.length > maxDescLength ? space.description.substring(0, maxDescLength) + "..." : space.description
                                             :
-                                            <Box>
+                                            <span>
                                                 <SpaceDefaultDescription spaceId={space.id} />
-                                            </Box>
+                                            </span>            
                                     }
                                 >
                                     <Box>

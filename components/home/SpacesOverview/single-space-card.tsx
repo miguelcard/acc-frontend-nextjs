@@ -88,7 +88,7 @@ export const CustomCard = ({
                         <Typography fontWeight={700} >
                             {title}
                         </Typography>
-                        <Typography fontSize={'0.8em'} fontWeight={400} color={'grey.600'} >
+                        <Typography component='div' fontSize={'0.8em'} fontWeight={400} color={'grey.600'} >
                             {/* TODO if this stays the "created by" make it clickable to the user creator profile */}
                             {subtitle}
                         </Typography>
