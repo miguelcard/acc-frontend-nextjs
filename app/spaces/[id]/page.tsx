@@ -1,7 +1,16 @@
 import 'server-only';
 import { getAuthCookie, getErrorMessage } from '@/lib/utils';
 import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { stringIconMapper } from '@/lib/fa-icons-mapper';
+import Avatar from '@mui/material/Avatar';
 
 interface Space {
   id: number;
@@ -63,10 +72,62 @@ export default async function Space({ params }: { params: { id: number } }) {
   const space: Space = spaceResponse;
 
   return (
-    <div>
-      This is the Space with ID: {space.id} <br />
-      space name: {space.name} <br />
-      space desc: {space.description} <br />
-    </div>
-  )
+    <Container component="section" maxWidth="lg" >
+      <CssBaseline />
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        flexDirection="column"
+      >
+        <Box width={"100%"}>
+
+          <Box display="flex" alignItems="center" gap="24px">
+            <Avatar
+              sx={{ width: 64, height: 64 }}
+            >
+              <FontAwesomeIcon icon={stringIconMapper.rocket} size='xl' />
+            </Avatar>
+            <Typography fontWeight='700' fontSize="1.4em" color="secondary">
+              {space.name + "a really looong description bla bla bla I mean a really long title bla bla bla, woohooo"}
+            </Typography>
+          </Box>
+
+          add line break? __________________________________________________________________________
+          <PlaceHolderCard text={"Stats..."} />
+          <PlaceHolderCard text={"Scorecard / Calendar"} />
+          This is the Space with ID: {space.id} <br />
+          space name: {space.name} <br />
+          {/* space desc: {space.description} ssssssssssssssssss sssss fdssssssssssssss ssssssssssssssss ssssssssssssss sssssss sssssssssssfdfddfd ssssssssssssssssssssss ssssssssssssssssssssssssssssssssssssss ksdfjkj sdfkjkj ldsfkjlsadkjf  <br /> */}
+        </Box>
+      </Box>
+    </Container>
+  );
+}
+
+
+
+
+
+const PlaceHolderCard = ({ text }: any) => {
+  return (
+    <Card
+      variant="outlined"
+      sx={{
+        my: 3,
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        backgroundColor: "#E8EAED"
+      }}>
+      <CardContent>
+        <Typography
+          fontWeight='500'
+          sx={{ py: 3 }}
+        >
+          {text}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
 }

@@ -1,5 +1,8 @@
 import ThemeRegistry from '@/components/theme/theme-registry';
 import './globals.css';
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+config.autoAddCss = false;
 
 // see Metadata  documentation: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
 export const metadata = {
@@ -13,8 +16,8 @@ export const metadata = {
  * @returns 
  */
 export default function RootLayout({
-  children,
-}: {
+  children
+} : {
   children: React.ReactNode
 }) {
   return (

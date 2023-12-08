@@ -4,6 +4,8 @@ import { Avatar, Button, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { stringIconMapper } from '@/lib/fa-icons-mapper';
 
 
 /**
@@ -61,7 +63,7 @@ const styles = {
 
 interface CustomCardProps {
     spaceId: number;
-    thumbnail: string;
+    icon: string;
     title: string;
     subtitle: string;
     description: any;
@@ -70,7 +72,7 @@ interface CustomCardProps {
 
 export const CustomCard = ({
     spaceId,
-    thumbnail,
+    icon,
     title,
     subtitle,
     description,
@@ -82,13 +84,15 @@ export const CustomCard = ({
         <Box onClick={() => router.push(`/spaces/${spaceId}`)} sx={styles.root}>
             <Box sx={styles.card} display='flex' flexDirection='column'>
                 <Box p={2} gap={2} display='flex' flexDirection='row'>
-                    <Avatar sx={styles.logo} variant={'rounded'} src={thumbnail} />
+                    <Avatar sx={styles.logo} variant={'rounded'} >
+                        <FontAwesomeIcon icon={stringIconMapper[icon]} size='xl' />
+                    </Avatar>
                     <Box alignSelf='center'>
                         {/* Note future: make this fonts responsive, use @media */}
                         <Typography fontWeight={700} >
                             {title}
                         </Typography>
-                        <Typography component='div' fontSize={'0.8em'} fontWeight={400} color={'grey.600'} >
+                        <Typography component='div' fontSize={'0.8em'} fontWeight={400} color={'grey.600'}>
                             {/* TODO if this stays the "created by" make it clickable to the user creator profile */}
                             {subtitle}
                         </Typography>
@@ -100,7 +104,7 @@ export const CustomCard = ({
                     color={'grey.600'}
                     fontSize={'0.9rem'}
                 >
-                    <Typography className={ubuntu.className}>
+                    <Typography component='div' className={ubuntu.className} sx={{pt:1}} >
                         {description}
                     </Typography>
                 </Box>

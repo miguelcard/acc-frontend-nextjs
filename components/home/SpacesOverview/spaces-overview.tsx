@@ -91,9 +91,7 @@ export default async function SpacesOverview() {
                             <Grid item xs={12} md={6} lg={4} key={space.id}>
                                 <CustomCard
                                     spaceId={space.id}
-                                    thumbnail={
-                                        'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRQHCBAj8nRJkEwjWg5TpNuSZZG9iscsf43V1mfx0LZHNDYW3S_&usqp=CAU'
-                                    }
+                                    icon={"rocket"}
                                     title={space.name}
                                     subtitle={'Created by ' + space.creator.username}
                                     description={
