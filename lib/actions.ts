@@ -12,6 +12,8 @@ type FormBodyObject = {
 
 const API = process.env.NEXT_PUBLIC_API;
 
+// ----- Auth Actions -----
+
 /**
  * Calls login api with the data sent in the form and sets the http-only cookie with the authorization token
  * @param formData 
@@ -91,6 +93,8 @@ export async function signUp(formData: FormData) {
 }
 
 
+// ----- Spaces Actions -----
+
 /**
  * Server action to call the create space endpoint
  * @param formData 
@@ -126,6 +130,84 @@ export async function createSpace(formData: FormikValues) {
     return { error: GENERIC_ERROR_MESSAGE };
   }
 }
+
+/**
+ * Server action to call the patch Space endpoint
+ * @param formData 
+ * @returns space object
+ */
+export async function patchSpace(formData: FormikValues, id: number) {
+  const patchSpaceUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/spaces/${id}/simple/`;
+
+  const requestOptions: RequestInit = {
+    method: 'PATCH',
+    headers: {
+      "Content-Type": "application/json",
+      'Cookie': `${getAuthCookie()}`,
+    },
+    body: JSON.stringify(formData),
+  };
+
+  try {
+    const res = await fetch(patchSpaceUrl, requestOptions);
+
+    // TODO handle this more graceful if user is unauthorized or something like that
+    if (!res.ok) {
+      const errorResp = await res.json();
+      console.warn('patchSpace server action Error: ' + getErrorMessage(errorResp));
+      console.warn(JSON.stringify(errorResp));
+      return { error: GENERIC_ERROR_MESSAGE };
+    }
+
+    revalidatePath(`/spaces/${id}`);
+    return await res.json();
+
+  } catch (error) {
+    console.warn('patchSpace server action Error: ', getErrorMessage(error));
+    return { error: GENERIC_ERROR_MESSAGE };
+  }
+}
+
+
+// ----- SpaceRoles Actions -----
+
+/**
+ * Server action to call the create SpaceRole endpoint (to link a user to a space)
+ * @param formData 
+ * @returns space information
+ */
+export async function createSpaceRole(formData: FormikValues, SpaceId: number) {
+  const createSpaceRoleUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/spaceroles/invite/`;
+
+  const requestOptions: RequestInit = {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      'Cookie': `${getAuthCookie()}`,
+    },
+    body: JSON.stringify(formData),
+  };
+
+  try {
+    const res = await fetch(createSpaceRoleUrl, requestOptions);
+
+    if (!res.ok) {
+      const errorResp = await res.json();
+      console.warn('createSpaceRole server action Error: ' + getErrorMessage(errorResp));
+      console.warn(JSON.stringify(errorResp));
+      return { error: GENERIC_ERROR_MESSAGE };
+    }
+
+    revalidatePath(`/spaces/${SpaceId}`);
+    return await res.json();
+
+  } catch (error) {
+    console.warn('createSpaceRole server action Error: ', getErrorMessage(error));
+    return { error: GENERIC_ERROR_MESSAGE };
+  }
+}
+
+
 
 
 /**

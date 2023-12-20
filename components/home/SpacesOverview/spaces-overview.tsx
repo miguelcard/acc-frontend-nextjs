@@ -1,10 +1,10 @@
 import 'server-only';
-import { getAuthCookie, getErrorMessage } from '@/lib/utils';
+import { getAuthCookie, getErrorMessage, setMaxStringLength } from '@/lib/utils';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import React from 'react';
 import { GENERIC_ERROR_MESSAGE, PaginatedResponse } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
-import { AvatarsGroup, SpaceDefaultDescription } from './space-users';
+import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
 import Space from '@/app/spaces/[id]/page';
 
 interface CreatorUser {
@@ -96,11 +96,11 @@ export default async function SpacesOverview() {
                                     subtitle={'Created by ' + space.creator.username}
                                     description={
                                         space.description ?
-                                            space.description.length > maxDescLength ? space.description.substring(0, maxDescLength) + "..." : space.description
+                                            setMaxStringLength(space.description, maxDescLength)
                                             :
                                             <span>
                                                 <SpaceDefaultDescription spaceId={space.id} />
-                                            </span>            
+                                            </span>
                                     }
                                 >
                                     <Box>

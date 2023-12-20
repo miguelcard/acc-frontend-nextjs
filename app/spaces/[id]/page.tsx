@@ -1,5 +1,5 @@
 import 'server-only';
-import { getAuthCookie, getErrorMessage } from '@/lib/utils';
+import { getAuthCookie, getErrorMessage, setMaxStringLength } from '@/lib/utils';
 import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -11,8 +11,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { stringIconMapper } from '@/lib/fa-icons-mapper';
 import Avatar from '@mui/material/Avatar';
+import React from 'react';
+import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
 
-interface Space {
+export interface Space {
   id: number;
   name: string;
   description?: string;
@@ -24,6 +26,7 @@ interface Space {
   updated_at?: string;
   creator?: number;
   members?: number[];
+  error?: string;     // just in case we add an error to the response
 };
 
 
@@ -62,14 +65,11 @@ async function getSpace(id: number) {
 
 export default async function Space({ params }: { params: { id: number } }) {
   const { id } = params;
-  const spaceResponse = await getSpace(id);
+  const space: Space = await getSpace(id);
 
-  if (spaceResponse.error) {
+  if (space.error) {
     // write an error message in the GUI manually or throw an error to be handled by next error boundry.
   }
-
-  // Assigning a type to the response object
-  const space: Space = spaceResponse;
 
   return (
     <Container component="section" maxWidth="lg" >
@@ -82,23 +82,39 @@ export default async function Space({ params }: { params: { id: number } }) {
       >
         <Box width={"100%"}>
 
-          <Box display="flex" alignItems="center" gap="24px">
+          <Box display="flex" alignItems="center" gap="28px" sx={{ px: 1, pt: 3 }}>
             <Avatar
-              sx={{ width: 64, height: 64 }}
+              sx={{
+                width: 64, height: 64,
+                '@media (max-width: 600px)': {
+                  width: 56,
+                  height: 56,
+                },
+              }}
             >
               <FontAwesomeIcon icon={stringIconMapper.rocket} size='xl' />
             </Avatar>
-            <Typography fontWeight='700' fontSize="1.4em" color="secondary">
-              {space.name + "a really looong description bla bla bla I mean a really long title bla bla bla, woohooo"}
+
+            <Typography fontWeight='700' fontSize="1.3em" color="secondary"
+              sx={{
+                '@media (max-width: 600px)': {
+                  fontSize: '1.1em',
+                },
+                '@media (max-width: 370px)': {
+                  fontSize: '1em',
+                },
+              }}
+            >
+              {setMaxStringLength(space.name, 120)}
             </Typography>
+
+            <MoreOptionsMenu space={space}/>
           </Box>
 
-          add line break? __________________________________________________________________________
           <PlaceHolderCard text={"Stats..."} />
           <PlaceHolderCard text={"Scorecard / Calendar"} />
           This is the Space with ID: {space.id} <br />
-          space name: {space.name} <br />
-          {/* space desc: {space.description} ssssssssssssssssss sssss fdssssssssssssss ssssssssssssssss ssssssssssssss sssssss sssssssssssfdfddfd ssssssssssssssssssssss ssssssssssssssssssssssssssssssssssssss ksdfjkj sdfkjkj ldsfkjlsadkjf  <br /> */}
+          space desc: {space.description} <br />
         </Box>
       </Box>
     </Container>
@@ -108,7 +124,7 @@ export default async function Space({ params }: { params: { id: number } }) {
 
 
 
-
+//  TODO DELETE
 const PlaceHolderCard = ({ text }: any) => {
   return (
     <Card

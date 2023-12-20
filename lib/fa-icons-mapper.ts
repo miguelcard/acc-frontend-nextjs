@@ -4,7 +4,7 @@
  * This is needed so that the icons reference can be saved in the backend as simply a
  * string, and then matched with its respective icon in the front end.
  */
-import { faUserAstronaut, faRocket, faEarthEurope, faPoo, faCode, faFire, faShieldCat, faShieldDog, faHeart, faWeightScale, faCannabis, faCircleRadiation, faBookOpen, faPenNib, faPencil, faLandmark, faPhoneVolume, faGlasses, faMoneyBillWave, faFeather, faDragon, faKiwiBird, faOtter, faHorseHead, faDumbbell, faBicycle, faPersonRunning, faFutbol, faCommentsDollar, faBrain, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faUserAstronaut, faRocket, faEarthEurope, faPoo, faCode, faFire, faShieldCat, faShieldDog, faHeart, faWeightScale, faCannabis, faCircleRadiation, faBookOpen, faPenNib, faPencil, faLandmark, faPhoneVolume, faGlasses, faMoneyBillWave, faFeather, faDragon, faKiwiBird, faOtter, faHorseHead, faDumbbell, faBicycle, faPersonRunning, faFutbol, faCommentsDollar, faBrain, IconDefinition, faAtom, faRobot, faShuttleSpace, faTruck, faRankingStar, faMicrophone } from '@fortawesome/free-solid-svg-icons';
 
 interface StringIconMapperType {
     [key: string]: IconDefinition;
@@ -41,6 +41,12 @@ export const stringIconMapper: StringIconMapperType = {
     futbol: faFutbol,
     commentsDollar: faCommentsDollar,
     brain: faBrain,
+    atom: faAtom,
+    robot: faRobot,
+    shuttleSpace: faShuttleSpace,
+    truck: faTruck,
+    rankingStar: faRankingStar,
+    microphone: faMicrophone
 }
 
 
