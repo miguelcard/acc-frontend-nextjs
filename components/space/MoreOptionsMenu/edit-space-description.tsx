@@ -36,7 +36,7 @@ export function EditSpaceDescription({ space }: EditSpaceDescriptionProps) {
             return;
         }
         setSpaceDescripton(updatedSpace.description);
-        router.push(`/spaces/${updatedSpace.id}`); // this does not do anything, + not needed if you just close modal
+        // router.push(`/spaces/${updatedSpace.id}`); // this does not do anything, + not needed if you just close modal
     }
 
     return (

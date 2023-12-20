@@ -3,7 +3,7 @@ import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/for
 import Box from '@mui/material/Box';
 import { TextField as TextFieldFormikMui } from 'formik-mui';
 import { Field, FormikValues } from 'formik';
-import React, { useState } from 'react'
+import React from 'react'
 import { object, string } from 'yup';
 import { Space } from "@/app/spaces/[id]/page";
 import { createSpaceRole, patchSpace } from '@/lib/actions';
@@ -15,7 +15,7 @@ interface InviteMembersProps {
 }
 
 /**
- * Component using the FormikStepper to edit the description of the space
+ * Component using the FormikStepper to add members/users to the space
  * @param space  
  * @returns 
  */

@@ -17,13 +17,16 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { EditSpaceDescription } from "./edit-space-description";
 import { InviteMembers } from "./invite-members";
+import { EditSpaceTitle } from "./edit-space-title";
 
 interface MoreOptionsMenuProps {
     space: Space;
 }
 
 /**
- * TODO
+ * This is a 3 dots menu that when clicked opens a modal where the user can 
+ * choose between different options to edit the space, this options include:
+ * Changing the space title and description, adding members, etc...
  */
 export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
 
@@ -56,12 +59,13 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
                 handleCloseOptionsMenu();
             },
             icon: <InfoIcon sx={sxIconStyle} />,
-            childrenBody: <EditSpaceDescription space={space}/>
+            childrenBody: <EditSpaceDescription space={space} />
         },
         {
             name: "Rename Space",
             click: () => { handleCloseOptionsMenu(); },
-            icon: <EditIcon sx={sxIconStyle} />
+            icon: <EditIcon sx={sxIconStyle} />,
+            childrenBody: <EditSpaceTitle space={space} />
         },
         {
             name: "Invite members",
