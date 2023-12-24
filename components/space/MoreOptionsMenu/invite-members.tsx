@@ -3,15 +3,16 @@ import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/for
 import Box from '@mui/material/Box';
 import { TextField as TextFieldFormikMui } from 'formik-mui';
 import { Field, FormikValues } from 'formik';
-import React from 'react'
+import React from 'react';
 import { object, string } from 'yup';
 import { Space } from "@/app/spaces/[id]/page";
-import { createSpaceRole, patchSpace } from '@/lib/actions';
-
+import { createSpaceRole } from '@/lib/actions';
 
 
 interface InviteMembersProps {
     space: Space;
+    handleCloseDialog?: () => void;
+    handleToastOpen: () => void;
 }
 
 /**
@@ -19,7 +20,7 @@ interface InviteMembersProps {
  * @param space  
  * @returns 
  */
-export function InviteMembers({ space }: InviteMembersProps) {
+export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: InviteMembersProps) {
 
     /**
      * Submits the request to the server action which adds the user to a space / creates a SpaceRole
@@ -30,13 +31,20 @@ export function InviteMembers({ space }: InviteMembersProps) {
         values.role = "member"; // harcoded for now
 
         const createdSpaceRole = await createSpaceRole(values, spaceId);
-        
+
         if (createdSpaceRole?.error) {
             // setErrorMessage(createdSpaceRole.error); // this would be to put an error in the UI, necessary?
+            // TODO: YES ITS NECESSARY TO PUT AN ERROR IN THE GUI
             console.log('error message: ', createdSpaceRole.error);
             return;
         }
-        // TODO: show a toast message if the user was added sucesfully
+
+        // Show a toast message if the user was added sucesfully
+        handleToastOpen();
+
+        if (handleCloseDialog !== undefined) {
+            handleCloseDialog();
+        };
     }
 
     return (
@@ -53,10 +61,10 @@ export function InviteMembers({ space }: InviteMembersProps) {
 
                 {/* // TODO: add similar validation schema as when signing up the user to verify the email exists?? */}
                 <FormikStep
-                    // validationSchema={object({
-                    //     name: string()
-                    //         .required('Space name is required'),
-                    // })}
+                // validationSchema={object({
+                //     name: string()
+                //         .required('Space name is required'),
+                // })}
                 >
                     <Box paddingBottom={2}>
                         <Field fullWidth name="member" component={TextFieldFormikMui} label="username or email (PK for now)" variant='outlined' />

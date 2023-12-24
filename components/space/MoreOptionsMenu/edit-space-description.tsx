@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 
 interface EditSpaceDescriptionProps {
     space: Space;
+    handleCloseDialog?: () => void;
 }
 
 /**
@@ -20,10 +21,9 @@ interface EditSpaceDescriptionProps {
  * @param space  
  * @returns 
  */
-export function EditSpaceDescription({ space }: EditSpaceDescriptionProps) {
+export function EditSpaceDescription({ space, handleCloseDialog }: EditSpaceDescriptionProps) {
 
     const [spaceDescripton, setSpaceDescripton] = useState<string | undefined>(space.description);
-    const router = useRouter();
 
     /**
      * Submits the request to the server action which patches the space
@@ -36,7 +36,7 @@ export function EditSpaceDescription({ space }: EditSpaceDescriptionProps) {
             return;
         }
         setSpaceDescripton(updatedSpace.description);
-        // router.push(`/spaces/${updatedSpace.id}`); // this does not do anything, + not needed if you just close modal
+        if(handleCloseDialog !== undefined){handleCloseDialog()};
     }
 
     return (

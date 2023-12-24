@@ -18,6 +18,10 @@ import ListItemText from "@mui/material/ListItemText";
 import { EditSpaceDescription } from "./edit-space-description";
 import { InviteMembers } from "./invite-members";
 import { EditSpaceTitle } from "./edit-space-title";
+import Snackbar from "@mui/material/Snackbar";
+import Slide from "@mui/material/Slide";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 
 interface MoreOptionsMenuProps {
     space: Space;
@@ -30,6 +34,7 @@ interface MoreOptionsMenuProps {
  */
 export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
 
+    // Anchor element to open menu
     const [anchorElOptions, setAnchorOptions] = useState<null | HTMLElement>(null);
 
     const handleOpenOptionsMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -40,6 +45,20 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
         setAnchorOptions(null);
     };
 
+    // Toast message of user added successfully
+    const [openToast, setOpenToast] = useState<boolean>(false);
+
+    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenToast(false);
+    };
+
+    const handleToastOpen = () => {
+        setOpenToast(true);
+    };
 
     type ClickHandler = (event: React.MouseEvent<HTMLElement>) => void;
 
@@ -71,7 +90,7 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
             name: "Invite members",
             click: () => { handleCloseOptionsMenu(); },
             icon: <PersonAddIcon sx={sxIconStyle} />,
-            childrenBody: <InviteMembers space={space}/>
+            childrenBody: <InviteMembers space={space} handleToastOpen={handleToastOpen} />
         },
         {
             name: "Change Avatar",
@@ -80,9 +99,17 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
         },
     ];
 
-
     return (
         <>
+            <Snackbar open={openToast} autoHideDuration={4000} onClose={handleToastClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                TransitionComponent={Slide}
+                sx={{ pt: 2 }}
+            >
+                <Alert onClose={handleToastClose} severity="success" sx={{ width: '100%', py: 3, fontWeight: 600 }}>
+                    User was successfully added to the Space!
+                </Alert>
+            </Snackbar>
             <Tooltip title="More options">
                 <IconButton onClick={handleOpenOptionsMenu} aria-label="More options" sx={{ ml: 'auto' }} >
                     <MoreVertIcon />
@@ -105,7 +132,8 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
                 onClose={handleCloseOptionsMenu}
             >
                 {menuOptions.map((option) => (
-                    <DialogModal key={option.name}
+                    <DialogModal
+                        key={option.name}
                         button={
                             <MenuItem onClick={option.click}>
                                 <ListItemIcon>

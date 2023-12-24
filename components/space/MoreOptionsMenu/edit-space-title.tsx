@@ -11,14 +11,15 @@ import { patchSpace } from '@/lib/actions';
 
 interface EditSpaceTitleProps {
     space: Space;
+    handleCloseDialog?: () => void;
 }
 
 /**
- * Component using the FormikStepper to edit the description of the space
+ * Component using the FormikStepper to edit the space title
  * @param space  
  * @returns 
  */
-export function EditSpaceTitle({ space }: EditSpaceTitleProps) {
+export function EditSpaceTitle({ space, handleCloseDialog }: EditSpaceTitleProps) {
 
     const [spaceTitle, setSpaceTitle] = useState<string | undefined>(space.name);
 
@@ -33,13 +34,14 @@ export function EditSpaceTitle({ space }: EditSpaceTitleProps) {
             return;
         }
         setSpaceTitle(updatedSpace.name);
+        if(handleCloseDialog !== undefined){handleCloseDialog()};
     }
 
     return (
         <>
             <FormikStepper
                 initialValues={{
-                    description: spaceTitle,
+                    name: spaceTitle,
                 }}
                 onSubmit={async (values) => submitEditSpace(values, space.id)}
                 step={0}

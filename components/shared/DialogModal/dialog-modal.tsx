@@ -8,6 +8,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { JSXElementConstructor, ReactElement } from 'react';
 
+/**
+ * This is a reusable Modal that we use to show things and embed forms within the modal
+ */
 interface DialogModalProps {
   button: ReactElement<any, string | JSXElementConstructor<any>>;
   childrenTitle?: React.ReactNode;
@@ -75,7 +78,7 @@ export default function DialogModal({ button, childrenTitle, childrenBody }: Dia
         </IconButton>
         {childrenBody ?
           <DialogContent sx={{ px: 4 }}>
-            <BodyWrapper childrenBody={childrenBody} step={step} setStep={setStep} />
+            <BodyWrapper childrenBody={childrenBody} step={step} setStep={setStep} handleCloseDialog={handleClose} />
           </DialogContent>
           : null}
       </Dialog>
@@ -88,14 +91,15 @@ export default function DialogModal({ button, childrenTitle, childrenBody }: Dia
  * Helper function to add the step and setStep properties to the children components only if they accept these props
  * @returns the child component with the added props if needed
  */
-function BodyWrapper({ childrenBody, step, setStep }: any) {
+function BodyWrapper({ childrenBody, step, setStep, handleCloseDialog }: any) {
 
-  if(!React.isValidElement(childrenBody)) {
+  if (!React.isValidElement(childrenBody)) {
     return childrenBody;
   }
 
-  const childrenBodyWithProps = React.cloneElement(childrenBody as React.ReactElement<any>, { step: step, setStep: setStep });
+  const childrenBodyWithStepProps = React.cloneElement(childrenBody as React.ReactElement<any>, { step: step, setStep: setStep });
+  const childrenBodyWithHandleCloseProps = React.cloneElement(childrenBodyWithStepProps as React.ReactElement<any>, { handleCloseDialog: handleCloseDialog });
   // TODO if we pass a component which does not have the step and setStep props,
   // we get a warning in the console for trying to assign them
-  return childrenBodyWithProps;
+  return childrenBodyWithHandleCloseProps;
 }
