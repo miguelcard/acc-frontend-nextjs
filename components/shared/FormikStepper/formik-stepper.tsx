@@ -7,7 +7,7 @@ import React, { ReactNode, useState } from 'react';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import IconButton from '@mui/material/IconButton';
 
-interface FormikStepProps extends Pick<FormikConfig<FormikValues>, 'children' | 'validationSchema' > {
+interface FormikStepProps extends Pick<FormikConfig<FormikValues>, 'children' | 'validationSchema'> {
 }
 
 export function FormikStep({ children }: FormikStepProps) {
@@ -16,13 +16,15 @@ export function FormikStep({ children }: FormikStepProps) {
 
 interface FormikStepperProps extends FormikConfig<FormikValues> {
     step: number;
-    setStep: (step: any) => void
+    setStep: (step: any) => void;
+    submitButtonText?: string
 }
 
-export function FormikStepper({ children, step, setStep, ...props }: FormikStepperProps) {
+export function FormikStepper({ children, step, setStep, submitButtonText, ...props }: FormikStepperProps) {
     const childrenArray = React.Children.toArray(children as ReactNode) as React.ReactElement<FormikStepProps>[];
     const currentChild = childrenArray[step];
     const [completed, setCompleted] = useState(false);
+    const lastStepButtonText: string = submitButtonText === undefined ? "Save" : submitButtonText;
 
     function isLastStep() {
         return step === childrenArray.length - 1;
@@ -30,6 +32,7 @@ export function FormikStepper({ children, step, setStep, ...props }: FormikStepp
 
     return (
         <Formik
+            enableReinitialize
             {...props}
             validationSchema={currentChild.props.validationSchema}
             onSubmit={async (values, helpers) => {
@@ -62,37 +65,39 @@ export function FormikStepper({ children, step, setStep, ...props }: FormikStepp
                             fontSize: '1.1em',
                         }}
                     >
-                        {isSubmitting ? 'Submitting' : isLastStep() ? 'Submit' : 'Next'}
+                        {isSubmitting ? 'Submitting' : isLastStep() ? lastStepButtonText : 'Next'}
                     </Button>
 
                     {/* Stepper Dots to navigate to different pages of the form */}
-                    <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                    >
-                        {childrenArray.map((child, index) => (
-                            <IconButton
-                                disabled={isSubmitting}
-                                key={index}
-                                onClick={async () => {
-                                    const validationErrors = await validateForm();
-                                    if (Object.keys(validationErrors).length > 0) {
-                                        setTouched(setNestedObjectValues<FormikTouched<FormikValues>>(validationErrors, true));
-                                        return;
-                                    }
-                                    // TODO:here you still have to do the check for the in between steps if you skip steps with validation ruels
-                                    setStep(index);
-                                    setTouched({});
-                                }}
-                            >
-                                <FiberManualRecordIcon
-                                    sx={{ fontSize: '0.6em' }}
-                                    color={step === index ? 'inherit' : 'disabled'}
-                                />
-                            </IconButton>
-                        ))}
-                    </Box>
+                    {childrenArray.length > 1 &&
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                        >
+                            {childrenArray.map((child, index) => (
+                                <IconButton
+                                    disabled={isSubmitting}
+                                    key={index}
+                                    onClick={async () => {
+                                        const validationErrors = await validateForm();
+                                        if (Object.keys(validationErrors).length > 0) {
+                                            setTouched(setNestedObjectValues<FormikTouched<FormikValues>>(validationErrors, true));
+                                            return;
+                                        }
+                                        // TODO:here you still have to do the check for the in between steps if you skip steps with validation ruels
+                                        setStep(index);
+                                        setTouched({});
+                                    }}
+                                >
+                                    <FiberManualRecordIcon
+                                        sx={{ fontSize: '0.6em' }}
+                                        color={step === index ? 'inherit' : 'disabled'}
+                                    />
+                                </IconButton>
+                            ))}
+                        </Box>
+                    }
                 </Form>
             )}
         </Formik>

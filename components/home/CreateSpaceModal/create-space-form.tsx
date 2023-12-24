@@ -27,7 +27,7 @@ async function submitCreateSpace(values: FormikValues, router: AppRouterInstance
 
 interface CreateSpaceFormProps {
     step?: number | undefined;
-    setStep?: undefined | React.Dispatch<React.SetStateAction<number>>
+    setStep?: undefined | React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps) {

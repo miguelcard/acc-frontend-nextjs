@@ -98,11 +98,12 @@ export async function SpaceDefaultDescription({
     if (results.length > 0) {
         const randomIndex = Math.floor(Math.random() * results.length);
         const user: SpaceUser = results[randomIndex];
+
+        // This is automatically wrapped with a Typography element on the CustomCard component
+        // even more meaningful would be to show total number of habits shared in this space ?
         return (
             <>
-                {/* This is automatically wrapped with a Typography element on the CustomCard component */}
                 <b>{user.username}</b> and {users.count - 1} others are members of this group.
-                {/* even more meaningful would be to show total number of habits shared in this space ? */}
             </>
         );
     } else {

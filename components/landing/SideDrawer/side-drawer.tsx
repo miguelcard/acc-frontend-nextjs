@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import React, { useState } from 'react';
+import React from 'react';
 import logoSecondary from '@/public/images/headers/avidhabits-secondary.png';
 import Link from "@mui/material/Link";
 import Image from 'next/image';
@@ -11,7 +11,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import NextLink from 'next/link';
-import Button from '@mui/material/Button';
 import styles from './side-drawer.module.css';
 import { LinkButtons } from '@/components/landing/LandingNavbar/landing-navbar';
 

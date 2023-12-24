@@ -8,22 +8,30 @@ import CloseIcon from '@mui/icons-material/Close';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { JSXElementConstructor, ReactElement } from 'react';
 
+/**
+ * This is a reusable Modal that we use to show things and embed forms within the modal
+ */
 interface DialogModalProps {
   button: ReactElement<any, string | JSXElementConstructor<any>>;
-  childrenTitle: React.ReactNode;
-  childrenBody: React.ReactNode;
+  childrenTitle?: React.ReactNode;
+  childrenBody?: React.ReactNode;
 }
 
-export default function DialogModal({button, childrenTitle, childrenBody }: DialogModalProps) {
+export default function DialogModal({ button, childrenTitle, childrenBody }: DialogModalProps) {
 
   const [open, setOpen] = React.useState<boolean>(false);
   // we need this state here only for the Back arrow button in the Modal in case of multi step forms
   const [step, setStep] = React.useState<number>(0);
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (event: React.MouseEvent<HTMLElement>) => {
+    // invoke original button onClick method first if it exists
+    if (button.props.onClick) {
+      button.props.onClick(event);
+    }
     setOpen(true);
     setStep(0);
   };
+
   const handleClose = () => {
     setOpen(false);
     setStep(0);
@@ -53,7 +61,7 @@ export default function DialogModal({button, childrenTitle, childrenBody }: Dial
             <ChevronLeftIcon />
           </IconButton>
         ) : null}
-        <DialogTitle sx={{ m: 0, p: 2 }} >
+        <DialogTitle sx={{ m: 0, p: 2 }} textAlign="center">
           {childrenTitle}
         </DialogTitle>
         <IconButton
@@ -68,9 +76,11 @@ export default function DialogModal({button, childrenTitle, childrenBody }: Dial
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent sx={{ px: 4 }}>
-          <BodyWrapper childrenBody={childrenBody} step={step} setStep={setStep} />
-        </DialogContent>
+        {childrenBody ?
+          <DialogContent sx={{ px: 4 }}>
+            <BodyWrapper childrenBody={childrenBody} step={step} setStep={setStep} handleCloseDialog={handleClose} />
+          </DialogContent>
+          : null}
       </Dialog>
     </div>
   );
@@ -81,9 +91,15 @@ export default function DialogModal({button, childrenTitle, childrenBody }: Dial
  * Helper function to add the step and setStep properties to the children components only if they accept these props
  * @returns the child component with the added props if needed
  */
-function BodyWrapper({childrenBody, step, setStep }: any ) {
-    const childrenBodyWithProps=React.cloneElement(childrenBody,{step: step, setStep: setStep });
-    // TODO if we pass a component which does not have the step and setStep props,
-    // we get a warning in the console for trying to assign them
-    return childrenBodyWithProps;
+function BodyWrapper({ childrenBody, step, setStep, handleCloseDialog }: any) {
+
+  if (!React.isValidElement(childrenBody)) {
+    return childrenBody;
+  }
+
+  const childrenBodyWithStepProps = React.cloneElement(childrenBody as React.ReactElement<any>, { step: step, setStep: setStep });
+  const childrenBodyWithHandleCloseProps = React.cloneElement(childrenBodyWithStepProps as React.ReactElement<any>, { handleCloseDialog: handleCloseDialog });
+  // TODO if we pass a component which does not have the step and setStep props,
+  // we get a warning in the console for trying to assign them
+  return childrenBodyWithHandleCloseProps;
 }

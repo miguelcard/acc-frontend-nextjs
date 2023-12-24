@@ -1,10 +1,10 @@
 import 'server-only';
-import { getAuthCookie, getErrorMessage } from '@/lib/utils';
+import { getAuthCookie, getErrorMessage, setMaxStringLength } from '@/lib/utils';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import React from 'react';
 import { GENERIC_ERROR_MESSAGE, PaginatedResponse } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
-import { AvatarsGroup, SpaceDefaultDescription } from './space-users';
+import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
 import Space from '@/app/spaces/[id]/page';
 
 interface CreatorUser {
@@ -91,18 +91,16 @@ export default async function SpacesOverview() {
                             <Grid item xs={12} md={6} lg={4} key={space.id}>
                                 <CustomCard
                                     spaceId={space.id}
-                                    thumbnail={
-                                        'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRQHCBAj8nRJkEwjWg5TpNuSZZG9iscsf43V1mfx0LZHNDYW3S_&usqp=CAU'
-                                    }
+                                    icon={"rocket"}
                                     title={space.name}
                                     subtitle={'Created by ' + space.creator.username}
                                     description={
                                         space.description ?
-                                            space.description.length > maxDescLength ? space.description.substring(0, maxDescLength) + "..." : space.description
+                                            setMaxStringLength(space.description, maxDescLength)
                                             :
-                                            <Box>
+                                            <span>
                                                 <SpaceDefaultDescription spaceId={space.id} />
-                                            </Box>
+                                            </span>
                                     }
                                 >
                                     <Box>

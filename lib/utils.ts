@@ -125,3 +125,15 @@ export const getErrorMessage = (error: unknown): string => {
 
     return message;
 }
+
+
+/**
+ * If the string is bigger than the max length, the string is cut and the threee dots are added at the end
+ * If the string is not bigger than the maxt length, then just returns the string
+ */
+export const setMaxStringLength = (text: string, maxLength: number): string => {
+    if (text !== undefined) {
+        return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    }
+    return text;
+}
