@@ -5,9 +5,8 @@ import TextField from '@mui/material/TextField';
 import { Field, FormikValues } from 'formik';
 import React, { useState } from 'react'
 import { object, string } from 'yup';
-import { Space } from "@/app/spaces/[id]/page";
 import { patchSpace } from '@/lib/actions';
-import { useRouter } from 'next/navigation';
+import { Space } from '@/lib/types-and-constants';
 
 
 

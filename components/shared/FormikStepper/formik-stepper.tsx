@@ -34,7 +34,7 @@ export function FormikStepper({ children, step, setStep, submitButtonText, ...pr
         <Formik
             enableReinitialize
             {...props}
-            validationSchema={currentChild.props.validationSchema}
+            validationSchema={currentChild?.props.validationSchema}
             onSubmit={async (values, helpers) => {
 
                 if (isLastStep()) {

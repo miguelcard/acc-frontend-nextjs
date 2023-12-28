@@ -4,7 +4,7 @@
  * This is needed so that the icons reference can be saved in the backend as simply a
  * string, and then matched with its respective icon in the front end.
  */
-import { faUserAstronaut, faRocket, faEarthEurope, faPoo, faCode, faFire, faShieldCat, faShieldDog, faHeart, faWeightScale, faCannabis, faCircleRadiation, faBookOpen, faPenNib, faPencil, faLandmark, faPhoneVolume, faGlasses, faMoneyBillWave, faFeather, faDragon, faKiwiBird, faOtter, faHorseHead, faDumbbell, faBicycle, faPersonRunning, faFutbol, faCommentsDollar, faBrain, IconDefinition, faAtom, faRobot, faShuttleSpace, faTruck, faRankingStar, faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import { faUserAstronaut, faRocket, faEarthEurope, faPoo, faCode, faFire, faShieldCat, faShieldDog, faHeart, faWeightScale, faCannabis, faCircleRadiation, faBookOpen, faPenNib, faPencil, faLandmark, faPhoneVolume, faGlasses, faMoneyBillWave, faFeather, faDragon, faKiwiBird, faOtter, faHorseHead, faDumbbell, faBicycle, faPersonRunning, faFutbol, faCommentsDollar, faBrain, IconDefinition, faAtom, faRobot, faShuttleSpace, faTruck, faRankingStar, faMicrophone, faMugHot, faGhost, faCat, faLocationCrosshairs, faYinYang, faCompass } from '@fortawesome/free-solid-svg-icons';
 
 interface StringIconMapperType {
     [key: string]: IconDefinition;
@@ -46,32 +46,11 @@ export const stringIconMapper: StringIconMapperType = {
     shuttleSpace: faShuttleSpace,
     truck: faTruck,
     rankingStar: faRankingStar,
-    microphone: faMicrophone
+    microphone: faMicrophone,
+    mugHot: faMugHot,
+    ghost: faGhost,
+    compass: faCompass,
+    cat: faCat,
+    locationCrosshairs: faLocationCrosshairs,
+    yinYang: faYinYang,
 }
-
-
-
-
-
-
-
-
-
-
-
-// iterate options:
-// const iconValues = Object.values(myIcons);
-
-// iconValues.forEach(icon => {
-//   // Do something with the icon
-//   console.log(icon);
-// });
-
-// or
-// for (const key in myIcons) {
-//     if (myIcons.hasOwnProperty(key)) {
-//       const icon = myIcons[key];
-//       // Do something with the icon
-//       console.log(key, icon);
-//     }
-//   }

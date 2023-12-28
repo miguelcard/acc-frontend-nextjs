@@ -5,8 +5,8 @@ import { TextField as TextFieldFormikMui } from 'formik-mui';
 import { Field, FormikValues } from 'formik';
 import React, { useState } from 'react'
 import { object, string } from 'yup';
-import { Space } from "@/app/spaces/[id]/page";
 import { patchSpace } from '@/lib/actions';
+import { Space } from '@/lib/types-and-constants';
 
 
 interface EditSpaceTitleProps {

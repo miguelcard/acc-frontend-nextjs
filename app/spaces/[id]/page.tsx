@@ -1,33 +1,17 @@
 import 'server-only';
 import { getAuthCookie, getErrorMessage, setMaxStringLength } from '@/lib/utils';
-import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
+import { GENERIC_ERROR_MESSAGE, Space } from '@/lib/types-and-constants';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { stringIconMapper } from '@/lib/fa-icons-mapper';
 import Avatar from '@mui/material/Avatar';
 import React from 'react';
 import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
-
-export interface Space {
-  id: number;
-  name: string;
-  description?: string;
-  tags?: string[];
-  members_count?: number;
-  habits_count?: number;
-  space_habits?: any[]; // Todo change for habits type, any[] for now
-  created_at?: string;
-  updated_at?: string;
-  creator?: number;
-  members?: number[];
-  error?: string;     // just in case we add an error to the response
-};
 
 
 /**
@@ -63,7 +47,7 @@ async function getSpace(id: number) {
 }
 
 
-export default async function Space({ params }: { params: { id: number } }) {
+export default async function SingleSpace({ params }: { params: { id: number } }) {
   const { id } = params;
   const space: Space = await getSpace(id);
 
@@ -92,7 +76,7 @@ export default async function Space({ params }: { params: { id: number } }) {
                 },
               }}
             >
-              <FontAwesomeIcon icon={stringIconMapper.rocket} size='xl' />
+              <FontAwesomeIcon icon={stringIconMapper[`${space.icon_alias !== null ? space.icon_alias : 'rocket'}`]} size='xl' />
             </Avatar>
 
             <Typography fontWeight='700' fontSize="1.3em" color="secondary"
