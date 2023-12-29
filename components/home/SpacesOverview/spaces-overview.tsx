@@ -81,7 +81,7 @@ export default async function SpacesOverview() {
                             <Grid item xs={12} md={6} lg={4} key={space.id}>
                                 <CustomCard
                                     spaceId={space.id}
-                                    icon={space.icon_alias ?? 'rocket'}
+                                    icon={space.icon_alias || 'rocket'}
                                     title={space.name}
                                     subtitle={space.creator != undefined ? 'Created by ' + space.creator.username : ''}
                                     description={

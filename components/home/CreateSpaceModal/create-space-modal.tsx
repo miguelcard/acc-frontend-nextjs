@@ -14,7 +14,10 @@ import planet from '@/public/images/spaces/planet.png';
 export default function CreateSpaceModal() {
     return (
         <>
-            <DialogModal button={<NewSpaceButton />} childrenTitle={<CreateSpaceDialogTitle />} childrenBody={<CreateSpaceForm />} />
+            <DialogModal button={<NewSpaceButton />}
+                childrenTitle={<CreateSpaceDialogTitle />}
+                childrenBody={<CreateSpaceForm />}
+            />
         </>
     )
 }
@@ -24,7 +27,7 @@ const NewSpaceButton = () => {
     return (
         <Button variant="outlined" color="secondary"
             startIcon={<><AddIcon /><GroupsIcon /></>}
-            sx={{py: 1}}
+            sx={{ py: 1 }}
         >
             <Typography fontWeight={600} fontSize={"1.1em"}
             >
@@ -45,12 +48,12 @@ const CreateSpaceDialogTitle = () => {
             >
                 <Image
                     src={planet}
-                    width={130}
+                    width={120}
                     height={0}
                     alt="logo"
                 // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
                 />
-                <Typography fontWeight={600} fontSize='1.1em' pb={2}>
+                <Typography fontWeight={600} fontSize='1em' pb={2}>
                     Create new Space
                 </Typography>
             </Box>

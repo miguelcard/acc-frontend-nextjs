@@ -76,7 +76,7 @@ export default async function SingleSpace({ params }: { params: { id: number } }
                 },
               }}
             >
-              <FontAwesomeIcon icon={stringIconMapper[`${space.icon_alias !== null ? space.icon_alias : 'rocket'}`]} size='xl' />
+              <FontAwesomeIcon icon={stringIconMapper[`${space.icon_alias || 'rocket'}`]} size='xl' />
             </Avatar>
 
             <Typography fontWeight='700' fontSize="1.3em" color="secondary"
