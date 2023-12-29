@@ -10,6 +10,7 @@ import { createSpace } from '@/lib/actions';
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import Typography from '@mui/material/Typography';
+import { EmojiSelector } from '@/components/space/EmojiSelector/emoji-selector';
 
 
 async function submitCreateSpace(values: FormikValues, router: AppRouterInstance | string[], setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>) {
@@ -43,6 +44,7 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
             <FormikStepper
                 initialValues={{
                     name: '',
+                    icon_alias: null,
                     description: ''
                 }}
                 onSubmit={async (values) => submitCreateSpace(values, router, setErrorMessage)}
@@ -59,6 +61,9 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                     <Box paddingBottom={2}>
                         <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant='standard' />
                     </Box>
+                </FormikStep>
+                <FormikStep>
+                    <EmojiSelector title="Choose a space avatar..." />
                 </FormikStep>
                 <FormikStep
                     validationSchema={object({

@@ -12,7 +12,7 @@ import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 
 import grey from "@mui/material/colors/grey";
 import DialogModal from "@/components/shared/DialogModal/dialog-modal";
-import { Space } from "@/app/spaces/[id]/page";
+import { Space } from '@/lib/types-and-constants';
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { EditSpaceDescription } from "./edit-space-description";
@@ -21,7 +21,7 @@ import { EditSpaceTitle } from "./edit-space-title";
 import Snackbar from "@mui/material/Snackbar";
 import Slide from "@mui/material/Slide";
 import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
+import { ChangeAvatar } from "./change-avatar";
 
 interface MoreOptionsMenuProps {
     space: Space;
@@ -95,7 +95,8 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
         {
             name: "Change Avatar",
             click: () => { handleCloseOptionsMenu(); },
-            icon: <InsertEmoticonIcon sx={sxIconStyle} />
+            icon: <InsertEmoticonIcon sx={sxIconStyle} />,
+            childrenBody: <ChangeAvatar space={space} />
         },
     ];
 

@@ -61,7 +61,7 @@ export default function DialogModal({ button, childrenTitle, childrenBody }: Dia
             <ChevronLeftIcon />
           </IconButton>
         ) : null}
-        <DialogTitle sx={{ m: 0, p: 2 }} textAlign="center">
+        <DialogTitle sx={{ m: 0, pt: 2 }} textAlign="center">
           {childrenTitle}
         </DialogTitle>
         <IconButton

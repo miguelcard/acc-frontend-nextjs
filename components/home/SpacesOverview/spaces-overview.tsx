@@ -2,10 +2,10 @@ import 'server-only';
 import { getAuthCookie, getErrorMessage, setMaxStringLength } from '@/lib/utils';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import React from 'react';
-import { GENERIC_ERROR_MESSAGE, PaginatedResponse } from '@/lib/types-and-constants';
+import { GENERIC_ERROR_MESSAGE, PaginatedResponse, Space } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
 import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
-import Space from '@/app/spaces/[id]/page';
+
 
 interface CreatorUser {
     id: number;
@@ -18,18 +18,8 @@ interface CreatorUser {
     // is_active?: boolean;
 }
 
-interface Space {
-    id: number;
-    tags: any[]; // Replace 'any' with the actual type of tags
-    members_count: number;
-    habits_count: number;
-    space_habits: any[]; // Replace 'any' with the actual type of space_habits
-    created_at: string;
-    updated_at: string;
-    name: string;
-    description: string;
+interface SpaceDetailed extends Space {
     creator: CreatorUser;
-    members: any[]; // Replace 'any' with the actual type of members
 }
 
 /**
@@ -70,7 +60,7 @@ async function getUserSpaces() {
  * hopefully is fixed in future MUI versions
  */
 export default async function SpacesOverview() {
-    const spaces: PaginatedResponse<Space> = await getUserSpaces();
+    const spaces: PaginatedResponse<SpaceDetailed> = await getUserSpaces();
     const maxDescLength: number = 66;
 
     if (spaces?.error) {
@@ -87,13 +77,13 @@ export default async function SpacesOverview() {
                 (<NoExistingSpacesText />)
                 : (
                     <Grid container spacing={4} py={4}>
-                        {spaces.results.map((space: Space) => (
+                        {spaces.results.map((space) => (
                             <Grid item xs={12} md={6} lg={4} key={space.id}>
                                 <CustomCard
                                     spaceId={space.id}
-                                    icon={"rocket"}
+                                    icon={space.icon_alias || 'rocket'}
                                     title={space.name}
-                                    subtitle={'Created by ' + space.creator.username}
+                                    subtitle={space.creator != undefined ? 'Created by ' + space.creator.username : ''}
                                     description={
                                         space.description ?
                                             setMaxStringLength(space.description, maxDescLength)

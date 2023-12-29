@@ -1,0 +1,15 @@
+.fa-icon {
+    transition: color 0.3s;
+    color: #838383;
+    cursor: pointer;
+}
+
+.fa-icon--hightlited {
+    transform: scale(1.5);
+    color: #000000;
+}
+
+.fa-icon:hover {
+    transform: scale(1.5);
+    color: #000000;
+}
