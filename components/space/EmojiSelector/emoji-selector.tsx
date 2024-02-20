@@ -18,11 +18,11 @@ export function EmojiSelector({ title }: EmojiSelectorProps) {
     const [hightlightedAvatar, setHightlightedAvatar] = useState<string>('');
 
     // Use formik to update the avatar field value without having to have an explicit Formik Field in the GUI
-    const formik = useFormikContext();
+    const formikCtx = useFormikContext();
 
     const updateFomrikFieldValue = (avatarKey: string) => {
         setHightlightedAvatar(avatarKey);
-        formik.setFieldValue('icon_alias', avatarKey);
+        formikCtx.setFieldValue('icon_alias', avatarKey);
     };
 
 

@@ -209,6 +209,38 @@ export async function createSpaceRole(formData: FormikValues, SpaceId: number) {
 
 
 
+// ------ Users Actions ------
+
+
+export async function getUsernameEmailSuggestions(member: string, resultsNumber: number) {
+  const getUsernameEmailSuggestionsUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/users/usernames-emails/?search=${member}&page_size=${resultsNumber}`;
+
+  const requestOptions: RequestInit = {
+    method: 'GET',
+    headers: {
+      "Content-Type": "application/json",
+      'Cookie': `${getAuthCookie()}`,
+    },
+  };
+
+  try {
+    const res = await fetch(getUsernameEmailSuggestionsUrl, requestOptions);
+
+    if (!res.ok) {
+      const errorResp = await res.json();
+      console.warn('getUsernameEmailSuggestions server action Error: ' + getErrorMessage(errorResp));
+      console.warn(JSON.stringify(errorResp));
+      return { error: GENERIC_ERROR_MESSAGE };
+    }
+
+    return await res.json();
+
+  } catch (error) {
+    console.warn('getUsernameEmailSuggestions server action Error: ', getErrorMessage(error));
+    return { error: GENERIC_ERROR_MESSAGE };
+  }
+}
+
 
 /**
  * Helper function to turn a formData object to a request body object

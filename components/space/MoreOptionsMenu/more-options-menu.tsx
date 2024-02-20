@@ -102,13 +102,13 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
 
     return (
         <>
-            <Snackbar open={openToast} autoHideDuration={4000} onClose={handleToastClose}
+            <Snackbar open={openToast} autoHideDuration={8000} onClose={handleToastClose}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 TransitionComponent={Slide}
                 sx={{ pt: 2 }}
             >
                 <Alert onClose={handleToastClose} severity="success" sx={{ width: '100%', py: 3, fontWeight: 600 }}>
-                    User was successfully added to the Space!
+                    Success! The user has been added to the Space. They can now view and contribute habits.
                 </Alert>
             </Snackbar>
             <Tooltip title="More options">

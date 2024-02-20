@@ -96,7 +96,7 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                         </Field>
                     </Box>
                 </FormikStep>
-                {/* TODO step to add other users to your space by UN /  PW */}
+                {/* TODO step to add other users to your space by UN /  PW -> InviteMembers Component */}
             </FormikStepper>
             {errorMessage ?
                 <Typography
