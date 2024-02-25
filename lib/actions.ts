@@ -1,7 +1,7 @@
 'use server';
 import 'server-only';
 import { revalidatePath } from "next/cache";
-import { getAuthCookie, getErrorMessage, setAuthCookie } from "./utils";
+import { createUrl, getAuthCookie, getErrorMessage, setAuthCookie } from "./utils";
 import { FormikValues } from "formik";
 import { GENERIC_ERROR_MESSAGE } from './types-and-constants';
 
@@ -212,6 +212,14 @@ export async function createSpaceRole(formData: FormikValues, SpaceId: number) {
 // ------ Users Actions ------
 
 
+/**
+ * This function calls the endpoint which retrieces a list of users which match either by username or email the value
+ * given on the search parameter
+ * 
+ * @param member either the username or email 
+ * @param resultsNumber resutls per page 
+ * @returns list of users who match either that username or email
+ */
 export async function getUsernameEmailSuggestions(member: string, resultsNumber: number) {
   const getUsernameEmailSuggestionsUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/users/usernames-emails/?search=${member}&page_size=${resultsNumber}`;
 
@@ -240,6 +248,50 @@ export async function getUsernameEmailSuggestions(member: string, resultsNumber:
     return { error: GENERIC_ERROR_MESSAGE };
   }
 }
+
+
+/**
+ * Calls backend to check if a given username or email is already taken or not
+ * 
+ * @param username the username or null
+ * @param email the email or null
+ * @returns { email_taken: true } or { username_taken: true }
+ */
+export async function checkUsernameOrEmailExist(username: string | null, email: string | null) {
+
+  const checkUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/users/username-or-email-exists/`;
+
+  const params = new URLSearchParams();
+  username && params.append('username', username);
+  email && params.append('email', email);
+
+  const finalUrl: string = createUrl(checkUrl, params);
+
+  const requestOptions: RequestInit = {
+    method: 'GET',
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const res = await fetch(finalUrl, requestOptions);
+
+    if (!res.ok) {
+      const errorResp = await res.json();
+      console.warn('checkUsernameOrEmailExist server action Error: ' + getErrorMessage(errorResp));
+      console.warn(JSON.stringify(errorResp));
+      return { error: GENERIC_ERROR_MESSAGE };
+    }
+
+    return await res.json();
+
+  } catch (error) {
+    console.warn('checkUsernameOrEmailExist server action Error: ', getErrorMessage(error));
+    return { error: GENERIC_ERROR_MESSAGE };
+  }
+}
+
 
 
 /**
