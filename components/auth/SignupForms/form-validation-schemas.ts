@@ -1,3 +1,4 @@
+import { checkUsernameOrEmailExist } from '@/lib/actions';
 import * as Yup from 'yup';
 
 const signupValidationSchemas = [
@@ -32,17 +33,26 @@ const signupValidationSchemas = [
     })
 ];
 
-
-// TODO dont check each time the email is being edited, rather just when the user stops focusing the text field, like in clickup
-const checkIfEmailIsTaken = async (value: string): Promise<boolean> => {
-    // Your implementation to check if the email is already taken goes here, should check with backend
-    return value === 'migueluy360@hotmail.com';
+/**
+ * checks in the backend if the email is already taken
+ * @param email 
+ * @returns true or false
+ */
+const checkIfEmailIsTaken = async (email: string): Promise<boolean> => {
+    const exists = await checkUsernameOrEmailExist(null, email);
+    const isTaken: boolean = exists.email_taken;
+    return isTaken;
 };
 
-// TODO
-const checkIfUsernameIsTaken = async (value: string): Promise<boolean> => {
-    // Your implementation to check if the username is already taken goes here, should check with backend
-    return value === 'migueluy';
+/**
+ * checks in the backend if the username is already taken
+ * @param username 
+ * @returns true or false
+ */
+const checkIfUsernameIsTaken = async (username: string): Promise<boolean> => {
+    const exists = await checkUsernameOrEmailExist(username, null);
+    const isTaken: boolean = exists.username_taken;
+    return isTaken;
 };
 
 
