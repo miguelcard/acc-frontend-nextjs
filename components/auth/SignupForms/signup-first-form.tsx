@@ -7,21 +7,20 @@ import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import React, { useState } from 'react'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import { SignupFormProps } from './constants';
 import styles from './signup.module.css';
 
 /**
- * 
- * @param formik 
- * @returns 
+ *
+ * @param formik
+ * @returns
  */
 export default function SignupFirstForm({ formik }: SignupFormProps) {
-
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
     return (
@@ -36,17 +35,10 @@ export default function SignupFirstForm({ formik }: SignupFormProps) {
                     alignItems: 'center',
                 }}
             >
-                <Typography component="h1" variant="h5" fontWeight='600'
-                    className={styles['register__action-text']}
-                    sx={{ pb: 3 }}
-                >
-                    Let's get you started!
+                <Typography component="h1" variant="h5" fontWeight="600" className={styles['register__action-text']} sx={{ pb: 3 }}>
+                    Let{`'`}s get you started!
                 </Typography>
-                <Box
-                    component="form"
-                    onSubmit={formik.handleSubmit}
-                    sx={{ mt: 1 }}
-                >
+                <Box component="form" onSubmit={formik.handleSubmit} sx={{ mt: 1 }}>
                     <InputLabel htmlFor="name" sx={{ fontWeight: 'bold' }}>
                         Name
                     </InputLabel>
@@ -88,7 +80,7 @@ export default function SignupFirstForm({ formik }: SignupFormProps) {
                         fullWidth
                         name="password"
                         placeholder="Minimum 8 characters"
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword ? 'text' : 'password'}
                         id="password"
                         autoComplete="new-password"
                         value={formik.values.password}
@@ -98,35 +90,20 @@ export default function SignupFirstForm({ formik }: SignupFormProps) {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password"
-                                        edge="end"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                    >
-                                        {showPassword ? (
-                                            <VisibilityOffIcon />
-                                        ) : (
-                                            <VisibilityIcon />
-                                        )}
+                                    <IconButton aria-label="toggle password" edge="end" onClick={() => setShowPassword(!showPassword)}>
+                                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                                     </IconButton>
                                 </InputAdornment>
-                            )
+                            ),
                         }}
                     />
-                    <Button
-                        className={styles['auth__form-button']}
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ my: 3 }}
-                    >
+                    <Button className={styles['auth__form-button']} type="submit" fullWidth variant="contained" sx={{ my: 3 }}>
                         Continue
                     </Button>
                     {/* TODO: put terms and conditions and policy links */}
-                    <Box
-                        sx={{ fontSize: '0.8em', textAlign: 'center' }}
-                    >
-                        <p>Signing up for an account means you agree to our &nbsp;
+                    <Box sx={{ fontSize: '0.8em', textAlign: 'center' }}>
+                        <p>
+                            Signing up for an account means you agree to our &nbsp;
                             <Link href="#" variant="body2">
                                 Privacy Policy
                             </Link>

@@ -6,7 +6,6 @@ import { GENERIC_ERROR_MESSAGE, PaginatedResponse, Space } from '@/lib/types-and
 import { CustomCard } from './single-space-card';
 import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
 
-
 interface CreatorUser {
     id: number;
     username: string;
@@ -27,14 +26,14 @@ interface SpaceDetailed extends Space {
  * @returns list of spaces
  */
 async function getUserSpaces() {
-    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&page_size=4&ordering=-updated_at`; // For the future load automatically on scrolling
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&ordering=-updated_at`; // For the future load automatically on scrolling
     const requestOptions: RequestInit = {
         method: 'GET',
         headers: {
-            "Content-Type": "application/json",
-            "Cookie": `${getAuthCookie()}`,
+            'Content-Type': 'application/json',
+            Cookie: `${getAuthCookie()}`,
         },
-        cache: 'no-store' // just in case, but it isn't necessary if we use cookies above
+        cache: 'no-store', // just in case, but it isn't necessary if we use cookies above
     };
 
     try {
@@ -46,9 +45,8 @@ async function getUserSpaces() {
             return { error: GENERIC_ERROR_MESSAGE };
         }
         return spaces;
-
     } catch (error) {
-        console.warn("An error ocurred: ", getErrorMessage(error));
+        console.warn('An error ocurred: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }
@@ -67,45 +65,46 @@ export default async function SpacesOverview() {
         // TODO how do I display this error messages in the gui without having to create a client component?
         // use sub-(client)-component ?
         // or just throw error to be handled by next js
-        console.warn("retrieving user spaces has an error :", spaces.error);
+        console.warn('retrieving user spaces has an error :', spaces.error);
         return;
     }
 
     return (
         <>
-            {spaces.results.length === 0 ?
-                (<NoExistingSpacesText />)
-                : (
-                    <Grid container spacing={4} py={4}>
-                        {spaces.results.map((space) => (
-                            <Grid item xs={12} md={6} lg={4} key={space.id}>
-                                <CustomCard
-                                    spaceId={space.id}
-                                    icon={space.icon_alias || 'rocket'}
-                                    title={space.name}
-                                    subtitle={space.creator != undefined ? 'Created by ' + space.creator.username : ''}
-                                    description={
-                                        space.description ?
-                                            setMaxStringLength(space.description, maxDescLength)
-                                            :
-                                            <span>
-                                                <SpaceDefaultDescription spaceId={space.id} />
-                                            </span>
-                                    }
-                                >
-                                    <Box>
-                                        <AvatarsGroup spaceId={space.id} />
-                                    </Box>
-                                </CustomCard>
-                            </Grid>
-                        ))}
-                    </Grid>
-                    // TODO do arrows here, dont show if there is nothing else to show - KISS, maybe something like an already existing carrousel
-                    // so that its horizontally scrollbar
-                )}
+            {spaces.results.length === 0 ? (
+                <NoExistingSpacesText />
+            ) : (
+                <Grid container spacing={4} py={4}>
+                    {spaces.results.map((space) => (
+                        <Grid item xs={12} md={6} lg={4} key={space.id}>
+                            <CustomCard
+                                spaceId={space.id}
+                                icon={space.icon_alias || 'rocket'}
+                                title={space.name}
+                                subtitle={space.creator != undefined ? 'Created by ' + space.creator.username : ''}
+                                description={
+                                    space.description ? (
+                                        setMaxStringLength(space.description, maxDescLength)
+                                    ) : (
+                                        <span>
+                                            <SpaceDefaultDescription spaceId={space.id} />
+                                        </span>
+                                    )
+                                }
+                            >
+                                <Box>
+                                    <AvatarsGroup spaceId={space.id} />
+                                </Box>
+                            </CustomCard>
+                        </Grid>
+                    ))}
+                </Grid>
+                // TODO do arrows here, dont show if there is nothing else to show - KISS, maybe something like an already existing carrousel
+                // so that its horizontally scrollbar
+            )}
         </>
     );
-};
+}
 
 const NoExistingSpacesText = () => {
     return (
@@ -116,16 +115,14 @@ const NoExistingSpacesText = () => {
                 width: '100%',
                 display: 'flex',
                 justifyContent: 'center',
-                backgroundColor: "#E8EAED"
-            }}>
+                backgroundColor: '#E8EAED',
+            }}
+        >
             <CardContent>
-                <Typography
-                    fontWeight='500'
-                    sx={{ py: 3 }}
-                >
+                <Typography fontWeight="500" sx={{ py: 3 }}>
                     You currently have no spaces, create one to get started.
                 </Typography>
             </CardContent>
         </Card>
     );
-}
+};

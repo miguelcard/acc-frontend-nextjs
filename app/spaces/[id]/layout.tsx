@@ -1,11 +1,9 @@
 import AuthenticatedLayout from '@/components/shared/AuthenticatedLayout/authenticated-layout';
 
-export default function SingleSpaceLayout({ children, }: { children: React.ReactNode; }) {
+export default function SingleSpaceLayout({ children }: { children: React.ReactNode }) {
     return (
         <>
-            <AuthenticatedLayout>
-                {children}
-            </AuthenticatedLayout>
+            <AuthenticatedLayout>{children}</AuthenticatedLayout>
         </>
     );
 }
