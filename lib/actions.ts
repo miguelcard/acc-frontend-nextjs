@@ -417,7 +417,7 @@ export async function addCheckmark(checkmark: { habit: number; status: string; d
         return await res.json();
     } catch (error) {
         console.warn('addCheckmark server action Error: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
+        return Promise.reject(GENERIC_ERROR_MESSAGE);
     }
 }
 

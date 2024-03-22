@@ -1,6 +1,6 @@
 import 'server-only';
-import { getAuthCookie, getErrorMessage, setMaxStringLength } from '@/lib/utils';
-import { GENERIC_ERROR_MESSAGE, Space, UserT } from '@/lib/types-and-constants';
+import { setMaxStringLength } from '@/lib/utils';
+import { Space, UserT } from '@/lib/types-and-constants';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -16,8 +16,8 @@ import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options
 import Link from 'next/link';
 import '../../../styles/singleSpace.css';
 import { IconButton } from '@mui/material';
-import CreateHabitModel from '@/components/space/Habits/ScoreCardCalander/CreateHabitModal';
-import { ScoreCard } from '@/components/space/Habits/ScoreCardCalander/ScoreCard';
+import CreateHabitModel from '@/components/space/Habits/CreateHabitModal';
+import { ScoreCard } from '@/components/space/Habits/ScoreCard';
 import { getSpace, getUser } from '@/lib/actions';
 import { redirect } from 'next/navigation';
 

@@ -4,8 +4,9 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import AddIcon from '@mui/icons-material/Add';
 import Image from 'next/image';
-import CreateHabitForm from './CreateHabit';
-import habitsImg from '../../../../public/images/spaces/habits.jpg';
+
+import habitsImg from '../../../public/images/spaces/habits.jpg';
+import CreateHabitForm from './CreateHabitForm';
 
 type CreateHabitPropsT = { spaceId: number };
 

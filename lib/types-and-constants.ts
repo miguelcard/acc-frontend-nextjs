@@ -108,6 +108,3 @@ export type MembersT = {
     about: any;
     is_active: boolean;
 };
-
-export const weekDaysShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-export const weekDaysFull = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
