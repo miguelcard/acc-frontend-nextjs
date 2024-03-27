@@ -81,8 +81,8 @@ export default async function SingleSpace({ params }: { params: { id: number } }
                     </Box>
                     <PlaceHolderCard text={'Stats...'} />
                     {/* Habits and there score cards */}
-                    {space.space_habits.length > 0 ? (
-                        <ScoreCard habits={space.space_habits} spaceId={space.id} user={user} members={space.members} />
+                    {space.space_habits && space.space_habits.length > 0 ? (
+                        <ScoreCard user={user} space={space} />
                     ) : (
                         <PlaceHolderCard text={'No Habits Yet'} />
                     )}

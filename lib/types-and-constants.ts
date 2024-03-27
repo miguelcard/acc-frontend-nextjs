@@ -13,8 +13,8 @@ export interface PaginatedResponse<T> {
 }
 
 export const timeFrames = [
-    { label: 'Week', value: 'W' },
-    { label: 'Month', value: 'M' },
+    { label: 'Weekly', value: 'W' },
+    { label: 'Monthly', value: 'M' },
 ];
 
 /**
@@ -49,6 +49,7 @@ export type HabitT = {
     time_frame: string;
     owner: number;
     spaces: number[];
+    error?: string;
 };
 
 export type CheckMarksT = {

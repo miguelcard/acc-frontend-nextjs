@@ -2,15 +2,14 @@
 import Box from '@mui/material/Box';
 import { Field, FormikHelpers, FormikValues } from 'formik';
 import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/formik-stepper';
-// import { useState } from 'react';
-import { object, string } from 'yup';
+import { number, object, string } from 'yup';
 import { TextField as TextFieldFormikMui } from 'formik-mui';
 import TextField from '@mui/material/TextField';
-// import Typography from '@mui/material/Typography';
 import { CreateHabitT, timeFrames } from '@/lib/types-and-constants';
 import { createHabit } from '@/lib/actions';
 import toast from 'react-hot-toast';
 import { MenuItem } from '@mui/material';
+import { useState } from 'react';
 
 async function submitNewHabit(value: any, id: number, action: FormikHelpers<FormikValues>) {
     action.setSubmitting(true);
@@ -37,6 +36,7 @@ type CreateHabitFormProps = {
 
 export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDialog }: CreateHabitFormProps) {
     // const [errorMessage, setErrorMessage] = useState<string>();
+    const [istimeFrameWeekly, setIstimeFrameWeekly] = useState<boolean>(true);
 
     return (
         <Box
@@ -48,7 +48,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                 initialValues={{
                     title: '',
                     description: '',
-                    times: undefined,
+                    times: 0,
                     time_frame: 'W',
                 }}
                 onSubmit={async (values, action) => {
@@ -61,7 +61,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                 {/* =================== Title */}
                 <FormikStep
                     validationSchema={object({
-                        title: string().max(20).required('Habit title is required'),
+                        title: string().max(70).required('Habit title is required'),
                     })}
                 >
                     <Box paddingBottom={2}>
@@ -100,23 +100,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                         </Field>
                     </Box>
                 </FormikStep>
-                <FormikStep
-                    validationSchema={object({
-                        times: string().required('Times are required'),
-                    })}
-                >
-                    <Box paddingBottom={2}>
-                        <Field
-                            fullWidth
-                            name="times"
-                            label="Times"
-                            type="number"
-                            variant="standard"
-                            min={0}
-                            component={TextFieldFormikMui}
-                        />
-                    </Box>
-                </FormikStep>
+                {/* =================== Time frame */}
                 <FormikStep
                     validationSchema={object({
                         time_frame: string().required('Time Frame is required'),
@@ -134,11 +118,34 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                             component={TextFieldFormikMui}
                         >
                             {timeFrames.map((option, index) => (
-                                <MenuItem key={index} value={option.value}>
+                                <MenuItem key={index} value={option.value} onClick={() => setIstimeFrameWeekly(option.value === 'W')}>
                                     {option.label}
                                 </MenuItem>
                             ))}
                         </Field>
+                    </Box>
+                </FormikStep>
+                {/* =================== habits recurrence in time frame */}
+                <FormikStep
+                    validationSchema={object({
+                        times: number()
+                            .integer()
+                            .min(1)
+                            .max(istimeFrameWeekly ? 7 : 31)
+                            .required('Times is required'),
+                    })}
+                >
+                    <Box paddingBottom={2}>
+                        <Field
+                            fullWidth
+                            name="times"
+                            label={`Times per ${istimeFrameWeekly ? 'week' : 'month'}`}
+                            type="number"
+                            variant="standard"
+                            min={1}
+                            max={istimeFrameWeekly ? 7 : 31}
+                            component={TextFieldFormikMui}
+                        />
                     </Box>
                 </FormikStep>
                 {/* TODO step to add other users to your Habit by UN /  PW -> InviteMembers Component */}

@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 export const toggleCheckmark = async (
     date: Date,
     habit: HabitT,
-    spaceId: number,
     checkedDates: {
         [key: string]: number[];
     },
@@ -27,7 +26,7 @@ export const toggleCheckmark = async (
             // Add checkmark
             const newCheckmark = { habit: habitId, status: 'DONE', date: dateStr };
             await toast.promise(
-                addCheckmark(newCheckmark, spaceId),
+                addCheckmark(newCheckmark),
                 {
                     loading: 'Updating',
                     success: (res) => {
@@ -45,7 +44,7 @@ export const toggleCheckmark = async (
         } else {
             // Remove checkmark
             await toast.promise(
-                deleteCheckmark(checkmark, spaceId),
+                deleteCheckmark(checkmark),
                 {
                     loading: 'Updating',
                     success: (res) => {
