@@ -3,7 +3,7 @@ import 'server-only';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { createUrl, formDataToReqBody, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
 import { FormikValues } from 'formik';
-import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarksT } from './types-and-constants';
+import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarksT, HabitT } from './types-and-constants';
 
 // for now all server actions will be included here, later we can opt out for more modularity, i.e. separating them in different files.
 type FormBodyObject = {
@@ -180,12 +180,49 @@ export async function getSpace(id: number) {
             'Content-Type': 'application/json',
             Cookie: `${getAuthCookie()}`,
         },
-        next: { revalidate: 3600, tags: ['spaces'] },
+        next: { revalidate: 600, tags: ['spaces'] },
     };
 
     try {
         const res = await fetch(url, requestOptions);
         const space = await res.json();
+
+        if (!res.ok) {
+            console.warn("Fetching individual space didn't work");
+            console.warn(getErrorMessage(space));
+            return { error: GENERIC_ERROR_MESSAGE };
+        }
+        return space;
+    } catch (error) {
+        console.warn('An error ocurred: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
+/**
+ * Gets a Habits Space by its ID
+ * @param id
+ * @returns space
+ */
+export async function getSpaceInRangeByOwner(habit: HabitT) {
+    const spaceId = habit.spaces[0];
+    const ownerId = habit.owner;
+    const url = `http://localhost:8000/api/v1/spaces/${spaceId}/owner/${ownerId}/checkmarks/?cm_from_date=2024-02-01&cm_to_date=2024-03-27`;
+
+    const requestOptions: RequestInit = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Cookie: `${getAuthCookie()}`,
+        },
+        next: { revalidate: 600, tags: ['spaces'] },
+    };
+
+    try {
+        const res = await fetch(url, requestOptions);
+        const space = await res.json();
+
+        console.log(space['results'][0]);
 
         if (!res.ok) {
             console.warn("Fetching individual space didn't work");
@@ -385,11 +422,92 @@ export async function createHabit(habit: CreateHabitT) {
 }
 
 /**
+ * Server action to call the patch Habit endpoint
+ * @param habit
+ * @returns Habit object
+ */
+export async function patchHabit(newHabitData: any, id: number) {
+    const patchHabitUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/habits/recurrent/${id}`;
+
+    const requestOptions: RequestInit = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Cookie: `${getAuthCookie()}`,
+        },
+        body: JSON.stringify(newHabitData),
+    };
+
+    try {
+        const res = await fetch(patchHabitUrl, requestOptions);
+
+        // TODO handle this more graceful if user is unauthorized or something like that
+        if (!res.ok) {
+            const errorResp = await res.json();
+            console.warn('patchHabit server action Error: ' + getErrorMessage(errorResp));
+            console.warn(JSON.stringify(errorResp));
+            return { error: GENERIC_ERROR_MESSAGE };
+        }
+
+        revalidateTag('spaces');
+        return await res.json();
+    } catch (error) {
+        console.warn('patchHabit server action Error: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
+/**
+ * Server action to call the DELETE habit endpoint
+ * @param habit
+ * @returns void
+ */
+export async function deleteHabit(habit: HabitT) {
+    const deleteHabitUrl: string = `${API}/v1/habits/recurrent/${habit.id}`;
+
+    const requestOptions: RequestInit = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            Cookie: `${getAuthCookie()}`,
+        },
+        body: JSON.stringify(habit)
+    };
+
+    try {
+        const res = await fetch(deleteHabitUrl, requestOptions);
+
+        if (!res.ok) {
+            const errorResp = await res.json();
+
+            console.warn('deleteHabit server action Error: ' + getErrorMessage(errorResp));
+            // console.warn(JSON.stringify(errorResp));
+            return { error: GENERIC_ERROR_MESSAGE };
+        }
+
+        revalidateTag('spaces');
+        // return await res.json();
+    } catch (error) {
+        console.warn('deleteHabit server action Error: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
+// Habit's Checkmark actions
+
+/**
+ * Server action to call the create checkmark endpoint
+ * @param { sapceId:number, ownerId, cm_to_date: to_date, cm_from_date: from_date }
+ * http://localhost:8000/api/v1/spaces/2/owner/5/checkmarks/?cm_from_date=2024-03-10&cm_to_date=2024-03-10
+ * @returns habits for spacific owner
+ */
+
+/**
  * Server action to call the create checkmark endpoint
  * @param CheckMarksT
  * @returns habit information
  */
-export async function addCheckmark(checkmark: { habit: number; status: string; date: string }, spaceId: number) {
+export async function addCheckmark(checkmark: { habit: number; status: string; date: string }) {
     const addCheckmarkUrl: string = `${API}/v1/habits/recurrent/${checkmark.habit}/checkmarks/`;
 
     const requestOptions: RequestInit = {
@@ -417,7 +535,7 @@ export async function addCheckmark(checkmark: { habit: number; status: string; d
         return await res.json();
     } catch (error) {
         console.warn('addCheckmark server action Error: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
+        return Promise.reject(GENERIC_ERROR_MESSAGE);
     }
 }
 
@@ -426,7 +544,7 @@ export async function addCheckmark(checkmark: { habit: number; status: string; d
  * @param CheckMarksT
  * @returns habit information
  */
-export async function deleteCheckmark(checkmark: CheckMarksT, spaceId: number) {
+export async function deleteCheckmark(checkmark: CheckMarksT) {
     const deleteCheckmarkUrl: string = `${API}/v1/habits/recurrent/${checkmark.habit}/checkmarks/${checkmark.id}`;
 
     const requestOptions: RequestInit = {

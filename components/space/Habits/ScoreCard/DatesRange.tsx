@@ -1,11 +1,11 @@
 'use client';
 
-import { Box, Button, Container, IconButton } from '@mui/material';
+import { Box, Button, ButtonBase, Container, IconButton } from '@mui/material';
 import React from 'react';
-import ArrowBackIosNewTwoToneIcon from '@mui/icons-material/ArrowBackIosNewTwoTone';
-import ArrowForwardIosTwoToneIcon from '@mui/icons-material/ArrowForwardIosTwoTone';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { format } from 'date-fns';
 import { generateWeekDays } from '@/lib/client-utils';
+import { SxProps } from '@mui/material-next';
 
 type DatesRangePropsT = {
     dates: Date[];
@@ -38,80 +38,73 @@ function DatesRange(props: DatesRangePropsT) {
 
     return (
         <>
-            <Container
+            <Box
                 sx={{
                     display: 'flex',
-                    flexWrap: 'wrap',
                     marginBottom: '20px',
                     width: '100%',
                     alignItems: 'center',
                     justifyContent: 'end',
-                    overflow: 'hidden',
-                    fontSize: '0.9em',
                 }}
             >
                 <Box
                     sx={{
                         border: 'solid gray 0.5px',
-                        borderRadius: '5px',
                         padding: '2px',
+                        borderRadius: '7px',
                         display: 'flex',
-                        justifyContent: 'end',
-                        alignItems: 'center',
-                        width: 'fit-content',
+                        // justifyContent: 'end',
+                        // alignItems: 'center',
+                        // width: 'fit-content',
+                        boxShadow: '0px 0px 5px 1px #dbdbe8',
+                        height: '100%',
                     }}
                 >
                     {/* Jump to previous week */}
-                    <IconButton
-                        title="Previous week"
-                        sx={{
-                            paddingInline: '1px',
-                            paddingBlock: '6px',
-                            borderRadius: '5px',
-                            marginRight: '3px',
-                            height: '100%',
-                        }}
-                        onClick={moveDatesBackward}
-                    >
-                        <ArrowBackIosNewTwoToneIcon sx={{ height: '20px' }} />
-                    </IconButton>
+                    <ArrowButton moveDates={moveDatesBackward} sx={{ marginRight: '2px' }} />
                     {/* Current range */}
                     <Button
                         variant="text"
                         sx={{
-                            borderInline: 'solid gray 0.5px',
-                            borderRadius: '5px',
+                            // borderInline: 'solid gray 0.5px',
+                            // borderRadius: '5px',
                             fontWeight: 700,
                             color: '#000',
-                            width: '230px',
-                            '@media (max-width: 600px)': {
-                                width: '200px',
-                            },
+                            width: '140px',
+                            // '@media (max-width: 600px)': {
+                            //     width: '140px',
+                            // },
                         }}
                         onClick={CurrentDate}
                     >
-                        {format(dates[0], 'dd-MMM-yy')} {' \u2014 '}
-                        {format(dates[6], 'dd-MMM-yy')}
+                        {format(dates[0], 'dd MMM')} {' \u2014 '}
+                        {format(dates[6], 'dd MMM')}
                         {/* {dates[6].toDateString()} */}
                     </Button>
                     {/* jump to next week */}
-                    <IconButton
-                        title="Next week"
-                        onClick={moveDatesForward}
-                        sx={{
-                            paddingInline: '1px',
-                            paddingBlock: '6px',
-                            borderRadius: '5px',
-                            marginLeft: '3px',
-                            height: '100%',
-                        }}
-                    >
-                        <ArrowForwardIosTwoToneIcon sx={{ height: '20px' }} />
-                    </IconButton>
+                    <ArrowButton moveDates={moveDatesForward} sx={{ marginLeft: '2px', rotate: '180deg' }} />
                 </Box>
-            </Container>
+            </Box>
         </>
     );
 }
 
 export default DatesRange;
+
+const ArrowButton = ({ moveDates, sx }: { moveDates: () => void; sx?: SxProps }) => {
+    return (
+        <ButtonBase
+            title="Next week"
+            onClick={moveDates}
+            sx={{
+                // scale: '0.6',
+                // paddingInline: '2px',
+                // paddingBlock: '11px',
+                borderRadius: '5px',
+                ...sx,
+            }}
+        >
+            <ChevronLeftIcon sx={{ scale: '0.9', height: '100%' }} />
+        </ButtonBase>
+    );
+};

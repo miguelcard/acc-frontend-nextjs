@@ -10,12 +10,7 @@ export default async function Home() {
         <>
             <Container component="section" maxWidth="lg">
                 <CssBaseline />
-                <Box
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    flexDirection="column"
-                >
+                <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
                     {/* // Here on top goes the dashboard showing some meaningful (main) habits, motivating data for user to see first
           // or something the user can see first that is novel / makes him crave going back... */}
 

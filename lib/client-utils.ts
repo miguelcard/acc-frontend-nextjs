@@ -1,26 +1,38 @@
 import { HabitT } from './types-and-constants';
 
 /**
- * @param endingDate is the refrance date from which the days of week are going to get created
+ * @param date is the refrance date from which the days of week are going to get created
  * @return dates and formetedays
  */
-export const generateWeekDays = (endingDate: Date): Date[] => {
-    // console.log('generateWeekDays called');
+export function generateWeekDays(date: Date): Date[] {
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust to Monday
 
-    const dates: Date[] = [];
-    const currentDate = new Date(endingDate);
-    currentDate.setHours(0, 0, 0, 0);
+    const monday = new Date(date.setDate(diff));
+    const sunday = new Date(date.setDate(diff + 6));
 
-    const lastWeekStartDate = new Date(currentDate);
-    lastWeekStartDate.setDate(lastWeekStartDate.getDate() - 6);
-
-    while (currentDate >= lastWeekStartDate) {
-        dates.push(new Date(lastWeekStartDate));
-        lastWeekStartDate.setDate(lastWeekStartDate.getDate() + 1);
+    const weekDates: Date[] = [];
+    for (let i = 0; i <= 6; i++) {
+        const currentDate = new Date(monday);
+        currentDate.setDate(currentDate.getDate() + i);
+        weekDates.push(currentDate);
     }
 
-    return dates;
-};
+    return weekDates;
+}
+
+export function isWithinLast7Days(dateToCheck: Date): boolean {
+    const currentDate = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(currentDate.getDate() - 6);
+
+    // Set hours, minutes, seconds, and milliseconds to 0 for both dates
+    currentDate.setHours(0, 0, 0, 0);
+    sevenDaysAgo.setHours(0, 0, 0, 0);
+    dateToCheck.setHours(0, 0, 0, 0);
+
+    return !(dateToCheck >= sevenDaysAgo && dateToCheck <= currentDate);
+}
 
 export const checkedDatesMap = (habits: HabitT[]) => {
     // console.log('checkedDatesMap called');
@@ -48,6 +60,17 @@ type CheckedDateItem = {
     date: string;
     habitId: number;
     checkmark: boolean;
+};
+
+/**
+ * If the string is bigger than the max length, the string is cut and the threee dots are added at the end
+ * If the string is not bigger than the maxt length, then just returns the string
+ */
+export const setMaxStringLength = (text: string, maxLength: number): string => {
+    if (text !== undefined) {
+        return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    }
+    return text;
 };
 
 // advance optimsed code currently in build process
@@ -112,4 +135,22 @@ const toggleCheckmark2 = (
 
         return { ...updatedCheckedDates };
     });
+};
+
+const generateWeekDaysFormEndingDate = (endingDate: Date): Date[] => {
+    // console.log('generateWeekDays called');
+
+    const dates: Date[] = [];
+    const currentDate = new Date(endingDate);
+    currentDate.setHours(0, 0, 0, 0);
+
+    const lastWeekStartDate = new Date(currentDate);
+    lastWeekStartDate.setDate(lastWeekStartDate.getDate() - 6);
+
+    while (currentDate >= lastWeekStartDate) {
+        dates.push(new Date(lastWeekStartDate));
+        lastWeekStartDate.setDate(lastWeekStartDate.getDate() + 1);
+    }
+
+    return dates;
 };
