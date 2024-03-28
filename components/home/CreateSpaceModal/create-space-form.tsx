@@ -7,17 +7,19 @@ import { object, string } from 'yup';
 import { TextField as TextFieldFormikMui } from 'formik-mui';
 import TextField from '@mui/material/TextField';
 import { createSpace } from '@/lib/actions';
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import Typography from '@mui/material/Typography';
 import { EmojiSelector } from '@/components/space/EmojiSelector/emoji-selector';
 
-
-async function submitCreateSpace(values: FormikValues, router: AppRouterInstance | string[], setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>) {
-
+async function submitCreateSpace(
+    values: FormikValues,
+    router: AppRouterInstance | string[],
+    setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>
+) {
     const space = await createSpace(values);
     if (space?.error) {
-        setErrorMessage(space.error)
+        setErrorMessage(space.error);
         console.log('error message: ', space.error);
 
         return;
@@ -38,28 +40,26 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
     return (
         <Box
             sx={{
-                width: '100%'
+                width: '100%',
             }}
         >
             <FormikStepper
                 initialValues={{
                     name: '',
                     icon_alias: null,
-                    description: ''
+                    description: '',
                 }}
                 onSubmit={async (values) => submitCreateSpace(values, router, setErrorMessage)}
                 step={step === undefined ? 0 : step}
-                setStep={setStep === undefined ? () => console.warn("setStep is undefined!") : setStep}
+                setStep={setStep === undefined ? () => console.warn('setStep is undefined!') : setStep}
             >
-
                 <FormikStep
                     validationSchema={object({
-                        name: string()
-                            .required('Space name is required'),
+                        name: string().max(20).required('Space name is required'),
                     })}
                 >
                     <Box paddingBottom={2}>
-                        <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant='standard' />
+                        <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant="standard" />
                     </Box>
                 </FormikStep>
                 <FormikStep>
@@ -67,8 +67,7 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                 </FormikStep>
                 <FormikStep
                     validationSchema={object({
-                        description: string()
-                            .max(220, 'A maximum of 220 characters is allowed'),
+                        description: string().max(220, 'A maximum of 220 characters is allowed'),
                     })}
                 >
                     <Box paddingBottom={2}>
@@ -82,15 +81,16 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                                     name="description"
                                     label="Description"
                                     placeholder="A description for your space"
-                                    autoComplete='null'
-                                    spellCheck='false'
+                                    autoComplete="null"
+                                    spellCheck="false"
                                     onFocus={() => form.setFieldTouched(field.name, true)}
                                     value={field.value}
                                     onChange={field.onChange}
                                     onBlur={field.onBlur}
                                     error={meta.touched && Boolean(meta.error)}
                                     helperText={meta.touched && meta.error}
-                                    multiline maxRows={6}
+                                    multiline
+                                    maxRows={6}
                                 />
                             )}
                         </Field>
@@ -98,16 +98,11 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                 </FormikStep>
                 {/* TODO step to add other users to your space by UN /  PW -> InviteMembers Component */}
             </FormikStepper>
-            {errorMessage ?
-                <Typography
-                    width='100%'
-                    display='inline-flex'
-                    justifyContent='center'
-                    color='error.light'
-                    children={errorMessage}
-                />
-                : null}
+            {errorMessage ? (
+                <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light">
+                    {errorMessage}
+                </Typography>
+            ) : null}
         </Box>
     );
 }
-

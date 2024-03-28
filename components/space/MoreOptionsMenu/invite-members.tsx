@@ -10,7 +10,6 @@ import { PaginatedResponse, Space } from '@/lib/types-and-constants';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-
 interface InviteMembersProps {
     space: Space;
     handleCloseDialog?: () => void;
@@ -25,11 +24,10 @@ interface UsernameEmailResult {
 
 /**
  * Component using the FormikStepper to add members/users to the space
- * @param space  
- * @returns 
+ * @param space
+ * @returns
  */
 export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: InviteMembersProps) {
-
     const [autocompleteOptions, setAutocompleteOptions] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>();
 
@@ -39,7 +37,7 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
      */
     const fetchOptions = async (event: React.ChangeEvent<any>, value: string | null) => {
         if (!value) {
-            setAutocompleteOptions([])
+            setAutocompleteOptions([]);
             return;
         }
 
@@ -49,7 +47,7 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
 
         if (paginatedUsersList?.error) {
             console.log('error getting user suggestions: ', paginatedUsersList.error);
-            setErrorMessage("Error getting user suggestions, please try again later.")
+            setErrorMessage('Error getting user suggestions, please try again later.');
             setAutocompleteOptions([]);
         }
 
@@ -60,11 +58,11 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
 
         suggestedUsersResult?.forEach((result) => {
             if (result.username.includes(value)) {
-                autocompleteOptionsList.push(result.username)
+                autocompleteOptionsList.push(result.username);
             }
 
             if (result.email.includes(value)) {
-                autocompleteOptionsList.push(result.email)
+                autocompleteOptionsList.push(result.email);
             }
         });
 
@@ -78,12 +76,12 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
         // add extra values that are required in the request
         values.space = spaceId;
         // harcoded for now, another option would be to add the user with the role "admin", users with admin role can manage (update) other spaceroles, and would be also able to delete them.
-        values.role = "member";
+        values.role = 'member';
 
         const createdSpaceRole = await createSpaceRole(values, spaceId);
 
         if (createdSpaceRole?.error) {
-            setErrorMessage("Unable to invite user, please check that the username or email are correct or try again later.");
+            setErrorMessage('Unable to invite user, please check that the username or email are correct or try again later.');
             console.log('error while creating spacerole / adding user to space: ', createdSpaceRole.error);
             return;
         }
@@ -93,7 +91,7 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
 
         if (handleCloseDialog !== undefined) {
             handleCloseDialog();
-        };
+        }
     }
 
     return (
@@ -104,14 +102,13 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
                 }}
                 onSubmit={async (values) => submitAddUserToSpace(values, space.id)}
                 step={0}
-                setStep={() => { }} // empty function, not needed
-                submitButtonText='Invite'
+                setStep={() => {}} // empty function, not needed
+                submitButtonText="Invite"
             >
                 {/* or just an error shown if a non existent one is tried to be inputed */}
                 <FormikStep
                     validationSchema={object({
-                        username_email: string()
-                            .required('Value is required'),
+                        username_email: string().required('Value is required'),
                     })}
                 >
                     <Box paddingBottom={2}>
@@ -129,7 +126,7 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
                                     <li {...props} key={option}>
                                         {option}
                                     </li>
-                                )
+                                );
                             }}
                             renderInput={(params: any) => {
                                 const keyProp = `${params.InputLabelProps.htmlFor}-${params.id}`;
@@ -139,25 +136,27 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
                                 // and to set the free typed value to be controlled by the formik state = gets formik validation too & is set correctly
                                 const { errors, setFieldValue }: FormikContextType<FormikValues> = useFormikContext();
 
-                                return <TextField name='input' key={keyProp} {...inputProps} label="Username or Email"
-                                    error={Boolean(errors.username_email)}
-                                    helperText={errors.username_email || ''}
-                                    onBlur={() => setFieldValue('username_email', inputProps.inputProps.value)}
-                                />
+                                return (
+                                    <TextField
+                                        name="input"
+                                        key={keyProp}
+                                        {...inputProps}
+                                        label="Username or Email"
+                                        error={Boolean(errors.username_email)}
+                                        helperText={errors.username_email || ''}
+                                        onBlur={() => setFieldValue('username_email', inputProps.inputProps.value)}
+                                    />
+                                );
                             }}
                         />
                     </Box>
                 </FormikStep>
             </FormikStepper>
-            {errorMessage ?
-                <Typography
-                    width='100%'
-                    display='inline-flex'
-                    justifyContent='center'
-                    color='error.light'
-                    children={errorMessage}
-                />
-                : null}
+            {errorMessage ? (
+                <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light">
+                    {errorMessage}
+                </Typography>
+            ) : null}
         </>
-    )
+    );
 }

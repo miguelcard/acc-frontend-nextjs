@@ -1,0 +1,102 @@
+  /* ====================================================== Create Habit styles ======================================================*/
+  .new_habit_button {
+     display: flex;
+     border: solid 2px #837dff90;
+     padding-inline: 8px;
+     padding-block: 4px;
+     border-radius: 10px;
+     margin-inline: auto;
+     position: fixed;
+     right: clamp(8px, 2vw, 30px);
+     bottom: clamp(8px, 2vw, 40px);
+     background-color: whitesmoke;
+     opacity: 1;
+     color: #655dff;
+     max-height: 42px;
+     overflow: hidden;
+  }
+
+  .new_habit_button_text {
+     opacity: 0;
+     width: 0px;
+     scale: 0;
+     transition: all 0.3s ease-in-out;
+  }
+
+  .new_habit_button:hover .new_habit_button_text {
+     width: 60px;
+     opacity: 1;
+     scale: 1;
+  }
+
+  /* ====================================================== ScoreCard/calender main container styles ======================================================*/
+
+
+  /* ====================================================== ScoreCard/calender Habit container styles ======================================================*/
+
+  .habit_title_container {
+
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 1px;
+  }
+
+  .habit_title {
+     font-size: clamp(14px, 4.5vw, 18px);
+     width: 100%;
+     max-width: 100%;
+     letter-spacing: -0.4px;
+     color: darkmagenta;
+     text-overflow: 'ellipsis';
+     overflow: 'hidden';
+  }
+
+  .habit_title_container:hover .habit_edit_button {
+     opacity: 1;
+  }
+
+  .habit_edit_button {
+     opacity: 0.1;
+     border-radius: 5px;
+     padding: 3px;
+     scale: 0.9;
+     transition: opacity 0.2s ease-in-out;
+  }
+
+  .habit_title::first-letter {
+     text-transform: capitalize;
+  }
+
+
+  /* ====================================================== breakpoint Screen 600px bellow ======================================================*/
+  @media screen and (max-width: 600px) {
+     .habit_title_container {
+        padding-bottom: 2px;
+        margin-bottom: 5px;
+        border-bottom: solid #655dff 0.5px;
+     }
+  }
+
+  /* ====================================================== Break Screen 600px ======================================================*/
+  @media screen and (min-width: 600px) {
+     .habit_title {
+        position: relative;
+        font-size: clamp(1rem, 3vw, 1.1rem);
+        font-weight: 500;
+        width: (150px, 8vw, 200px);
+     }
+
+     .new_habit_button {
+        scale: 1.1;
+     }
+  }
+
+  /* ====================================================== Break Screen 1400px ======================================================*/
+  @media screen and (min-width: 1400px) {
+     .new_habit_button {
+        right: 7%;
+        bottom: clamp(8px, 4vw, 40px);
+        scale: 1.2;
+     }
+  }
