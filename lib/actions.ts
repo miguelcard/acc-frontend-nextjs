@@ -471,6 +471,7 @@ export async function deleteHabit(habit: HabitT) {
             'Content-Type': 'application/json',
             Cookie: `${getAuthCookie()}`,
         },
+        body: JSON.stringify(habit)
     };
 
     try {
