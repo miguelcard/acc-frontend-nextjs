@@ -1,10 +1,11 @@
 import 'server-only';
-import { getAuthCookie, getErrorMessage, setMaxStringLength } from '@/lib/utils';
+import { getAuthCookie, getErrorMessage } from '@/lib/utils';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import React from 'react';
-import { GENERIC_ERROR_MESSAGE, PaginatedResponse, Space } from '@/lib/types-and-constants';
+import { GENERIC_ERROR_MESSAGE, PaginatedResponse, SpaceT } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
 import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
+import { setMaxStringLength } from '@/lib/client-utils';
 
 interface CreatorUser {
     id: number;
@@ -17,7 +18,7 @@ interface CreatorUser {
     // is_active?: boolean;
 }
 
-interface SpaceDetailed extends Space {
+interface SpaceDetailed extends SpaceT {
     creator: CreatorUser;
 }
 
@@ -26,7 +27,7 @@ interface SpaceDetailed extends Space {
  * @returns list of spaces
  */
 async function getUserSpaces() {
-    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&ordering=-updated_at`; // For the future load automatically on scrolling
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&page_size=4&ordering=-updated_at`; // For the future load automatically on scrolling
     const requestOptions: RequestInit = {
         method: 'GET',
         headers: {

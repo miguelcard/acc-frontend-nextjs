@@ -5,8 +5,8 @@ import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { grey } from '@mui/material/colors';
 import EditIcon from '@mui/icons-material/Edit';
 import { HabitT } from '@/lib/types-and-constants';
-import { EditHabitDescription } from './EditHabitDescription';
-import { EditHabitTitle } from './EditHabitTitle';
+import { EditHabit } from './edit-habit';
+import { EditHabitTitle } from './edit-habit-title';
 import InfoIcon from '@mui/icons-material/Info';
 import { deleteHabit } from '@/lib/actions';
 import toast from 'react-hot-toast';
@@ -23,20 +23,19 @@ export const HabitOptionsMenu = ({ habit }: { habit: HabitT }) => {
 
     const handleDelete = async () => {
         handleCloseOptionsMenu();
-        toast.promise(
-            deleteHabit(habit),
-            {
-                loading: 'Deleting...',
-                success: 'Deleted successfully',
-                error: 'Failed please try again.',
-            },
-            { duration: 1000 }
-        );
+
+        const res = await deleteHabit(habit);
+
+        if (res.error) toast.error('Failed please try again.', { duration: 1000 });
+        else
+            toast.success('Deleted successfully', {
+                duration: 1000,
+            });
     };
 
     interface MenuOption {
         name: string;
-        click: (event: React.MouseEvent<HTMLElement>) => void;
+        click: () => void;
         icon: React.ReactElement;
         childrenBody?: React.ReactElement;
     }
@@ -54,12 +53,12 @@ export const HabitOptionsMenu = ({ habit }: { habit: HabitT }) => {
             childrenBody: <EditHabitTitle habit={habit} />,
         },
         {
-            name: 'Edit Habit info',
+            name: 'Edit Habit',
             click: () => {
                 handleCloseOptionsMenu();
             },
             icon: <InfoIcon sx={sxIconStyle} />,
-            childrenBody: <EditHabitDescription habit={habit} />,
+            childrenBody: <EditHabit habit={habit} />,
         },
         {
             name: 'Delete Habit',
@@ -71,7 +70,7 @@ export const HabitOptionsMenu = ({ habit }: { habit: HabitT }) => {
     ];
     return (
         <>
-            <Tooltip title="Edit Habit">
+            <Tooltip title="Edit Habit" placement="right">
                 <ButtonBase className={styles['habit_edit_button']} onClick={handleOpenOptionsMenu}>
                     <EditIcon fontSize="medium" />
                 </ButtonBase>
@@ -93,7 +92,6 @@ export const HabitOptionsMenu = ({ habit }: { habit: HabitT }) => {
                 onClose={handleCloseOptionsMenu}
             >
                 {menuOptions.map((option) => {
-                    // console.log(option);
                     return option.childrenBody ? (
                         <DialogModal
                             key={option.name}

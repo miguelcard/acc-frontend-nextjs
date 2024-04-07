@@ -1,33 +1,25 @@
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
-import { HabitT, UserT } from '@/lib/types-and-constants';
-import { Box, Checkbox, Tooltip, Typography } from '@mui/material';
-import { SxProps } from '@mui/material-next';
+import { CheckedDatesT, HabitT, UserT } from '@/lib/types-and-constants';
+import { Box, Checkbox, Typography } from '@mui/material';
 import styles from '../habits.module.css';
-import { HabitOptionsMenu } from '../HabitsOptions/HabitOptionsMenu';
+import { HabitOptionsMenu } from '../HabitsOptions/habit-options-menu';
 
-export const SmallScreenHabitScoreCards = ({
-    ownerHabits,
-    user,
-    toggleCheckmark,
-    checkedDates,
-    dates,
-    setCheckedDates,
-}: {
+type SmallScreenHabitScoreCardsPropsT = {
     ownerHabits: HabitT[];
     user: UserT;
     toggleCheckmark: Function;
-    checkedDates: {
-        [key: string]: number[];
-    };
+    checkedDates: CheckedDatesT;
     dates: Date[];
-    setCheckedDates: Function;
-}) => {
+    setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>;
+};
+
+export const SmallScreenHabitScoreCards = (props: SmallScreenHabitScoreCardsPropsT) => {
+    const { ownerHabits, user, toggleCheckmark, checkedDates, dates, setCheckedDates } = props;
     return (
         <Box
             sx={{
                 display: { xs: 'grid', sm: 'none' },
                 gridTemplateColumns: '1fr ',
-                // gap: `clamp(4px, 2vw, 4px)`
             }}
         >
             {ownerHabits
@@ -38,11 +30,6 @@ export const SmallScreenHabitScoreCards = ({
                         sx={{
                             padding: `clamp(6px, 3vw, 10px)`,
                             width: '100%',
-                            // border: 'solid grey 0.5px',
-                            // borderBottom: 'dashed grey 0.5px',
-
-                            // borderRadius: '6px',
-                            // boxShadow: '0 6px 20px 0 #dbdbe8',
                         }}
                     >
                         {/* ============================= Habit's Title HTs */}
@@ -64,11 +51,9 @@ export const SmallScreenHabitScoreCards = ({
                             }}
                         >
                             {dates.map((date, i) => {
-                                const checkedDate = checkedDates[date.toDateString()];
+                                const checkmark = checkedDates[date.toDateString()] && checkedDates[date.toDateString()][habit.id];
 
-                                const checkState = checkedDate ? checkedDate.includes(habit.id) : false;
-
-                                const toggle = () => toggleCheckmark(date, habit, checkedDates, setCheckedDates);
+                                const toggle = () => toggleCheckmark(date, habit, checkmark, setCheckedDates);
 
                                 return (
                                     <Box
@@ -82,7 +67,7 @@ export const SmallScreenHabitScoreCards = ({
                                         <Checkbox
                                             title={`"${habit.title}": ${date.toDateString()}`}
                                             disabled={isWithinLast7Days(date) || habit.owner !== user.id}
-                                            checked={checkState}
+                                            checked={Boolean(checkmark)}
                                             onChange={toggle}
                                             sx={{
                                                 padding: 0,
@@ -119,7 +104,7 @@ export const SmallScreenHabitScoreCards = ({
     );
 };
 
-const CheckBoxWithNumber = ({ date, sx }: { date: Date; sx?: SxProps }) => {
+const CheckBoxWithNumber = ({ date, sx = [] }: { date: Date; sx?: any }) => {
     const days = ['Su', 'Mn', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
     const day = days[date.getDay()];
     const isToday = date.toDateString() === new Date().toDateString();
@@ -138,22 +123,10 @@ const CheckBoxWithNumber = ({ date, sx }: { date: Date; sx?: SxProps }) => {
                 justifyContent: 'center',
                 color: isToday ? '#655dff' : 'black',
                 padding: '4px',
-                ...sx,
+                ...(sx || {}),
             }}
         >
             {day}
         </Box>
     );
 };
-
-/* dates as title 
-
-<Typography
-    fontSize={`clamp(14px, 4.5vw, 17px)`}
-    color="#000"
-    fontWeight={550}
-    width={'100%'}
-    textAlign="center"
-    >
-        {date.toDateString().split(' ')[0].toUpperCase()}
-</Typography> */

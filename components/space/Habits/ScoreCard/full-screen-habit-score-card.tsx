@@ -1,4 +1,4 @@
-import { HabitT, UserT } from '@/lib/types-and-constants';
+import { CheckedDatesT, HabitT, UserT } from '@/lib/types-and-constants';
 import {
     Box,
     Checkbox,
@@ -15,12 +15,12 @@ import {
 import { styled } from '@mui/material/styles';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import { toggleCheckmark } from './CheckmarkToggle';
+import { toggleCheckmark } from './checkmark-toggle';
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
 import styles from '../habits.module.css';
-import { HabitOptionsMenu } from '../HabitsOptions/HabitOptionsMenu';
+import { HabitOptionsMenu } from '../HabitsOptions/habit-options-menu';
 
-export const FullScreenHabitScoreTable = ({ dates, ownerHabits, checkedDates, user, setCheckedDates }: FullScreenHabitScoreTablePropsT) => (
+export const FullScreenHabitScoreCard = ({ dates, ownerHabits, checkedDates, user, setCheckedDates }: FullScreenHabitScoreCardPropsT) => (
     <TableContainer component={Paper} sx={{ display: { xs: 'none', sm: 'block' } }}>
         <Table
             sx={{
@@ -54,7 +54,7 @@ export const FullScreenHabitScoreTable = ({ dates, ownerHabits, checkedDates, us
                                 >
                                     {splited[0]}
                                 </Typography>
-                                <Typography fontSize={10} color={isToday ? '#655dff' : '#fff'}>
+                                <Typography fontSize={10} color={isToday ? '#655dff' : '#fff'} whiteSpace={'nowrap'}>
                                     {splited[1]} {splited[2]}
                                 </Typography>
                             </StyledTableCell>
@@ -81,18 +81,16 @@ export const FullScreenHabitScoreTable = ({ dates, ownerHabits, checkedDates, us
                                 </StyledTableCell>
                                 {/* ============================= CheckMarks HCf */}
                                 {dates.map((date, i) => {
-                                    const checkedDate = checkedDates[date.toDateString()];
+                                    const checkmark = checkedDates[date.toDateString()] && checkedDates[date.toDateString()][habit.id];
 
-                                    const checkState = checkedDate ? checkedDate.includes(habit.id) : false;
-
-                                    const toggle = () => toggleCheckmark(date, habit, checkedDates, setCheckedDates);
+                                    const toggle = () => toggleCheckmark(date, habit, checkmark, setCheckedDates);
 
                                     return (
                                         <StyledTableCell key={i} align="right">
                                             <Checkbox
                                                 title={`"${habit.title}": ${date.toDateString()}`}
                                                 disabled={isWithinLast7Days(date) || habit.owner !== user.id}
-                                                checked={checkState}
+                                                checked={Boolean(checkmark)}
                                                 onChange={toggle}
                                                 sx={{
                                                     scale: { sm: '1.1', md: '1.2' },
@@ -135,22 +133,15 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
         fontSize: 14,
         paddingInline: '15px',
         paddingBlock: '6px',
-        // border: 0
     },
 }));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    // '&:nth-of-type(odd)': {
-    //     backgroundColor: theme.palette.error,
-    // },
-    // hide last border
-    // '&:last-child th': { borderBottom: 0 },
-}));
+const StyledTableRow = styled(TableRow)(() => ({}));
 
-type FullScreenHabitScoreTablePropsT = {
+type FullScreenHabitScoreCardPropsT = {
     dates: Date[];
     ownerHabits: HabitT[];
-    checkedDates: { [key: string]: number[] };
+    checkedDates: CheckedDatesT;
     user: UserT;
-    setCheckedDates: (arg0: { [key: string]: number[] }) => void;
+    setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>;
 };

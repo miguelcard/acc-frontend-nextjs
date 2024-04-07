@@ -13,7 +13,7 @@ import { useState } from 'react';
 
 async function submitNewHabit(value: any, id: number, action: FormikHelpers<FormikValues>) {
     action.setSubmitting(true);
-    let habit: CreateHabitT = value;
+    const habit: CreateHabitT = value;
     habit.spaces = [id];
     const res = await createHabit(habit);
     action.setSubmitting(false);

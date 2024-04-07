@@ -1,6 +1,5 @@
 import 'server-only';
-import { setMaxStringLength } from '@/lib/utils';
-import { Space, UserT } from '@/lib/types-and-constants';
+import { SpaceT, UserT } from '@/lib/types-and-constants';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -14,24 +13,26 @@ import Avatar from '@mui/material/Avatar';
 import React from 'react';
 import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
 import Link from 'next/link';
-import '../../../styles/singleSpace.css';
+import styles from './page.module.css';
 import { IconButton } from '@mui/material';
-import CreateHabitModel from '@/components/space/Habits/CreateHabitModal';
-import { ScoreCard } from '@/components/space/Habits/ScoreCard';
+import CreateHabitModal from '@/components/space/Habits/create-habit-modal';
+import { ScoreCard } from '@/components/space/Habits/score-card';
 import { getSpace, getUser } from '@/lib/actions';
 import { redirect } from 'next/navigation';
+import { setMaxStringLength } from '@/lib/client-utils';
 
 export default async function SingleSpace({ params }: { params: { id: number } }) {
     const { id } = params;
-    const space: Space = await getSpace(id);
-
+    const space: SpaceT = await getSpace(id);
+    const { members, space_habits, name, description, icon_alias, error } = space;
     let user: UserT;
+
     const res = await getUser();
 
     if (res.error) return redirect(`/login`);
     user = res;
 
-    if (space.error) {
+    if (error) {
         // write an error message in the GUI manually or throw an error to be handled by next error boundry.
     }
 
@@ -39,9 +40,9 @@ export default async function SingleSpace({ params }: { params: { id: number } }
         <Container component="section" maxWidth="lg">
             <CssBaseline />
             <Box display="flex" position="relative" justifyContent="center" alignItems="center" flexDirection="column">
-                <Box className="back-container">
+                <Box className={styles.back_to_spaces_container}>
                     <Link href={'/home'}>
-                        <IconButton className="back-icon" aria-label="spaces">
+                        <IconButton className={styles.back_to_spaces_icon} aria-label="spaces">
                             <FontAwesomeIcon icon={faArrowLeft} size="sm" />
                         </IconButton>
                     </Link>
@@ -58,9 +59,8 @@ export default async function SingleSpace({ params }: { params: { id: number } }
                                 },
                             }}
                         >
-                            <FontAwesomeIcon icon={stringIconMapper[`${space.icon_alias || 'rocket'}`]} size="xl" />
+                            <FontAwesomeIcon icon={stringIconMapper[`${icon_alias || 'rocket'}`]} size="xl" />
                         </Avatar>
-
                         <Typography
                             fontWeight="700"
                             fontSize="1.3em"
@@ -74,38 +74,34 @@ export default async function SingleSpace({ params }: { params: { id: number } }
                                 },
                             }}
                         >
-                            {setMaxStringLength(space.name, 120)}
+                            {setMaxStringLength(name, 120)}
                         </Typography>
 
                         <MoreOptionsMenu space={space} />
                     </Box>
                     <PlaceHolderCard text={'Stats...'} />
+
                     {/* Habits and there score cards */}
-                    {space.space_habits && space.space_habits.length > 0 ? (
-                        <ScoreCard user={user} space={space} />
+                    {space_habits && space_habits.length > 0 && members && members.length > 0 ? (
+                        <ScoreCard user={user} spaceHabits={space_habits} members={members} spaceId={id} />
                     ) : (
                         <PlaceHolderCard text={'No Habits Yet'} />
                     )}
+
                     {/* Create newHabits */}
+                    <CreateHabitModal spaceId={id} />
+
+                    {/* Space and user info */}
                     <Container
                         sx={{
                             padding: '3px',
                             display: 'grid',
-                            gap: '10px',
                             justifyContent: 'center',
                             gridTemplateColumns: '1fr',
-
                             width: '100%',
                             marginBottom: '10rem',
                         }}
                     >
-                        {/* <Box
-                            sx={{
-                                padding: '3px',
-                                justifyContent: 'center',
-                            }}
-                        > */}
-                        <CreateHabitModel spaceId={space.id} />
                         <Box
                             sx={{
                                 border: 'solid gray 0.5px',
@@ -114,10 +110,9 @@ export default async function SingleSpace({ params }: { params: { id: number } }
                             }}
                         >
                             username: {user.username} <br />
-                            This is the Space with ID: {space.id} <br />
-                            space desc: {space.description} <br />B
+                            This is the Space with ID: {id} <br />
+                            space desc: {description} <br />B
                         </Box>
-                        {/* </Box> */}
                     </Container>
                 </Box>
             </Box>

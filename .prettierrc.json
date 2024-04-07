@@ -3,22 +3,5 @@
    "tabWidth": 4,
    "semi": true,
    "singleQuote": true,
-   "printWidth": 140,
-   "importOrder": [
-      "^(react/(.*)$)|^(react$)",
-      "^(next/(.*)$)|^(next$)",
-      "<THIRD_PARTY_MODULES>",
-      "",
-      "^types$",
-      "^@/types/(.*)$",
-      "^@/config/(.*)$",
-      "^@/lib/(.*)$",
-      "^@/hooks/(.*)$",
-      "^@/components/ui/(.*)$",
-      "^@/components/(.*)$",
-      "^@/styles/(.*)$",
-      "^@/app/(.*)$",
-      "",
-      "^[./]"
-   ]
+   "printWidth": 140
 }
