@@ -516,6 +516,7 @@ export async function addCheckmark(checkmark: { habit: number; status: string; d
             console.warn(JSON.stringify(errorResp));
             return { error: GENERIC_ERROR_MESSAGE };
         }
+        revalidateTag('spaces');
 
         return await res.json();
     } catch (error) {
@@ -551,6 +552,7 @@ export async function deleteCheckmark(checkmark: CheckMarksT) {
             return { error: GENERIC_ERROR_MESSAGE };
         }
 
+        revalidateTag('spaces');
         return { error: null };
     } catch (error) {
         console.warn('deleteCheckmark server action Error: ', getErrorMessage(error));
