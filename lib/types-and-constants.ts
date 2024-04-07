@@ -20,7 +20,7 @@ export const timeFrames = [
 /**
  * Simple Space interface
  */
-export type Space = {
+export type SpaceT = {
     id: number;
     name: string;
     description?: string;
@@ -52,6 +52,14 @@ export type HabitT = {
     error?: string;
 };
 
+/**
+ * this type is for checked Dates in the space_habit,
+ */
+export type CheckedDatesT = { [date: string]: { [habitId: string]: CheckMarksT } };
+
+/**
+ * this type is for single checkmarks,
+ */
 export type CheckMarksT = {
     created_at: Date;
     date: string;

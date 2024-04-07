@@ -151,7 +151,6 @@ export async function patchSpace(formData: FormikValues, id: number) {
     try {
         const res = await fetch(patchSpaceUrl, requestOptions);
 
-        // TODO handle this more graceful if user is unauthorized or something like that
         if (!res.ok) {
             const errorResp = await res.json();
             console.warn('patchSpace server action Error: ' + getErrorMessage(errorResp));
@@ -168,7 +167,7 @@ export async function patchSpace(formData: FormikValues, id: number) {
 }
 
 /**
- * Gets a Single Space by its ID
+ * Get Habits Space by its ID
  * @param id
  * @returns space
  */
@@ -194,20 +193,19 @@ export async function getSpace(id: number) {
         }
         return space;
     } catch (error) {
-        console.warn('An error ocurred: ', getErrorMessage(error));
+        console.warn('getSpace server action Error: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }
 
 /**
- * Gets a Habits Space by its ID
- * @param id
- * @returns space
+ * Server action to get habits based on space Id and the date range query params
+ * @param sapceId Id of space
+ * @param dateString string containing cm_to_date and cm_from_date which are range of date for checkmaks
+ * @returns habits for spacific owner
  */
-export async function getSpaceInRangeByOwner(habit: HabitT) {
-    const spaceId = habit.spaces[0];
-    const ownerId = habit.owner;
-    const url = `http://localhost:8000/api/v1/spaces/${spaceId}/owner/${ownerId}/checkmarks/?cm_from_date=2024-02-01&cm_to_date=2024-03-27`;
+export async function getSpaceInRangeByOwner(spaceId: number, dateString: string) {
+    const url = `${API}/v1/spaces/${spaceId}/checkmarks/?${dateString}`;
 
     const requestOptions: RequestInit = {
         method: 'GET',
@@ -222,16 +220,14 @@ export async function getSpaceInRangeByOwner(habit: HabitT) {
         const res = await fetch(url, requestOptions);
         const space = await res.json();
 
-        console.log(space['results'][0]);
-
         if (!res.ok) {
-            console.warn("Fetching individual space didn't work");
+            console.warn("getSpaceInRangeByOwner didn't work");
             console.warn(getErrorMessage(space));
             return { error: GENERIC_ERROR_MESSAGE };
         }
         return space;
     } catch (error) {
-        console.warn('An error ocurred: ', getErrorMessage(error));
+        console.warn('getSpaceInRangeByOwner error ocurred: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }
@@ -277,7 +273,6 @@ export async function createSpaceRole(formData: FormikValues, SpaceId: number) {
 
 /**
  * This function gets logged-in users data
- *
  * @returns user who is logged-in
  */
 export async function getUser() {
@@ -387,7 +382,7 @@ export async function checkUsernameOrEmailExist(username: string | null, email: 
 // Habit actions
 
 /**
- * Server action to call the create habit endpoint
+ * Server action to create new habit
  * @param CreateHabitT
  * @returns habit information
  */
@@ -422,8 +417,8 @@ export async function createHabit(habit: CreateHabitT) {
 }
 
 /**
- * Server action to call the patch Habit endpoint
- * @param habit
+ * Server action to call the patch Habit
+ * @param newHabitData
  * @returns Habit object
  */
 export async function patchHabit(newHabitData: any, id: number) {
@@ -458,7 +453,7 @@ export async function patchHabit(newHabitData: any, id: number) {
 }
 
 /**
- * Server action to call the DELETE habit endpoint
+ * Server action to call the DELETE habit
  * @param habit
  * @returns void
  */
@@ -471,7 +466,7 @@ export async function deleteHabit(habit: HabitT) {
             'Content-Type': 'application/json',
             Cookie: `${getAuthCookie()}`,
         },
-        body: JSON.stringify(habit)
+        body: JSON.stringify(habit),
     };
 
     try {
@@ -481,26 +476,19 @@ export async function deleteHabit(habit: HabitT) {
             const errorResp = await res.json();
 
             console.warn('deleteHabit server action Error: ' + getErrorMessage(errorResp));
-            // console.warn(JSON.stringify(errorResp));
+            console.warn(JSON.stringify(errorResp));
             return { error: GENERIC_ERROR_MESSAGE };
         }
 
         revalidateTag('spaces');
-        // return await res.json();
+        return { error: null };
     } catch (error) {
         console.warn('deleteHabit server action Error: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }
 
-// Habit's Checkmark actions
-
-/**
- * Server action to call the create checkmark endpoint
- * @param { sapceId:number, ownerId, cm_to_date: to_date, cm_from_date: from_date }
- * http://localhost:8000/api/v1/spaces/2/owner/5/checkmarks/?cm_from_date=2024-03-10&cm_to_date=2024-03-10
- * @returns habits for spacific owner
- */
+// ---- Habit's Checkmark actions ----
 
 /**
  * Server action to call the create checkmark endpoint
@@ -525,17 +513,14 @@ export async function addCheckmark(checkmark: { habit: number; status: string; d
         if (!res.ok) {
             const errorResp = await res.json();
             console.warn('addCheckmark server action Error: ' + getErrorMessage(errorResp));
-            // console.warn(JSON.stringify(errorResp));
-            return Promise.reject(GENERIC_ERROR_MESSAGE);
+            console.warn(JSON.stringify(errorResp));
+            return { error: GENERIC_ERROR_MESSAGE };
         }
-
-        // revalidatePath(`/spaces/${spaceId}}`);
-        revalidateTag('spaces');
 
         return await res.json();
     } catch (error) {
         console.warn('addCheckmark server action Error: ', getErrorMessage(error));
-        return Promise.reject(GENERIC_ERROR_MESSAGE);
+        return { error: GENERIC_ERROR_MESSAGE };
     }
 }
 
@@ -562,14 +547,13 @@ export async function deleteCheckmark(checkmark: CheckMarksT) {
         if (res.status !== 204) {
             const errorResp = await res.json();
             console.warn('deleteCheckmark server action Error: ' + getErrorMessage(errorResp));
-            // console.warn(JSON.stringify(errorResp));
-            return Promise.reject(GENERIC_ERROR_MESSAGE);
+            console.warn(JSON.stringify(errorResp));
+            return { error: GENERIC_ERROR_MESSAGE };
         }
 
-        // revalidatePath(`/spaces/${spaceId}}`);
-        revalidateTag('spaces');
+        return { error: null };
     } catch (error) {
         console.warn('deleteCheckmark server action Error: ', getErrorMessage(error));
-        return Promise.reject(GENERIC_ERROR_MESSAGE);
+        return { error: GENERIC_ERROR_MESSAGE };
     }
 }

@@ -6,12 +6,12 @@ import { Field, FormikContextType, FormikValues, useFormikContext } from 'formik
 import React, { useState } from 'react';
 import { object, string } from 'yup';
 import { createSpaceRole, getUsernameEmailSuggestions } from '@/lib/actions';
-import { PaginatedResponse, Space } from '@/lib/types-and-constants';
+import { PaginatedResponse, SpaceT } from '@/lib/types-and-constants';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 interface InviteMembersProps {
-    space: Space;
+    space: SpaceT;
     handleCloseDialog?: () => void;
     handleToastOpen: () => void;
 }

@@ -1,39 +1,38 @@
 'use client';
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useState } from "react";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import { useState } from 'react';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 
-import grey from "@mui/material/colors/grey";
-import DialogModal from "@/components/shared/DialogModal/dialog-modal";
-import { Space } from '@/lib/types-and-constants';
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import { EditSpaceDescription } from "./edit-space-description";
-import { InviteMembers } from "./invite-members";
-import { EditSpaceTitle } from "./edit-space-title";
-import Snackbar from "@mui/material/Snackbar";
-import Slide from "@mui/material/Slide";
-import Alert from "@mui/material/Alert";
-import { ChangeAvatar } from "./change-avatar";
+import grey from '@mui/material/colors/grey';
+import DialogModal from '@/components/shared/DialogModal/dialog-modal';
+import { SpaceT } from '@/lib/types-and-constants';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import { EditSpaceDescription } from './edit-space-description';
+import { InviteMembers } from './invite-members';
+import { EditSpaceTitle } from './edit-space-title';
+import Snackbar from '@mui/material/Snackbar';
+import Slide from '@mui/material/Slide';
+import Alert from '@mui/material/Alert';
+import { ChangeAvatar } from './change-avatar';
 
 interface MoreOptionsMenuProps {
-    space: Space;
+    space: SpaceT;
 }
 
 /**
- * This is a 3 dots menu that when clicked opens a modal where the user can 
+ * This is a 3 dots menu that when clicked opens a modal where the user can
  * choose between different options to edit the space, this options include:
  * Changing the space title and description, adding members, etc...
  */
 export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
-
     // Anchor element to open menu
     const [anchorElOptions, setAnchorOptions] = useState<null | HTMLElement>(null);
 
@@ -73,36 +72,45 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
 
     const menuOptions: MenuOption[] = [
         {
-            name: "Space info",
+            name: 'Space info',
             click: () => {
                 handleCloseOptionsMenu();
             },
             icon: <InfoIcon sx={sxIconStyle} />,
-            childrenBody: <EditSpaceDescription space={space} />
+            childrenBody: <EditSpaceDescription space={space} />,
         },
         {
-            name: "Rename Space",
-            click: () => { handleCloseOptionsMenu(); },
+            name: 'Rename Space',
+            click: () => {
+                handleCloseOptionsMenu();
+            },
             icon: <EditIcon sx={sxIconStyle} />,
-            childrenBody: <EditSpaceTitle space={space} />
+            childrenBody: <EditSpaceTitle space={space} />,
         },
         {
-            name: "Invite members",
-            click: () => { handleCloseOptionsMenu(); },
+            name: 'Invite members',
+            click: () => {
+                handleCloseOptionsMenu();
+            },
             icon: <PersonAddIcon sx={sxIconStyle} />,
-            childrenBody: <InviteMembers space={space} handleToastOpen={handleToastOpen} />
+            childrenBody: <InviteMembers space={space} handleToastOpen={handleToastOpen} />,
         },
         {
-            name: "Change Avatar",
-            click: () => { handleCloseOptionsMenu(); },
+            name: 'Change Avatar',
+            click: () => {
+                handleCloseOptionsMenu();
+            },
             icon: <InsertEmoticonIcon sx={sxIconStyle} />,
-            childrenBody: <ChangeAvatar space={space} />
+            childrenBody: <ChangeAvatar space={space} />,
         },
     ];
 
     return (
         <>
-            <Snackbar open={openToast} autoHideDuration={8000} onClose={handleToastClose}
+            <Snackbar
+                open={openToast}
+                autoHideDuration={8000}
+                onClose={handleToastClose}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 TransitionComponent={Slide}
                 sx={{ pt: 2 }}
@@ -112,7 +120,7 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
                 </Alert>
             </Snackbar>
             <Tooltip title="More options">
-                <IconButton onClick={handleOpenOptionsMenu} aria-label="More options" sx={{ ml: 'auto' }} >
+                <IconButton onClick={handleOpenOptionsMenu} aria-label="More options" sx={{ ml: 'auto' }}>
                     <MoreVertIcon />
                 </IconButton>
             </Tooltip>
@@ -137,9 +145,7 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
                         key={option.name}
                         button={
                             <MenuItem onClick={option.click}>
-                                <ListItemIcon>
-                                    {option.icon}
-                                </ListItemIcon>
+                                <ListItemIcon>{option.icon}</ListItemIcon>
                                 <ListItemText sx={{ color: grey[700], pr: 7, py: 1 }}>{option.name}</ListItemText>
                             </MenuItem>
                         }

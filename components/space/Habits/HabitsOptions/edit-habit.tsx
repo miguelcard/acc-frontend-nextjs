@@ -4,12 +4,13 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Field, FormikValues } from 'formik';
 import React, { useState } from 'react';
-import { object, string } from 'yup';
+import { number, object, string } from 'yup';
 import { patchHabit } from '@/lib/actions';
-import { HabitT } from '@/lib/types-and-constants';
+import { HabitT, timeFrames } from '@/lib/types-and-constants';
 import { TextField as TextFieldFormikMui } from 'formik-mui';
+import { MenuItem } from '@mui/material';
 
-interface EditHabitDescriptionProps {
+interface EditHabitProps {
     habit: HabitT;
     handleCloseDialog?: () => void;
 }
@@ -19,8 +20,11 @@ interface EditHabitDescriptionProps {
  * @param habit
  * @returns
  */
-export function EditHabitDescription({ habit, handleCloseDialog }: EditHabitDescriptionProps) {
+export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
     const [habitDescripton, setHabitDescripton] = useState<string | undefined>(habit.description);
+
+    const [habitTimes, setHabitTimes] = useState<number>(habit.times);
+    const [habitTimeFrame, setHabitTimeFrame] = useState<string>(habit.time_frame);
 
     /**
      * Submits the request to the server action which patches the habit
@@ -29,14 +33,13 @@ export function EditHabitDescription({ habit, handleCloseDialog }: EditHabitDesc
         const newHabit = {
             title: habit.title,
             description: values.description,
-            times: habit.times,
-            time_frame: habit.time_frame,
+            times: values.times,
+            time_frame: values.time_frame,
             spaces: habit.spaces,
         };
         const updatedHabit: HabitT = await patchHabit(newHabit, habitId);
 
         if (updatedHabit?.error) {
-            // setErrorMessage(habit.error); // this would be to put an error in the UI, should I?
             console.log('error message: ', updatedHabit.error);
             return;
         }
@@ -51,6 +54,8 @@ export function EditHabitDescription({ habit, handleCloseDialog }: EditHabitDesc
             <FormikStepper
                 initialValues={{
                     description: habitDescripton,
+                    times: habitTimes,
+                    time_frame: habitTimeFrame,
                 }}
                 onSubmit={async (values) => submitEditHabit(values, habit.id)}
                 step={0}
@@ -60,6 +65,12 @@ export function EditHabitDescription({ habit, handleCloseDialog }: EditHabitDesc
                 <FormikStep
                     validationSchema={object({
                         description: string().max(220, 'A maximum of 220 characters is allowed'),
+                        time_frame: string().required('Time Frame is required'),
+                        times: number()
+                            .integer()
+                            .min(1)
+                            .max(habit.time_frame === 'W' ? 7 : 31)
+                            .required('Times is required'),
                     })}
                 >
                     <Box paddingBottom={2}>
@@ -86,6 +97,45 @@ export function EditHabitDescription({ habit, handleCloseDialog }: EditHabitDesc
                                 />
                             )}
                         </Field>
+                    </Box>
+
+                    <Box component={'div'} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                        {/* =================== Time frame */}
+                        <Box component={'div'} sx={{ width: { xs: '100%', sm: '48%' } }}>
+                            <Field
+                                fullWidth
+                                select
+                                name="time_frame"
+                                label="Time Frame"
+                                defaultValue="W"
+                                helperText="Please select time frame for the habit"
+                                variant="standard"
+                                component={TextFieldFormikMui}
+                            >
+                                {timeFrames.map((option, index) => (
+                                    <MenuItem key={index} value={option.value} onClick={() => setHabitTimeFrame(option.value)}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Field>
+                        </Box>
+                        {/* =================== habits recurrence in time frame */}
+                        <Box
+                            component={'div'}
+                            sx={{ width: { xs: '100%', sm: '48%' } }}
+                            onChange={(e: any) => setHabitTimes(parseInt(e.target.value))}
+                        >
+                            <Field
+                                fullWidth
+                                name="times"
+                                label={`Times per ${habitTimeFrame === 'W' ? 'week' : 'month'}`}
+                                type="number"
+                                variant="standard"
+                                min={1}
+                                max={habitTimeFrame === 'W' ? 7 : 31}
+                                component={TextFieldFormikMui}
+                            />
+                        </Box>
                     </Box>
                 </FormikStep>
             </FormikStepper>

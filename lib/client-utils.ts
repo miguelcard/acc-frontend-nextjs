@@ -1,15 +1,18 @@
-import { HabitT } from './types-and-constants';
+import { format } from 'date-fns';
+import { CheckedDatesT, HabitT } from './types-and-constants';
 
 /**
  * @param date is the refrance date from which the days of week are going to get created
  * @return dates and formetedays
  */
-export function generateWeekDays(date: Date): Date[] {
-    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust to Monday
+export function generateWeekDays(arg0?: Date): Date[] {
+    let date = arg0;
+    date === undefined ? (date = new Date()) : (date = new Date(date));
+
+    const dayOfWeek = date.getDay();
+    const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
 
     const monday = new Date(date.setDate(diff));
-    const sunday = new Date(date.setDate(diff + 6));
 
     const weekDates: Date[] = [];
     for (let i = 0; i <= 6; i++) {
@@ -21,7 +24,13 @@ export function generateWeekDays(date: Date): Date[] {
     return weekDates;
 }
 
-export function isWithinLast7Days(dateToCheck: Date): boolean {
+/**
+ * isWithinLast7Days checks is input date is within last 7 days of current date
+ * @param arg0
+ * @return dates and formetedays
+ */
+export function isWithinLast7Days(arg0: Date): boolean {
+    const dateToCheck = new Date(arg0);
     const currentDate = new Date();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(currentDate.getDate() - 6);
@@ -34,33 +43,31 @@ export function isWithinLast7Days(dateToCheck: Date): boolean {
     return !(dateToCheck >= sevenDaysAgo && dateToCheck <= currentDate);
 }
 
-export const checkedDatesMap = (habits: HabitT[]) => {
-    // console.log('checkedDatesMap called');
+/**
+ * createWeekUUID create unique code based on space between and weeks last date for adding it to the fetching sequence by default it is week based but in future we can make it mounth based or any other way as needed
+ * @param spaceBetween number of dates you want to fetch
+ * @param lastDate ending date for the fetching
+ * @return unique week id
+ */
+export const createWeekUUID = (spaceBetween: number = -6, lastDate: Date | string = new Date()) => {
+    const firstWeekDay = new Date(lastDate);
+    firstWeekDay.setDate(firstWeekDay.getDate() + spaceBetween);
 
-    return habits.reduce(
-        (mapedDates, habit) => {
-            habit.checkmarks.forEach((checkmark) => {
-                const date = new Date(checkmark.date);
-                const dateString = date.toDateString();
-                if (!mapedDates[dateString]) {
-                    mapedDates[dateString] = [];
-                }
+    const startDateStr = format(firstWeekDay, 'yyyy-MM-dd');
+    const endDateStr = format(lastDate, 'yyyy-MM-dd');
 
-                mapedDates[dateString].push(habit.id);
-            });
-
-            return mapedDates;
-        },
-        {} as { [key: string]: number[] }
-    );
+    const weekUUID = `cm_from_date=${startDateStr}&cm_to_date=${endDateStr}`;
+    return weekUUID;
 };
 
-type CheckedDateItem = {
-    id: number;
-    date: string;
-    habitId: number;
-    checkmark: boolean;
-};
+export function parseDateString(queryString: string) {
+    const params = new URLSearchParams(queryString);
+    let result = {
+        cm_from_date: params.get('cm_from_date'),
+        cm_to_date: params.get('cm_to_date'),
+    };
+    return result;
+}
 
 /**
  * If the string is bigger than the max length, the string is cut and the threee dots are added at the end
@@ -73,9 +80,12 @@ export const setMaxStringLength = (text: string, maxLength: number): string => {
     return text;
 };
 
-// advance optimsed code currently in build process
-const checkedDatesMap2 = (habits: HabitT[]) => {
-    const allCheckedDates: { [date: string]: { [habitId: number]: CheckedDateItem } } = {};
+/**
+ * @param habits
+ * @return CheckedDatesT which is an object of all the date of the checked dates
+ */
+export const checkedDatesMap = (habits: HabitT[]) => {
+    const allCheckedDates: CheckedDatesT = {};
 
     habits.forEach((habit) => {
         habit.checkmarks.forEach((checkmark) => {
@@ -87,70 +97,9 @@ const checkedDatesMap2 = (habits: HabitT[]) => {
                 allCheckedDates[dateString] = {};
             }
 
-            // Create the CheckedDateItem for the habit
-            const checkmarkStatus = checkmark.status === 'checked';
-            const checkedDateItem: CheckedDateItem = {
-                id: checkmark.id,
-                date: checkmark.date,
-                habitId: habit.id,
-                checkmark: checkmarkStatus,
-            };
-
             // Assign the CheckedDateItem to the corresponding habitId
-            allCheckedDates[dateString][habit.id] = checkedDateItem;
+            allCheckedDates[dateString][habit.id] = checkmark;
         });
     });
-
     return allCheckedDates;
-};
-
-const toggleCheckmark2 = (
-    dateString: string,
-    habitId: number,
-    setCheckedDates: React.Dispatch<
-        React.SetStateAction<{
-            [date: string]: {
-                [habitId: number]: CheckedDateItem;
-            };
-        }>
-    >
-) => {
-    setCheckedDates((prevCheckedDates) => {
-        const updatedCheckedDates = { ...prevCheckedDates };
-
-        if (!updatedCheckedDates[dateString]) {
-            updatedCheckedDates[dateString] = {};
-        }
-
-        if (!updatedCheckedDates[dateString][habitId]) {
-            updatedCheckedDates[dateString][habitId] = {
-                id: -1,
-                checkmark: true,
-                date: dateString,
-                habitId,
-            };
-        } else {
-            delete updatedCheckedDates[dateString][habitId];
-        }
-
-        return { ...updatedCheckedDates };
-    });
-};
-
-const generateWeekDaysFormEndingDate = (endingDate: Date): Date[] => {
-    // console.log('generateWeekDays called');
-
-    const dates: Date[] = [];
-    const currentDate = new Date(endingDate);
-    currentDate.setHours(0, 0, 0, 0);
-
-    const lastWeekStartDate = new Date(currentDate);
-    lastWeekStartDate.setDate(lastWeekStartDate.getDate() - 6);
-
-    while (currentDate >= lastWeekStartDate) {
-        dates.push(new Date(lastWeekStartDate));
-        lastWeekStartDate.setDate(lastWeekStartDate.getDate() + 1);
-    }
-
-    return dates;
 };

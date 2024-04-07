@@ -4,8 +4,8 @@ import Box from '@mui/material/Box';
 import AddIcon from '@mui/icons-material/Add';
 import Image from 'next/image';
 
-import habitsImg from '../../../public/images/spaces/habits.jpg';
-import CreateHabitForm from './CreateHabitForm';
+import habitsImg from '@/public/images/spaces/habits.jpg';
+import CreateHabitForm from './create-habit-form';
 import { ButtonBase, Container } from '@mui/material';
 import styles from './habits.module.css';
 
@@ -15,7 +15,7 @@ type CreateHabitPropsT = { spaceId: number };
  * @param { spaceId :number }
  * The Modal for creating a Habit
  */
-export default function CreateHabitModel(props: CreateHabitPropsT) {
+export default function CreateHabitModal(props: CreateHabitPropsT) {
     const NewHabitButton = () => (
         <Container maxWidth="lg" sx={{ position: 'relative' }}>
             <ButtonBase color="secondary" sx={{ marginInline: 'auto' }} className={styles['new_habit_button']}>
