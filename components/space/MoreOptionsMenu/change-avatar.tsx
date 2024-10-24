@@ -50,34 +50,3 @@ export function ChangeAvatar({ space, handleCloseDialog }: ChangeAvatarProps) {
         </>
     );
 }
-
-// {({ values, setFieldValue }) => (
-//     <FormikStep>
-//         {/* <EmojiSelector /> */}
-
-//         <Box paddingBottom={0}>
-//             <Field name="avatar" type="hidden">
-//                 {({ field, form, meta }: any) => (
-//                     <p>Hola</p>
-//                     // <TextField
-//                     //     {...field}
-//                     //     fullWidth
-//                     //     type="text"
-//                     //     name="description"
-//                     //     label="Edit Space Description"
-//                     //     // placeholder="Enter the space description"
-//                     //     autoComplete='null'
-//                     //     spellCheck='false'
-//                     //     onFocus={() => form.setFieldTouched(field.name, true)}
-//                     //     value={field.value}
-//                     //     onChange={field.onChange}
-//                     //     onBlur={field.onBlur}
-//                     //     error={meta.touched && Boolean(meta.error)}
-//                     //     helperText={meta.touched && meta.error}
-//                     //     multiline maxRows={6}
-//                     // />
-//                 )}
-//             </Field>
-//         </Box>
-//     </FormikStep>
-// )}

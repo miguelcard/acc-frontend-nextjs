@@ -21,8 +21,8 @@ interface EditHabitProps {
  * @returns
  */
 export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
-    const [habitDescripton, setHabitDescripton] = useState<string | undefined>(habit.description);
 
+    const [habitDescripton, setHabitDescription] = useState<string | undefined>(habit.description);
     const [habitTimes, setHabitTimes] = useState<number>(habit.times);
     const [habitTimeFrame, setHabitTimeFrame] = useState<string>(habit.time_frame);
 
@@ -30,20 +30,19 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
      * Submits the request to the server action which patches the habit
      */
     async function submitEditHabit(values: FormikValues, habitId: number) {
-        const newHabit = {
-            title: habit.title,
+        const patchedHabit = {
             description: values.description,
             times: values.times,
             time_frame: values.time_frame,
-            spaces: habit.spaces,
         };
-        const updatedHabit: HabitT = await patchHabit(newHabit, habitId);
+        const updatedHabit: HabitT = await patchHabit(patchedHabit, habitId);
 
         if (updatedHabit?.error) {
             console.log('error message: ', updatedHabit.error);
             return;
         }
-        setHabitDescripton(updatedHabit.description);
+
+        // setHabitDescripton(updatedHabit.description);
         if (handleCloseDialog !== undefined) {
             handleCloseDialog();
         }
@@ -88,7 +87,10 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                                     spellCheck="false"
                                     onFocus={() => form.setFieldTouched(field.name, true)}
                                     value={field.value}
-                                    onChange={field.onChange}
+                                    onChange={(e: any) => {
+                                        setHabitDescription(e.target.value);
+                                        field.onChange;
+                                    }}
                                     onBlur={field.onBlur}
                                     error={meta.touched && Boolean(meta.error)}
                                     helperText={meta.touched && meta.error}
@@ -113,7 +115,11 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                                 component={TextFieldFormikMui}
                             >
                                 {timeFrames.map((option, index) => (
-                                    <MenuItem key={index} value={option.value} onClick={() => setHabitTimeFrame(option.value)}>
+                                    <MenuItem
+                                        key={index}
+                                        value={option.value}
+                                        onClick={() => setHabitTimeFrame(option.value)}
+                                    >
                                         {option.label}
                                     </MenuItem>
                                 ))}

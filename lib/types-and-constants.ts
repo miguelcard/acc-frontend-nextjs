@@ -39,7 +39,7 @@ export type SpaceT = {
 export type HabitT = {
     id: number;
     tags: any[];
-    checkmarks: CheckMarksT[];
+    checkmarks: CheckMarkT[];
     title: string;
     description: string;
     created_at: Date;
@@ -55,12 +55,12 @@ export type HabitT = {
 /**
  * this type is for checked Dates in the space_habit,
  */
-export type CheckedDatesT = { [date: string]: { [habitId: string]: CheckMarksT } };
+export type CheckedDatesT = { [date: string]: { [habitId: string]: CheckMarkT } };
 
 /**
  * this type is for single checkmarks,
  */
-export type CheckMarksT = {
+export type CheckMarkT = {
     created_at: Date;
     date: string;
     habit: number;

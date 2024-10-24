@@ -1,18 +1,18 @@
-import { CheckMarksT, CheckedDatesT, HabitT } from '@/lib/types-and-constants';
+import { CheckMarkT, CheckedDatesT, HabitT } from '@/lib/types-and-constants';
 import { format } from 'date-fns';
 import { addCheckmark, deleteCheckmark } from '@/lib/actions';
 import toast from 'react-hot-toast';
 
-// ========================================================== Toggle the checkmark for a specific date
+// Toggle the checkmark for a specific date
 export const toggleCheckmark = async (
     date: Date,
     habit: HabitT,
-    checkmark: CheckMarksT,
+    checkmark: CheckMarkT,
     setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>
 ) => {
-    const habitId = habit.id;
-    const dateString = date.toDateString();
-    const dateStr = format(date, 'yyyy-MM-dd');
+    const habitId :number = habit.id;
+    const dateString :string = date.toDateString();
+    const formatedDateString: string = format(date, 'yyyy-MM-dd'); 
 
     try {
         if (Boolean(checkmark)) {
@@ -36,7 +36,7 @@ export const toggleCheckmark = async (
             toast.success('Removed successfully', { duration: 1000 });
         } else {
             // Create new checkmark object to add to database
-            const newCheckmark = { habit: habitId, status: 'DONE', date: dateStr };
+            const newCheckmark = { habit: habitId, status: 'DONE', date: formatedDateString };
 
             // Api call to add checkmark to database
             const res = await addCheckmark(newCheckmark);

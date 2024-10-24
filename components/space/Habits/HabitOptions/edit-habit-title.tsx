@@ -19,21 +19,19 @@ interface EditHabitTitleProps {
  * @returns
  */
 export function EditHabitTitle({ habit, handleCloseDialog }: EditHabitTitleProps) {
+    
     const [habitTitle, setHabitTitle] = useState<string | undefined>(habit.title);
 
     /**
      * Submits the request to the server action which patches the habit
      */
     async function submitEditHabit(values: FormikValues) {
-        const newHabit = {
+        
+        const patchedHabit = {
             title: values.title,
-            description: habit.description,
-            times: habit.times,
-            time_frame: habit.time_frame,
-            spaces: habit.spaces,
         };
 
-        const updatedHabit: HabitT = await patchHabit(newHabit, habit.id);
+        const updatedHabit: HabitT = await patchHabit(patchedHabit, habit.id);
 
         if (updatedHabit?.error) {
             // setErrorMessage(habit.error); // this would be to put an error in the UI, should I?

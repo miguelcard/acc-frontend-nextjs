@@ -6,9 +6,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { checkedDatesMap, createWeekUUID, generateWeekDays } from '@/lib/client-utils';
 import DatesRange from './ScoreCard/dates-range';
 import { FullScreenHabitScoreCard } from './ScoreCard/full-screen-habit-score-card';
-import { SmallScreenHabitScoreCards } from './ScoreCard/small-screen-habit-score-cards';
-import { toggleCheckmark } from './ScoreCard/checkmark-toggle';
-import { getSpaceInRangeByOwner } from '@/lib/actions';
+import { SmallScreenHabitScoreCard } from './ScoreCard/small-screen-habit-score-card';
+import { getAllHabitsAndCheckmarksFromSpace } from '@/lib/actions';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 type ScoreCardPropsT = {
@@ -39,6 +38,7 @@ export function ScoreCard({ user, spaceHabits, members, spaceId }: ScoreCardProp
     const owners = members.map((member) => {
         return { id: member.id, name: member.username };
     });
+
     const userIndex = owners.findIndex((owner) => owner.id === user.id);
     if (userIndex > -1) owners.splice(userIndex, 1);
     owners.unshift({ id: user.id, name: user.username });
@@ -52,7 +52,7 @@ export function ScoreCard({ user, spaceHabits, members, spaceId }: ScoreCardProp
     const updateCheckedDates = async (DateRangeCode: string) => {
         if (!datesFetched.includes(DateRangeCode)) {
             let res: any;
-            res = await getSpaceInRangeByOwner(spaceId, DateRangeCode);
+            res = await getAllHabitsAndCheckmarksFromSpace(spaceId, DateRangeCode);
             setDatesFetched((prev) => [...prev, DateRangeCode]);
 
             const fetchCheckedDates = checkedDatesMap(res.results);
@@ -125,10 +125,9 @@ export function ScoreCard({ user, spaceHabits, members, spaceId }: ScoreCardProp
                                         user={user}
                                         setCheckedDates={setCheckedDates}
                                     />
-                                    <SmallScreenHabitScoreCards
+                                    <SmallScreenHabitScoreCard
                                         ownerHabits={ownerHabits}
                                         user={user}
-                                        toggleCheckmark={toggleCheckmark}
                                         checkedDates={checkedDates}
                                         dates={dates}
                                         setCheckedDates={setCheckedDates}

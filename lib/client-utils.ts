@@ -2,8 +2,8 @@ import { format } from 'date-fns';
 import { CheckedDatesT, HabitT } from './types-and-constants';
 
 /**
- * @param date is the refrance date from which the days of week are going to get created
- * @return dates and formetedays
+ * @param date is the reference date from which the days of the week are going to get created
+ * @return dates and formated days
  */
 export function generateWeekDays(arg0?: Date): Date[] {
     let date = arg0;

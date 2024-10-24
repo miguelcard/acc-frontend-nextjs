@@ -12,6 +12,7 @@ import { MenuItem } from '@mui/material';
 import { useState } from 'react';
 
 async function submitNewHabit(value: any, id: number, action: FormikHelpers<FormikValues>) {
+
     action.setSubmitting(true);
     const habit: CreateHabitT = value;
     habit.spaces = [id];
@@ -35,7 +36,7 @@ type CreateHabitFormProps = {
 };
 
 export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDialog }: CreateHabitFormProps) {
-    // const [errorMessage, setErrorMessage] = useState<string>();
+    
     const [istimeFrameWeekly, setIstimeFrameWeekly] = useState<boolean>(true);
 
     return (
@@ -148,18 +149,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                         />
                     </Box>
                 </FormikStep>
-                {/* TODO step to add other users to your Habit by UN /  PW -> InviteMembers Component */}
             </FormikStepper>
-            {/* {errorMessage ? (
-                <Typography
-                    width="100%"
-                    display="inline-flex"
-                    justifyContent="center"
-                    color="error.light"
-                >
-                    {errorMessage}
-                </Typography>
-            ) : null} */}
         </Box>
     );
 }

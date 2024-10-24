@@ -7,7 +7,7 @@ import Image from 'next/image';
 import habitsImg from '@/public/images/spaces/habits.jpg';
 import CreateHabitForm from './create-habit-form';
 import { ButtonBase, Container } from '@mui/material';
-import styles from './habits.module.css';
+import styles from './scorecard-habits.module.css';
 
 type CreateHabitPropsT = { spaceId: number };
 

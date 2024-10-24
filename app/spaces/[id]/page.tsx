@@ -29,6 +29,7 @@ export default async function SingleSpace({ params }: { params: { id: number } }
 
     const res = await getUser();
 
+    // TODO this is checking right now if the user is authenticated based on an error. Improve proactively
     if (res.error) return redirect(`/login`);
     user = res;
 
@@ -79,19 +80,18 @@ export default async function SingleSpace({ params }: { params: { id: number } }
 
                         <MoreOptionsMenu space={space} />
                     </Box>
-                    <PlaceHolderCard text={'Stats...'} />
 
-                    {/* Habits and there score cards */}
+                    {/* Habits and their score cards */}
                     {space_habits && space_habits.length > 0 && members && members.length > 0 ? (
                         <ScoreCard user={user} spaceHabits={space_habits} members={members} spaceId={id} />
                     ) : (
-                        <PlaceHolderCard text={'No Habits Yet'} />
+                        <PlaceHolderCard text={'No Habits to Show Yet ... TODO implement call to action, replace this with a button to create the first habit'} />
                     )}
 
                     {/* Create newHabits */}
                     <CreateHabitModal spaceId={id} />
 
-                    {/* Space and user info */}
+                    {/* Space and user info to delete */}
                     <Container
                         sx={{
                             padding: '3px',
@@ -111,7 +111,7 @@ export default async function SingleSpace({ params }: { params: { id: number } }
                         >
                             username: {user.username} <br />
                             This is the Space with ID: {id} <br />
-                            space desc: {description} <br />B
+                            space desc: {description} <br />
                         </Box>
                     </Container>
                 </Box>

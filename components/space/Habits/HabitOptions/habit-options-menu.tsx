@@ -1,5 +1,5 @@
 import { Box, ButtonBase, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material';
-import styles from '../habits.module.css';
+import styles from '../scorecard-habits.module.css';
 import { useState } from 'react';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { grey } from '@mui/material/colors';
@@ -7,16 +7,16 @@ import EditIcon from '@mui/icons-material/Edit';
 import { HabitT } from '@/lib/types-and-constants';
 import { EditHabit } from './edit-habit';
 import { EditHabitTitle } from './edit-habit-title';
-import InfoIcon from '@mui/icons-material/Info';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { deleteHabit } from '@/lib/actions';
 import toast from 'react-hot-toast';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 export const HabitOptionsMenu = ({ habit }: { habit: HabitT }) => {
+
     const [anchorElOptions, setAnchorOptions] = useState<null | HTMLElement>(null);
-
     const handleOpenOptionsMenu = (event: React.MouseEvent<HTMLElement>) => setAnchorOptions(event.currentTarget);
-
+    
     const handleCloseOptionsMenu = () => {
         setAnchorOptions(null);
     };
@@ -57,7 +57,7 @@ export const HabitOptionsMenu = ({ habit }: { habit: HabitT }) => {
             click: () => {
                 handleCloseOptionsMenu();
             },
-            icon: <InfoIcon sx={sxIconStyle} />,
+            icon: <SettingsIcon sx={sxIconStyle} />,
             childrenBody: <EditHabit habit={habit} />,
         },
         {

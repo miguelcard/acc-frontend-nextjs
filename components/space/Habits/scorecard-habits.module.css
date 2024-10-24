@@ -1,33 +1,5 @@
-  /* ====================================================== Space page back button styles ======================================================*/
-  .back_to_spaces_icon {
-     padding: .5rem;
-     border: solid;
-     border-color: whitesmoke;
-     border-radius: 10px;
-  }
-
-  .back_to_spaces_container {
-     position: absolute;
-     left: -5rem;
-     top: 2rem;
-  }
-
-  @media (max-width: 1380px) {
-
-     .back_to_spaces_container {
-        width: 100%;
-        left: 0rem;
-        top: 0rem;
-        margin-block: 0.5rem;
-        margin-inline: auto;
-        position: relative;
-        display: flex;
-        justify-content: start;
-     }
-
-  }
-
   /* ====================================================== Create Habit styles ======================================================*/
+  
   .new_habit_button {
      display: flex;
      border: solid 2px #837dff90;
@@ -58,7 +30,31 @@
      scale: 1;
   }
 
-  /* ====================================================== ScoreCard/calender Habit container styles ======================================================*/
+/* ====================================================== Break Screen 600px ======================================================*/
+@media screen and (min-width: 600px) {
+   .new_habit_button {
+      scale: 1.1;
+   }
+}
+
+/* ====================================================== Break Screen 1400px ======================================================*/
+@media screen and (min-width: 1400px) {
+   .new_habit_button {
+      right: 7%;
+      bottom: clamp(8px, 4vw, 40px);
+      scale: 1.2;
+   }
+}
+
+
+   /* TODO ALL OF THE ABOVE CAN BE SEPARATED INTO OWN CSS FILE, maybe a component can be created for the create-habit actions */
+
+
+
+
+
+
+  /* ====================================================== ScoreCard/calendar Habit container styles ======================================================*/
 
   .habit_title_container {
 
@@ -78,17 +74,6 @@
      overflow: 'hidden';
   }
 
-  .habit_title_container:hover .habit_edit_button {
-     opacity: 1;
-  }
-
-  .habit_edit_button {
-     opacity: 0.1;
-     border-radius: 5px;
-     padding: 3px;
-     scale: 0.9;
-     transition: opacity 0.2s ease-in-out;
-  }
 
   .habit_title::first-letter {
      text-transform: capitalize;
@@ -111,17 +96,18 @@
         font-weight: 500;
         width: (150px, 8vw, 200px);
      }
-
-     .new_habit_button {
-        scale: 1.1;
-     }
   }
 
-  /* ====================================================== Break Screen 1400px ======================================================*/
-  @media screen and (min-width: 1400px) {
-     .new_habit_button {
-        right: 7%;
-        bottom: clamp(8px, 4vw, 40px);
-        scale: 1.2;
-     }
-  }
+
+  /* ====================================================== Edit Habit button styles ===================================================*/
+   .habit_title_container:hover .habit_edit_button {
+      opacity: 1;
+   }
+
+   .habit_edit_button {
+      opacity: 0.1;
+      border-radius: 5px;
+      padding: 3px;
+      scale: 0.9;
+      transition: opacity 0.2s ease-in-out;
+   }

@@ -24,6 +24,7 @@ type DatesRangePropsT = {
  * @return React.JSX.Element
  */
 function DatesRange(props: DatesRangePropsT) {
+
     const { dates, setDates, updateCheckedDates } = props;
 
     const moveDatesBackward = () => {
@@ -50,26 +51,16 @@ function DatesRange(props: DatesRangePropsT) {
                     marginBottom: { xs: '10px', sm: '20px' },
                     width: '100%',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
+                    justifyContent: 'flex-start',
                 }}
             >
-                <Typography
-                    sx={{
-                        fontSize: `clamp(1.3rem, 3vw, 1.8rem)`,
-                        fontWeight: 800,
-                        textTransform: 'capitalize',
-                        letterSpacing: -0.8,
-                    }}
-                >
-                    Members
-                </Typography>
                 <Box
                     sx={{
                         border: 'solid gray 0.5px',
                         padding: '2px',
                         borderRadius: '7px',
                         display: 'flex',
-
+                        justifyContent: 'flex-end',
                         boxShadow: '0px 0px 5px 1px #dbdbe8',
                         height: '100%',
                     }}

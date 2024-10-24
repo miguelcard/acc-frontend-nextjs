@@ -17,8 +17,17 @@ import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { toggleCheckmark } from './checkmark-toggle';
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
-import styles from '../habits.module.css';
-import { HabitOptionsMenu } from '../HabitsOptions/habit-options-menu';
+import styles from '../scorecard-habits.module.css';
+import { HabitOptionsMenu } from '../HabitOptions/habit-options-menu';
+
+type FullScreenHabitScoreCardPropsT = {
+    dates: Date[];
+    ownerHabits: HabitT[];
+    checkedDates: CheckedDatesT;
+    user: UserT;
+    setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>;
+};
+
 
 export const FullScreenHabitScoreCard = ({ dates, ownerHabits, checkedDates, user, setCheckedDates }: FullScreenHabitScoreCardPropsT) => (
     <TableContainer component={Paper} sx={{ display: { xs: 'none', sm: 'block' } }}>
@@ -34,9 +43,6 @@ export const FullScreenHabitScoreCard = ({ dates, ownerHabits, checkedDates, use
             <TableHead>
                 <StyledTableRow>
                     <StyledTableCell align="left">
-                        <Typography fontSize={`clamp(1.2rem, 4vw, 1.4rem)`} fontWeight={700} color={'black'}>
-                            Habits
-                        </Typography>
                     </StyledTableCell>
                     {dates.map((date, index) => {
                         const isToday = date.toDateString() === new Date().toDateString();
@@ -137,11 +143,3 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(() => ({}));
-
-type FullScreenHabitScoreCardPropsT = {
-    dates: Date[];
-    ownerHabits: HabitT[];
-    checkedDates: CheckedDatesT;
-    user: UserT;
-    setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>;
-};

@@ -64,7 +64,7 @@ export function EditSpaceDescription({ space, handleCloseDialog }: EditSpaceDesc
                                     fullWidth
                                     type="text"
                                     name="description"
-                                    label="Edit SpaceT Description"
+                                    label="Edit Space Description"
                                     // placeholder="Enter the space description"
                                     autoComplete='null'
                                     spellCheck='false'

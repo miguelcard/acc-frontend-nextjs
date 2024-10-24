@@ -1,20 +1,22 @@
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
 import { CheckedDatesT, HabitT, UserT } from '@/lib/types-and-constants';
 import { Box, Checkbox, Typography } from '@mui/material';
-import styles from '../habits.module.css';
-import { HabitOptionsMenu } from '../HabitsOptions/habit-options-menu';
+import styles from '../scorecard-habits.module.css';
+import { HabitOptionsMenu } from '../HabitOptions/habit-options-menu';
+import { toggleCheckmark } from './checkmark-toggle';
 
 type SmallScreenHabitScoreCardsPropsT = {
     ownerHabits: HabitT[];
     user: UserT;
-    toggleCheckmark: Function;
     checkedDates: CheckedDatesT;
     dates: Date[];
     setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>;
 };
 
-export const SmallScreenHabitScoreCards = (props: SmallScreenHabitScoreCardsPropsT) => {
-    const { ownerHabits, user, toggleCheckmark, checkedDates, dates, setCheckedDates } = props;
+export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsPropsT) => {
+
+    const { ownerHabits, user, checkedDates, dates, setCheckedDates } = props;
+
     return (
         <Box
             sx={{
@@ -83,9 +85,9 @@ export const SmallScreenHabitScoreCards = (props: SmallScreenHabitScoreCardsProp
                                                     color: '#00c04b',
                                                 },
                                             }}
-                                            icon={<CheckBoxWithNumber date={date} />}
+                                            icon={<CheckBoxWithDay date={date} />}
                                             checkedIcon={
-                                                <CheckBoxWithNumber
+                                                <CheckBoxWithDay
                                                     date={date}
                                                     sx={{
                                                         backgroundColor: '#00c04b',
@@ -104,8 +106,8 @@ export const SmallScreenHabitScoreCards = (props: SmallScreenHabitScoreCardsProp
     );
 };
 
-const CheckBoxWithNumber = ({ date, sx = [] }: { date: Date; sx?: any }) => {
-    const days = ['Su', 'Mn', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const CheckBoxWithDay = ({ date, sx = [] }: { date: Date; sx?: any }) => {
+    const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
     const day = days[date.getDay()];
     const isToday = date.toDateString() === new Date().toDateString();
 

@@ -3,7 +3,7 @@ import 'server-only';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { createUrl, formDataToReqBody, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
 import { FormikValues } from 'formik';
-import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarksT, HabitT } from './types-and-constants';
+import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarkT, HabitT } from './types-and-constants';
 
 // for now all server actions will be included here, later we can opt out for more modularity, i.e. separating them in different files.
 type FormBodyObject = {
@@ -151,6 +151,7 @@ export async function patchSpace(formData: FormikValues, id: number) {
     try {
         const res = await fetch(patchSpaceUrl, requestOptions);
 
+        // TODO handle this more graceful if user is unauthorized or something like that
         if (!res.ok) {
             const errorResp = await res.json();
             console.warn('patchSpace server action Error: ' + getErrorMessage(errorResp));
@@ -167,7 +168,7 @@ export async function patchSpace(formData: FormikValues, id: number) {
 }
 
 /**
- * Get Habits Space by its ID
+ * Get Space by its ID
  * @param id
  * @returns space
  */
@@ -199,12 +200,12 @@ export async function getSpace(id: number) {
 }
 
 /**
- * Server action to get habits based on space Id and the date range query params
+ * Server action to get all habits from an space based on its Id and the date range query params
  * @param sapceId Id of space
  * @param dateString string containing cm_to_date and cm_from_date which are range of date for checkmaks
  * @returns habits for spacific owner
  */
-export async function getSpaceInRangeByOwner(spaceId: number, dateString: string) {
+export async function getAllHabitsAndCheckmarksFromSpace(spaceId: number, dateString: string) {
     const url = `${API}/v1/spaces/${spaceId}/checkmarks/?${dateString}`;
 
     const requestOptions: RequestInit = {
@@ -221,13 +222,13 @@ export async function getSpaceInRangeByOwner(spaceId: number, dateString: string
         const space = await res.json();
 
         if (!res.ok) {
-            console.warn("getSpaceInRangeByOwner didn't work");
+            console.warn("getAllHabitsAndCheckmarksFromSpace didn't work");
             console.warn(getErrorMessage(space));
             return { error: GENERIC_ERROR_MESSAGE };
         }
         return space;
     } catch (error) {
-        console.warn('getSpaceInRangeByOwner error ocurred: ', getErrorMessage(error));
+        console.warn('getAllHabitsAndCheckmarksFromSpace error ocurred: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }
@@ -304,7 +305,7 @@ export async function getUser() {
 }
 
 /**
- * This function calls the endpoint which retrieces a list of users which match either by username or email the value
+ * This function calls the endpoint which retrieves a list of users which match either by username or email the value
  * given on the search parameter
  *
  * @param member either the username or email
@@ -379,7 +380,7 @@ export async function checkUsernameOrEmailExist(username: string | null, email: 
     }
 }
 
-// Habit actions
+//==================================== Habit actions =======================================
 
 /**
  * Server action to create new habit
@@ -425,7 +426,7 @@ export async function patchHabit(newHabitData: any, id: number) {
     const patchHabitUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/habits/recurrent/${id}`;
 
     const requestOptions: RequestInit = {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
             Cookie: `${getAuthCookie()}`,
@@ -488,11 +489,11 @@ export async function deleteHabit(habit: HabitT) {
     }
 }
 
-// ---- Habit's Checkmark actions ----
+// ----------- Habit's Checkmarks actions ---------
 
 /**
  * Server action to call the create checkmark endpoint
- * @param CheckMarksT
+ * @param CheckMarkT
  * @returns habit information
  */
 export async function addCheckmark(checkmark: { habit: number; status: string; date: string }) {
@@ -527,10 +528,10 @@ export async function addCheckmark(checkmark: { habit: number; status: string; d
 
 /**
  * Server action to call the delete checkmark endpoint
- * @param CheckMarksT
+ * @param CheckMarkT
  * @returns habit information
  */
-export async function deleteCheckmark(checkmark: CheckMarksT) {
+export async function deleteCheckmark(checkmark: CheckMarkT) {
     const deleteCheckmarkUrl: string = `${API}/v1/habits/recurrent/${checkmark.habit}/checkmarks/${checkmark.id}`;
 
     const requestOptions: RequestInit = {
