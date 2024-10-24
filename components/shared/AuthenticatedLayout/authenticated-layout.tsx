@@ -1,29 +1,23 @@
 // 'use client';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 import React from 'react';
-import AppBar from "@mui/material/AppBar";
-import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
-import Toolbar from "@mui/material/Toolbar";
-import NextLink from "next/link";
-import Image from "next/image";
+import AppBar from '@mui/material/AppBar';
+import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
+import Toolbar from '@mui/material/Toolbar';
+import NextLink from 'next/link';
+import Image from 'next/image';
 import logo from '@/public/images/headers/avidhabits.png';
-
 
 // TODO ALL THIS FUNCTIONALITY
 // You'll have to put this in a separate Layout component for sure, if you want to use data Dynamically in this Navbar
 // with this I mean setting the right user profile picture for example, or operations where you have to pass props to this navbar I think
-export default function AuthenticatedLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-
+export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
     // const router = useRouter();
 
-    // TODO do logout with 
+    // TODO do logout with
     function logout() {
         const API = process.env.NEXT_PUBLIC_API;
         const logoutUrl: string = `${API}/v1/logout/`;
@@ -32,26 +26,25 @@ export default function AuthenticatedLayout({
         const requestOptions: RequestInit = {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
                 // "Authorization": `token ${token}`,
             },
         };
 
-        fetch(logoutUrl, requestOptions)
-            .then((res) => {
-                if (!res.ok) {
-                    console.warn('An error ocurred on logout');
-                }
-                // removeTokenFromStorage();
-                // router.push('/login');
-            });
+        fetch(logoutUrl, requestOptions).then((res) => {
+            if (!res.ok) {
+                console.warn('An error ocurred on logout');
+            }
+            // removeTokenFromStorage();
+            // router.push('/login');
+        });
     }
 
     return (
         <>
             {/* use sticky navigation on (Desktop view mainly) when home page gets bigger <AppBar position="sticky" */}
-            <AppBar position="static" elevation={0} sx={{ p: 1 }} >
-                <Container maxWidth="xl" >
+            <AppBar position="static" elevation={0} sx={{ p: 1 }}>
+                <Container maxWidth="xl">
                     <Toolbar>
                         {/*
                         The responsiveness of the elements can be handled by the display property, if xs: 'none' it means
@@ -63,7 +56,11 @@ export default function AuthenticatedLayout({
                         Elements for medium (md) screens and above:
                         */}
                         <Link
-                            sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' }, mr: 1 }}
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: 'flex', md: 'flex' },
+                                mr: 1,
+                            }}
                             component={NextLink}
                             href="/"
                         >
@@ -72,7 +69,7 @@ export default function AuthenticatedLayout({
                                 width={130}
                                 height={0}
                                 alt="logo"
-                            // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
+                                // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
                             />
                         </Link>
                         {/* <Box
@@ -95,14 +92,15 @@ export default function AuthenticatedLayout({
                         {/* further elements on the end of the NavBar */}
                         <IconButton
                             // onClick={logout}
-                            sx={{ p: 0 }}>
-                            <Avatar alt="Memy Sharp"
-                            // src="/static/images/avatar/2.jpg" 
+                            sx={{ p: 0 }}
+                        >
+                            <Avatar
+                                alt="Memy Sharp"
+                                // src="/static/images/avatar/2.jpg"
                             />
                         </IconButton>
 
                         {/* Navigation bar content for small screens and below */}
-
                     </Toolbar>
                 </Container>
             </AppBar>
@@ -112,11 +110,8 @@ export default function AuthenticatedLayout({
     );
 }
 
-
 // Read in case you want to customize the nextjs layouts with props or something similar:
 // https://stackoverflow.com/questions/75190344/how-to-pass-props-to-layout-js-from-page-js-in-the-app-directory-of-next-js
-
-
 
 // here an example AppBar with the user profile and so on:
 // 'use client';
@@ -136,7 +131,6 @@ export default function AuthenticatedLayout({
 // import Tooltip from '@mui/material/Tooltip';
 // import Button from '@mui/material/Button';
 // import Avatar from '@mui/material/Avatar';
-
 
 // export default function Home() {
 
@@ -200,7 +194,6 @@ export default function AuthenticatedLayout({
 //             >
 //               <img src={logotype} alt="logo" className='landing-header__logo' />
 //             </Link> */}
-
 
 //             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
 //               <IconButton

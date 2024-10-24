@@ -26,8 +26,8 @@ async function getUsersFromSpace(spaceId: number, resultsNumber: number) {
     const requestOptions: RequestInit = {
         method: 'GET',
         headers: {
-            "Content-Type": "application/json",
-            "Cookie": `${getAuthCookie()}`,
+            'Content-Type': 'application/json',
+            Cookie: `${getAuthCookie()}`,
         },
     };
 
@@ -40,58 +40,55 @@ async function getUsersFromSpace(spaceId: number, resultsNumber: number) {
             return { error: GENERIC_ERROR_MESSAGE };
         }
         return users;
-
     } catch (error) {
-        console.warn("An error ocurred: ", getErrorMessage(error));
+        console.warn('An error ocurred: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }
 
 interface SpaceIdProps {
-    spaceId: number
+    spaceId: number;
 }
 
 /**
  * Group of avatars from users fetched from a specific space
- * This is a server component, it fetches the users pictures and we can pass it down as props/children to a 
+ * This is a server component, it fetches the users pictures and we can pass it down as props/children to a
  * client component.
  */
-export async function AvatarsGroup({
-    spaceId
-}: SpaceIdProps) {
-
+export async function AvatarsGroup({ spaceId }: SpaceIdProps) {
     const maxPhotosShown: number = 4;
     const users: PaginatedResponse<SpaceUser> = await getUsersFromSpace(spaceId, maxPhotosShown);
 
     return (
-        <AvatarGroup max={maxPhotosShown} total={users.count}
+        <AvatarGroup
+            max={maxPhotosShown}
+            total={users.count}
             sx={{
                 avatar: {
                     fontSize: '0.875rem',
                     backgroundColor: '#6d7efc',
-                }, cursor: "default"
-            }} >
+                },
+                cursor: 'default',
+            }}
+        >
             {users.results.map((user: SpaceUser) => (
                 <Avatar
                     key={user.id}
                     src={`${user.profile_photo}`}
                     sx={{ bgcolor: user.profile_photo ? 'inherit' : stringToColor(user.username + user.id) }}
-                    children={getLetter(user.name, user.last_name, user.username)}
-                />
+                >
+                    {getLetter(user.name, user.last_name, user.username)}
+                </Avatar>
             ))}
         </AvatarGroup>
-    )
+    );
 }
-
 
 /**
  * Its the default description of the space if none exists, just shows a random username that is member of that
  * space and the total of users who belong there.
  */
-export async function SpaceDefaultDescription({
-    spaceId
-}: SpaceIdProps) {
-
+export async function SpaceDefaultDescription({ spaceId }: SpaceIdProps) {
     const users: PaginatedResponse<SpaceUser> = await getUsersFromSpace(spaceId, 3);
     const results: SpaceUser[] = users.results;
 
@@ -107,21 +104,15 @@ export async function SpaceDefaultDescription({
             </>
         );
     } else {
-        return (
-            <>
-            </>
-        );
+        return <></>;
     }
-
 }
-
 
 /**
  * Gets the a random query for the query parameter "ordering" either ascending or descending for either the updated_at or username fields
  * @returns query value
  */
 function getRandomUserOrderingQueryValue(): string {
-
     // Use the random number to determine the ordering ascending/descending
     const orderDirection: string = Math.random() < 0.5 ? '-' : '';
     const field: string = Math.random() < 0.5 ? 'updated_at' : 'username';

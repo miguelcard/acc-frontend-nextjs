@@ -1,0 +1,28 @@
+  /* ====================================================== Space page back button styles ======================================================*/
+  .back_to_spaces_icon {
+     padding: .5rem;
+     border: solid;
+     border-color: whitesmoke;
+     border-radius: 10px;
+  }
+
+  .back_to_spaces_container {
+     position: absolute;
+     left: -5rem;
+     top: 2rem;
+  }
+
+  @media (max-width: 1380px) {
+
+     .back_to_spaces_container {
+        width: 100%;
+        left: 0rem;
+        top: 0rem;
+        margin-block: 0.5rem;
+        margin-inline: auto;
+        position: relative;
+        display: flex;
+        justify-content: start;
+     }
+
+  }

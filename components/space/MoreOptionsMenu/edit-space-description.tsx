@@ -6,12 +6,12 @@ import { Field, FormikValues } from 'formik';
 import React, { useState } from 'react'
 import { object, string } from 'yup';
 import { patchSpace } from '@/lib/actions';
-import { Space } from '@/lib/types-and-constants';
+import { SpaceT } from '@/lib/types-and-constants';
 
 
 
 interface EditSpaceDescriptionProps {
-    space: Space;
+    space: SpaceT;
     handleCloseDialog?: () => void;
 }
 
@@ -28,7 +28,7 @@ export function EditSpaceDescription({ space, handleCloseDialog }: EditSpaceDesc
      * Submits the request to the server action which patches the space
      */
     async function submitEditSpace(values: FormikValues, spaceId: number) {
-        const updatedSpace: Space = await patchSpace(values, spaceId);
+        const updatedSpace: SpaceT = await patchSpace(values, spaceId);
         if (updatedSpace?.error) {
             // setErrorMessage(space.error); // this would be to put an error in the UI, should I?
             console.log('error message: ', updatedSpace.error);
