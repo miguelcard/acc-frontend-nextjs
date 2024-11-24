@@ -20,6 +20,7 @@ import { ScoreCard } from '@/components/space/Habits/score-card';
 import { getSpace, getUser } from '@/lib/actions';
 import { redirect } from 'next/navigation';
 import { setMaxStringLength } from '@/lib/client-utils';
+import { grey } from '@mui/material/colors';
 
 export default async function SingleSpace({ params }: { params: { id: number } }) {
     const { id } = params;
@@ -54,6 +55,7 @@ export default async function SingleSpace({ params }: { params: { id: number } }
                             sx={{
                                 width: 64,
                                 height: 64,
+                                bgcolor: grey[500],
                                 '@media (max-width: 600px)': {
                                     width: 56,
                                     height: 56,
@@ -62,6 +64,7 @@ export default async function SingleSpace({ params }: { params: { id: number } }
                         >
                             <FontAwesomeIcon icon={stringIconMapper[`${icon_alias || 'rocket'}`]} size="xl" />
                         </Avatar>
+                        {/* Space title */}
                         <Typography
                             fontWeight="700"
                             fontSize="1.3em"
@@ -71,7 +74,7 @@ export default async function SingleSpace({ params }: { params: { id: number } }
                                     fontSize: '1.1em',
                                 },
                                 '@media (max-width: 370px)': {
-                                    fontSize: '1em',
+                                    fontSize: '1.1em',
                                 },
                             }}
                         >
@@ -83,45 +86,23 @@ export default async function SingleSpace({ params }: { params: { id: number } }
 
                     {/* Habits and their score cards */}
                     {space_habits && space_habits.length > 0 && members && members.length > 0 ? (
-                        <ScoreCard user={user} spaceHabits={space_habits} members={members} spaceId={id} />
+                        <>
+                            <ScoreCard currentUser={user} spaceHabits={space_habits} members={members} spaceId={id} />
+                            {/* Create newHabits */}
+                            <CreateHabitModal spaceId={id} isFirstSpaceHabit={false} />
+                        </>
                     ) : (
-                        <PlaceHolderCard text={'No Habits to Show Yet ... TODO implement call to action, replace this with a button to create the first habit'} />
+                        <CreateHabitModal spaceId={id} isFirstSpaceHabit={true} />
                     )}
 
-                    {/* Create newHabits */}
-                    <CreateHabitModal spaceId={id} />
-
-                    {/* Space and user info to delete */}
-                    <Container
-                        sx={{
-                            padding: '3px',
-                            display: 'grid',
-                            justifyContent: 'center',
-                            gridTemplateColumns: '1fr',
-                            width: '100%',
-                            marginBottom: '10rem',
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                border: 'solid gray 0.5px',
-                                padding: { xs: '10px', sm: '20px' },
-                                borderRadius: '10px',
-                            }}
-                        >
-                            username: {user.username} <br />
-                            This is the Space with ID: {id} <br />
-                            space desc: {description} <br />
-                        </Box>
-                    </Container>
                 </Box>
             </Box>
         </Container>
     );
 }
 
-//  TODO DELETE
-const PlaceHolderCard = ({ text }: any) => {
+
+const PlaceHolderCard = () => {
     return (
         <Card
             variant="outlined"
@@ -135,7 +116,7 @@ const PlaceHolderCard = ({ text }: any) => {
         >
             <CardContent>
                 <Typography fontWeight="500" sx={{ py: 3 }}>
-                    {text}
+                    {"hola text"}
                 </Typography>
             </CardContent>
         </Card>

@@ -93,6 +93,7 @@ export type UserT = {
     is_active: boolean;
     is_staff: boolean;
     is_superuser: boolean;
+    profile_photo: string | null;
     // TODO  Not defined yet but define them as req needs
     // tags: any;
     // languages: any;

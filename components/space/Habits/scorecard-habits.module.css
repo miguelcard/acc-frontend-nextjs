@@ -2,19 +2,15 @@
   
   .new_habit_button {
      display: flex;
-     border: solid 2px #837dff90;
-     padding-inline: 8px;
-     padding-block: 4px;
-     border-radius: 10px;
      margin-inline: auto;
      position: fixed;
-     right: clamp(8px, 2vw, 30px);
-     bottom: clamp(8px, 2vw, 40px);
-     background-color: whitesmoke;
-     opacity: 1;
-     color: #655dff;
+     right: clamp(18px, 2vw, 30px);
+     bottom: clamp(18px, 2vw, 40px);
+     background-color: #655dff;
+     color: #ffffff;
      max-height: 42px;
      overflow: hidden;
+     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
   }
 
   .new_habit_button_text {
@@ -28,7 +24,44 @@
      width: 60px;
      opacity: 1;
      scale: 1;
+     padding-inline: 8px;
+     padding-block: 4px;
+     border-radius: 10px;
   }
+
+  .new_habit_button:hover {
+   padding-inline: 6px;
+   padding-block: 2px;
+   border-radius: 10px;
+   background-color: #655dff;
+}
+
+
+/* ==== CSS Animations when the space has no habits and the habit button has to have a call to aciton styling */
+
+.pulse_animation {
+   animation: pulse 3s infinite;
+   padding-inline: 6px;
+   padding-block: 6px;
+   border-radius: 10px;
+   background-color: #655dff;
+}
+
+@keyframes pulse {
+   0% {
+      transform: scale(1);
+   }
+
+   50% {
+      transform: scale(1.05);
+   }
+
+   100% {
+      transform: scale(1);
+   }
+}
+
+
 
 /* ====================================================== Break Screen 600px ======================================================*/
 @media screen and (min-width: 600px) {
@@ -57,7 +90,6 @@
   /* ====================================================== ScoreCard/calendar Habit container styles ======================================================*/
 
   .habit_title_container {
-
      display: flex;
      align-items: center;
      justify-content: space-between;
@@ -65,14 +97,16 @@
   }
 
   .habit_title {
-     font-size: clamp(14px, 4.5vw, 18px);
-     width: 100%;
-     max-width: 100%;
-     letter-spacing: -0.4px;
-     color: darkmagenta;
+     font-size: clamp(10px, 4vw, 14px);
      text-overflow: 'ellipsis';
      overflow: 'hidden';
+     cursor: pointer;
+     transition: color 0.2s ease-in-out;
   }
+
+  .habit_title:hover {
+   color: #84cec1;
+}
 
 
   .habit_title::first-letter {
@@ -83,8 +117,8 @@
   /* ====================================================== breakpoint Screen 600px bellow ======================================================*/
   @media screen and (max-width: 600px) {
      .habit_title_container {
-        padding-bottom: 2px;
-        margin-bottom: 5px;
+        padding-bottom: 1px;
+        margin-bottom: 4px;
      }
   }
 

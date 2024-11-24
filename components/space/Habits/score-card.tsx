@@ -1,23 +1,25 @@
 'use client';
 
 import { CheckedDatesT, HabitT, MembersT, UserT } from '@/lib/types-and-constants';
-import { Box, ButtonBase, Typography } from '@mui/material';
+import { Avatar, Box, ButtonBase, Typography } from '@mui/material';
 import React, { useCallback, useMemo, useState } from 'react';
 import { checkedDatesMap, createWeekUUID, generateWeekDays } from '@/lib/client-utils';
-import DatesRange from './ScoreCard/dates-range';
+import DatesRangeSelector from './ScoreCard/dates-range-selector';
 import { FullScreenHabitScoreCard } from './ScoreCard/full-screen-habit-score-card';
 import { SmallScreenHabitScoreCard } from './ScoreCard/small-screen-habit-score-card';
 import { getAllHabitsAndCheckmarksFromSpace } from '@/lib/actions';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import { ubuntu } from '@/styles/fonts/fonts';
+import { getLetter, stringToColor } from '@/components/home/SpacesOverview/avatar-utils';
 
 type ScoreCardPropsT = {
-    user: UserT;
+    currentUser: UserT;
     spaceHabits: HabitT[];
     members: MembersT[];
     spaceId: number;
 };
 
-export function ScoreCard({ user, spaceHabits, members, spaceId }: ScoreCardPropsT) {
+export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreCardPropsT) {
     // ============================= States initialization prepration
     const weedDays = useMemo(() => generateWeekDays(), []);
     const newCheckedDates = useCallback((spaceHabits: HabitT[]) => checkedDatesMap(spaceHabits), []);
@@ -29,19 +31,21 @@ export function ScoreCard({ user, spaceHabits, members, spaceId }: ScoreCardProp
     const [collapsedOwners, setCollapsedOwners] = useState<number[]>([]);
 
     // ============================= Collapse owners
-    const handleCollapseOwners = (owner: number) => {
-        if (collapsedOwners.includes(owner)) setCollapsedOwners((prev) => [...prev.filter((id) => id !== owner)]);
-        else setCollapsedOwners([...collapsedOwners, owner]);
+    const handleCollapseMemberScoreCard = (memberId: number) => {
+        if (collapsedOwners.includes(memberId)) setCollapsedOwners((prev) => [...prev.filter((id) => id !== memberId)]);
+        else setCollapsedOwners([...collapsedOwners, memberId]);
     };
 
-    // ============================= Getting owners and shifting order for current user
-    const owners = members.map((member) => {
-        return { id: member.id, name: member.username };
-    });
+    // ============================= Getting members and shifting order for current user
 
-    const userIndex = owners.findIndex((owner) => owner.id === user.id);
-    if (userIndex > -1) owners.splice(userIndex, 1);
-    owners.unshift({ id: user.id, name: user.username });
+    const currentUserIndex = members.findIndex((user) => user.id === currentUser.id);
+
+    if (currentUserIndex > 0) {
+        // Remove the current user from their current position
+        const [currentUser] = members.splice(currentUserIndex, 1);
+        // Add the current user to the beginning of the list
+        members.unshift(currentUser);
+    }
 
     // ============================= Getting new habits and updating checked dates
     const [datesFetched, setDatesFetched] = useState([todayUUID]);
@@ -62,11 +66,11 @@ export function ScoreCard({ user, spaceHabits, members, spaceId }: ScoreCardProp
 
     return (
         <>
-            <DatesRange dates={dates} setDates={setDates} updateCheckedDates={updateCheckedDates} />
-            {owners.map((owner) => {
-                const ownerHabits = spaceHabits.filter((habit) => habit.owner === owner.id);
+            <DatesRangeSelector dates={dates} setDates={setDates} updateCheckedDates={updateCheckedDates} />
+            {members.map((member) => {
+                const ownerHabits = spaceHabits.filter((habit) => habit.owner === member.id);
                 return (
-                    <Box key={owner.id}>
+                    <Box key={member.id}>
                         {/* =========================================== Owner name */}
                         <Box
                             component={'div'}
@@ -75,46 +79,71 @@ export function ScoreCard({ user, spaceHabits, members, spaceId }: ScoreCardProp
                                 gap: '5px',
                                 alignItems: 'center',
                                 height: '100%',
-                                marginBottom: 2,
-                                color: owner.id === user.id ? 'black' : 'gray',
+                                marginBottom: 0.5,
+                                color: member.id === currentUser.id ? 'black' : 'gray',
                             }}
                         >
-                            <Typography
+                            {/* avatar picture or initials of the user in his scorecard */}
+                            <Avatar
+                                key={member.id}
+                                src={`${member.profile_photo}`}
                                 sx={{
-                                    fontSize: `clamp(1.4rem, 2.5vw, 1.6rem)`,
-                                    fontWeight: 700,
-                                    textTransform: 'capitalize',
+                                    bgcolor: member.profile_photo ? 'inherit' : stringToColor(member.username + member.id),
+                                    width: 28,
+                                    height: 28,
+                                    marginX: 1,
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        fontSize: '0.9rem',
+                                        fontWeight: 500,
+                                    }}
+                                >
+                                    {getLetter(member.name, member.last_name, member.username)}
+                                </Typography>
+                                {/* {getLetter(member.name, member.last_name, member.username)} */}
+                            </Avatar>
+                            {/* username on top of the scorecard */}
+                            <Typography
+                                className={ubuntu.className}
+                                // color= {member.id === currentUser.id ? 'secondary' : 'grey.600'}
+                                sx={{
+                                    fontSize: `clamp(1rem, 2.5vw, 1.6rem)`,
+                                    fontWeight: 500,
                                     letterSpacing: -0.4,
                                 }}
                             >
-                                {owner.name}
-                                {owner.id === user.id && ' (You)'}
+                                {member.username}
+                                {member.id === currentUser.id && ' (you)'}
                             </Typography>
-                            {/* ===================================================== Collapse button */}
+                            {/* ======== Collapse arrow button ====== */}
                             <ButtonBase
-                                onClick={() => handleCollapseOwners(owner.id)}
+                                onClick={() => handleCollapseMemberScoreCard(member.id)}
                                 sx={{ borderRadius: '5px', padding: '3px', marginRight: '5px' }}
                             >
                                 <ChevronLeftIcon
                                     sx={{
-                                        rotate: collapsedOwners.includes(owner.id) ? '-90deg' : '90deg',
+                                        rotate: collapsedOwners.includes(member.id) ? '-90deg' : '90deg',
                                         transition: 'all 0.2s ease-in-out',
-                                        scale: '1.2',
+                                        scale: '1.1',
+                                        // color: member.id === currentUser.id ? 'secondary.main' : 'grey.600'
                                     }}
                                 />
                             </ButtonBase>
                         </Box>
-                        {/* =========================================== Habits and checkmaks */}
+                        {/* ============== Habits and checkmaks =========== */}
                         <Box
-                            hidden={collapsedOwners.includes(owner.id)}
+                            hidden={collapsedOwners.includes(member.id)}
                             marginBottom={4}
                             width={'100%'}
                             flexGrow={1}
                             maxHeight={{ sm: '70vh' }}
                             overflow={'auto'}
-                            border={'solid grey 0.5px'}
-                            borderRadius={'8px'}
-                            boxShadow="0 6px 20px 0 #dbdbe8"
+                            borderRadius={'1rem'}
+                            boxShadow={'0 6px 20px 0 #dbdbe8'}
+                            border={'1px solid #dbdbe8'}
+                            bgcolor={'#fff'}
                         >
                             {ownerHabits.length > 0 ? (
                                 <>
@@ -122,12 +151,12 @@ export function ScoreCard({ user, spaceHabits, members, spaceId }: ScoreCardProp
                                         dates={dates}
                                         ownerHabits={ownerHabits}
                                         checkedDates={checkedDates}
-                                        user={user}
+                                        user={currentUser}
                                         setCheckedDates={setCheckedDates}
                                     />
                                     <SmallScreenHabitScoreCard
                                         ownerHabits={ownerHabits}
-                                        user={user}
+                                        user={currentUser}
                                         checkedDates={checkedDates}
                                         dates={dates}
                                         setCheckedDates={setCheckedDates}

@@ -4,6 +4,11 @@ import { Box, Checkbox, Typography } from '@mui/material';
 import styles from '../scorecard-habits.module.css';
 import { HabitOptionsMenu } from '../HabitOptions/habit-options-menu';
 import { toggleCheckmark } from './checkmark-toggle';
+import DialogModal from '@/components/shared/DialogModal/dialog-modal';
+import { ubuntu } from '@/styles/fonts/fonts';
+import Image from 'next/image';
+import checkedImage from '@/public/images/spaces/checkbox-tick.svg';
+import { grey } from '@mui/material/colors';
 
 type SmallScreenHabitScoreCardsPropsT = {
     ownerHabits: HabitT[];
@@ -12,6 +17,9 @@ type SmallScreenHabitScoreCardsPropsT = {
     dates: Date[];
     setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>;
 };
+
+// small function to return "week" for "W" and "month" for "M"
+const timeLetterToWord = (letter : string) => letter.toLowerCase() === "m" ? "month" : letter.toLowerCase() === "w" ? "week" : letter;
 
 export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsPropsT) => {
 
@@ -34,28 +42,50 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                             width: '100%',
                         }}
                     >
-                        {/* ============================= Habit's Title HTs */}
+                        {/* ============================= Habit's Title With Modal to show details ======================== */}
+
                         <Box component={'div'} className={styles['habit_title_container']}>
-                            <Typography title={habit.title} className={styles['habit_title']}>
-                                {setMaxStringLength(habit.title, 25).toLowerCase()}
-                            </Typography>
+                            <DialogModal
+                                key={habit.id}
+                                button={
+                                    <Box  sx={{ display: 'flex', alignItems: 'center' }} >
+                                        <Typography title={habit.title} fontWeight={700} className={styles['habit_title']} >
+                                            {setMaxStringLength(habit.title, 30)}
+                                        </Typography>
+                                        <Typography
+                                            fontWeight={100} 
+                                            fontSize='0.7em'
+                                            sx={{ marginLeft: '8px' }}
+                                        >
+                                            {`(${habit.times}x/${timeLetterToWord(habit.time_frame)})`}
+                                        </Typography>
+                                    </Box>
+                                }
+                                childrenTitle={habit.title}
+                                childrenBody={<HabitsInformationModalBody
+                                    description={habit.description}
+                                    times={habit.times}
+                                    time_frame={habit.time_frame}
+                                />}
+                            />
                             {habit.owner === user.id && <HabitOptionsMenu habit={habit} />}
                         </Box>
-                        {/* ============================= Habit's Checkboxes HCs */}
+
+                        {/* ============================= Habit's Checkboxes ========= */}
                         <Box
                             sx={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 paddingInline: `clamp(5px, 2.5vw, 20px)`,
-                                paddingBlock: `clamp(3px, 2vw, 6px)`,
+                                // paddingBlock: `clamp(1px, 1vw, 4px)`,
                                 gap: `clamp(4px, 8vw, 8px)`,
                                 justifyContent: 'space-between',
                             }}
                         >
                             {dates.map((date, i) => {
                                 const checkmark = checkedDates[date.toDateString()] && checkedDates[date.toDateString()][habit.id];
-
                                 const toggle = () => toggleCheckmark(date, habit, checkmark, setCheckedDates);
+                                const isToday: boolean = date.toDateString() === new Date().toDateString();
 
                                 return (
                                     <Box
@@ -71,29 +101,33 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                                             disabled={isWithinLast7Days(date) || habit.owner !== user.id}
                                             checked={Boolean(checkmark)}
                                             onChange={toggle}
+                                            // sets styles also of the checkmark when its disabled
                                             sx={{
                                                 padding: 0,
                                                 margin: 0,
                                                 color: 'black',
                                                 '&.Mui-disabled': {
                                                     '&.Mui-checked': {
-                                                        opacity: 0.5,
+                                                        opacity: 0.6,
                                                     },
-                                                    opacity: 0.5,
+                                                    opacity: 0.6,
+                                                    backgroundColor: 'grey.200'
                                                 },
-                                                '&.Mui-checked': {
-                                                    color: '#00c04b',
-                                                },
+                                                // '&.Mui-checked': {
+                                                //     color: '#00c04b',
+                                                // },
                                             }}
-                                            icon={<CheckBoxWithDay date={date} />}
+                                            icon={<CheckBoxWithDay date={date} isToday={isToday} />}
+                                            // Checked icon
                                             checkedIcon={
-                                                <CheckBoxWithDay
-                                                    date={date}
-                                                    sx={{
-                                                        backgroundColor: '#00c04b',
-                                                        color: 'white',
-                                                    }}
-                                                />
+                                                <Box display="flex" alignItems="center" >
+                                                    <Image
+                                                        src={checkedImage}
+                                                        width={isToday? 40 : 30}
+                                                        height={0}
+                                                        alt="checked"
+                                                    />
+                                                </Box>
                                             }
                                         />
                                     </Box>
@@ -106,29 +140,76 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
     );
 };
 
-const CheckBoxWithDay = ({ date, sx = [] }: { date: Date; sx?: any }) => {
+// Gets each checkbox design with the initials of the day of the week plus the color
+const CheckBoxWithDay = ({ date, isToday, sx = [] }: { date: Date; isToday: boolean; sx?: any }) => {
     const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
     const day = days[date.getDay()];
-    const isToday = date.toDateString() === new Date().toDateString();
 
     return (
         <Box
             fontSize={`clamp(13px, 4vw, 16px)`}
             fontWeight={500}
             sx={{
-                border: `solid ${isToday ? '#655dff' : 'grey'} 0.9px`,
+                border: `solid ${isToday ? 'rgba(0, 242, 158, 0.4)' : grey[400]} 0.1em`,
                 borderRadius: '100px',
-                width: `clamp(30px, 8vw, 38px)`,
-                height: `clamp(30px, 8vw, 38px)`,
+                width: isToday? `clamp(40px, 10vw, 42px)` : `clamp(31px, 8vw, 38px)`,
+                height: isToday ? `clamp(40px, 10vw, 42px)` :  `clamp(31px, 8vw, 38px)`,
                 display: 'grid',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: isToday ? '#655dff' : 'black',
-                padding: '4px',
+                boxShadow: isToday ? `0 0 0 2px rgba(0, 242, 158, 0.4)` : 'none',
                 ...(sx || {}),
             }}
         >
-            {day}
+            <Typography
+                color={isToday ? 'rgba(0, 242, 158, 0.4)' : 'grey.400'}
+                fontWeight="700"
+                fontSize={isToday ? "1.2em" : "1em"}
+            >   
+                {day}
+            </Typography>
         </Box>
     );
 };
+
+
+
+type HabitInformationProps = {
+    description: string;
+    times: number;
+    time_frame: string;
+}
+
+// Just the habits information shown in the modal when the habit title is clicked
+const HabitsInformationModalBody = ({description, times, time_frame}: HabitInformationProps) => {
+
+    return (
+        <Box>
+            {description ?
+                <Typography className={ubuntu.className} >
+                    <Typography component="span" className={ubuntu.className}
+                        fontWeight="700"
+                        color="#2385e7"
+                    >
+                        Description:
+                    </Typography>
+                    {" " + description}
+                </Typography>
+                :
+                <Typography className={ubuntu.className}>No description to show</Typography>
+            }
+            <Typography className={ubuntu.className}
+                sx={{ py: 2 }}
+            >
+                <Typography component="span" className={ubuntu.className}
+                    fontWeight="700"
+                    color="#2385e7"
+                >
+                    Frequency:
+                </Typography>
+                {" " + times}
+                {" times per " + timeLetterToWord(time_frame)}
+            </Typography>
+        </Box>
+    )
+}

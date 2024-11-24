@@ -180,7 +180,7 @@ export async function getSpace(id: number) {
             'Content-Type': 'application/json',
             Cookie: `${getAuthCookie()}`,
         },
-        next: { revalidate: 600, tags: ['spaces'] },
+        next: { revalidate: 60, tags: ['spaces'] },
     };
 
     try {
