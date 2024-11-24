@@ -6,6 +6,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { stringIconMapper } from '@/lib/fa-icons-mapper';
+import grey from '@mui/material/colors/grey';
 
 
 /**
@@ -44,6 +45,7 @@ const styles = {
         borderRadius: '1rem',
         boxShadow: '0 6px 20px 0 #dbdbe8',
         backgroundColor: '#fff',
+        // backgroundColor: '#d9daf1',
         transition: '0.4s',
         height: '100%',
     },
@@ -51,6 +53,7 @@ const styles = {
         width: 48,
         height: 48,
         borderRadius: '0.75rem',
+        bgcolor: grey[500]
     },
     join: {
         background: 'linear-gradient(to top, #638ef0, #82e7fe)',

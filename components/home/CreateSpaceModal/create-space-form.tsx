@@ -79,8 +79,8 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                                     fullWidth
                                     type="text"
                                     name="description"
-                                    label="Description"
-                                    placeholder="A description for your space"
+                                    label="Description (Optional)"
+                                    placeholder="Describe your space"
                                     autoComplete="null"
                                     spellCheck="false"
                                     onFocus={() => form.setFieldTouched(field.name, true)}
