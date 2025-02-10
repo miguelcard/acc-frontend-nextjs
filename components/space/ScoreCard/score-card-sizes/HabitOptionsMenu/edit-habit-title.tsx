@@ -55,7 +55,7 @@ export function EditHabitTitle({ habit, handleCloseDialog }: EditHabitTitleProps
                 {/* =================== Title */}
                 <FormikStep
                     validationSchema={object({
-                        title: string().max(70).required('Habit title is required'),
+                        title: string().max(35).required('Habit title is required'),
                     })}
                 >
                     <Box paddingBottom={2}>

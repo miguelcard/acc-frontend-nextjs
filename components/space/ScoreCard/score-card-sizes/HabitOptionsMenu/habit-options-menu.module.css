@@ -1,0 +1,12 @@
+/* ====================================================== Edit Habit button styles ===================================================*/
+.habit_edit_button:hover {
+    opacity: 1;
+ }
+
+ .habit_edit_button {
+    opacity: 0.4;
+    border-radius: 5px;
+    padding: 3px;
+    scale: 0.9;
+    transition: opacity 0.2s ease-in-out;
+ }

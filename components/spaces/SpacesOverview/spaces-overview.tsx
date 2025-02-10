@@ -60,7 +60,8 @@ async function getUserSpaces() {
  */
 export default async function SpacesOverview() {
     const spaces: PaginatedResponse<SpaceDetailed> = await getUserSpaces();
-    const maxDescLength: number = 66;
+    const maxDescLength: number = 77;
+    const maxTitleLength: number = 54;
 
     if (spaces?.error) {
         // TODO how do I display this error messages in the gui without having to create a client component?
@@ -81,7 +82,7 @@ export default async function SpacesOverview() {
                             <CustomCard
                                 spaceId={space.id}
                                 icon={space.icon_alias || 'rocket'}
-                                title={space.name}
+                                title={setMaxStringLength(space.name, maxTitleLength)}
                                 subtitle={space.creator != undefined ? 'Created by ' + space.creator.username : ''}
                                 description={
                                     space.description ? (

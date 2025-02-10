@@ -1,8 +1,8 @@
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
 import { CheckedDatesT, HabitT, UserT } from '@/lib/types-and-constants';
 import { Box, Checkbox, Typography } from '@mui/material';
-import styles from '../scorecard-habits.module.css';
-import { HabitOptionsMenu } from '../HabitOptions/habit-options-menu';
+import styles from './habit-score-card.module.css';
+import { HabitOptionsMenu } from './HabitOptionsMenu/habit-options-menu';
 import { toggleCheckmark } from './checkmark-toggle';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { ubuntu } from '@/styles/fonts/fonts';
@@ -28,7 +28,7 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
     return (
         <Box
             sx={{
-                display: { xs: 'grid', sm: 'none' },
+                display: { xs: 'grid', sm: 'none', overflow:'hidden' },
                 gridTemplateColumns: '1fr ',
             }}
         >
@@ -86,6 +86,7 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                                 const checkmark = checkedDates[date.toDateString()] && checkedDates[date.toDateString()][habit.id];
                                 const toggle = () => toggleCheckmark(date, habit, checkmark, setCheckedDates);
                                 const isToday: boolean = date.toDateString() === new Date().toDateString();
+                                const isDisabled: boolean = !isWithinLast7Days(date) || habit.owner !== user.id;
 
                                 return (
                                     <Box
@@ -98,7 +99,7 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                                     >
                                         <Checkbox
                                             title={`"${habit.title}": ${date.toDateString()}`}
-                                            disabled={isWithinLast7Days(date) || habit.owner !== user.id}
+                                            disabled={isDisabled}
                                             checked={Boolean(checkmark)}
                                             onChange={toggle}
                                             // sets styles also of the checkmark when its disabled
@@ -111,13 +112,13 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                                                         opacity: 0.6,
                                                     },
                                                     opacity: 0.6,
-                                                    backgroundColor: 'grey.200'
+                                                    backgroundColor: 'grey.200',
                                                 },
                                                 // '&.Mui-checked': {
                                                 //     color: '#00c04b',
                                                 // },
                                             }}
-                                            icon={<CheckBoxWithDay date={date} isToday={isToday} />}
+                                            icon={<CheckBoxWithDay date={date} isToday={isToday} isDisabled={isDisabled} />}
                                             // Checked icon
                                             checkedIcon={
                                                 <Box display="flex" alignItems="center" >
@@ -141,7 +142,7 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
 };
 
 // Gets each checkbox design with the initials of the day of the week plus the color
-const CheckBoxWithDay = ({ date, isToday, sx = [] }: { date: Date; isToday: boolean; sx?: any }) => {
+const CheckBoxWithDay = ({ date, isToday, isDisabled, sx = [] }: { date: Date; isToday: boolean; isDisabled: boolean, sx?: any }) => {
     const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
     const day = days[date.getDay()];
 
@@ -150,19 +151,19 @@ const CheckBoxWithDay = ({ date, isToday, sx = [] }: { date: Date; isToday: bool
             fontSize={`clamp(13px, 4vw, 16px)`}
             fontWeight={500}
             sx={{
-                border: `solid ${isToday ? 'rgba(0, 242, 158, 0.4)' : grey[400]} 0.1em`,
+                border: `solid ${isToday && !isDisabled ? 'none' : grey[400]} 0.1em`,
+                boxShadow: isToday && !isDisabled ? `0 0 0 2px rgba(0, 242, 157, 0.61)` : 'none',
                 borderRadius: '100px',
                 width: isToday? `clamp(40px, 10vw, 42px)` : `clamp(31px, 8vw, 38px)`,
                 height: isToday ? `clamp(40px, 10vw, 42px)` :  `clamp(31px, 8vw, 38px)`,
                 display: 'grid',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: isToday ? `0 0 0 2px rgba(0, 242, 158, 0.4)` : 'none',
                 ...(sx || {}),
             }}
         >
             <Typography
-                color={isToday ? 'rgba(0, 242, 158, 0.4)' : 'grey.400'}
+                color={isToday && !isDisabled ? 'rgba(0, 242, 157, 0.61)' : 'grey.400'}
                 fontWeight="700"
                 fontSize={isToday ? "1.2em" : "1em"}
             >   
