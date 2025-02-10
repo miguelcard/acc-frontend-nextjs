@@ -7,9 +7,8 @@ export default function HomeLayout({
 }) {
     return (
         <>
-            <AuthenticatedLayout>
+            <AuthenticatedLayout/>
                 {children}
-            </AuthenticatedLayout>
         </>
     );
 }

@@ -1,8 +1,8 @@
 'use client';
 
-import { Box, Button, ButtonBase, Typography } from '@mui/material';
-import React from 'react';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import ExpandCircleDownOutlinedIcon from '@mui/icons-material/ExpandCircleDownOutlined';
 import { format } from 'date-fns';
 import { createWeekUUID, generateWeekDays } from '@/lib/client-utils';
 
@@ -26,19 +26,25 @@ type DatesRangePropsT = {
 function DatesRangeSelector(props: DatesRangePropsT) {
 
     const { dates, setDates, updateCheckedDates } = props;
+    const [isNextWeekDisabled, setIsNextWeekDisabled] = useState<boolean>(true);
 
     const moveDatesBackward = () => {
-        const firstDate = new Date(dates[0]);
-        firstDate.setDate(firstDate.getDate() - 1);
-        setDates(generateWeekDays(firstDate));
-        const code = createWeekUUID(-6, firstDate);
+        const firstWeekDate = new Date(dates[0]);
+        firstWeekDate.setDate(firstWeekDate.getDate() - 1);
+        setDates(generateWeekDays(firstWeekDate));
+        const code = createWeekUUID(-6, firstWeekDate);
         updateCheckedDates(code);
+        setIsNextWeekDisabled(false);
     };
 
     const moveDatesForward = () => {
-        const lastDate = new Date(dates[dates.length - 1]);
-        lastDate.setDate(lastDate.getDate() + 7);
-        setDates(generateWeekDays(lastDate));
+        const lastDayOfWeek = new Date(dates[dates.length - 1]);
+        lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 7);
+        // Checking if the date where it is being navigated to exceeds today (this week)
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        setIsNextWeekDisabled(lastDayOfWeek >= today ? true : false);
+        setDates(generateWeekDays(lastDayOfWeek));
     };
 
     const CurrentDate = () => setDates(generateWeekDays());
@@ -52,7 +58,8 @@ function DatesRangeSelector(props: DatesRangePropsT) {
                     width: '100%',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '1em'
+                    px: 4,
+                    py: 1
                 }}
             >
                 <Box
@@ -64,7 +71,7 @@ function DatesRangeSelector(props: DatesRangePropsT) {
                     }}
                 >
                     {/* Jump to previous week */}
-                    <ArrowButton moveDates={moveDatesBackward} title='Previous Week' sx={{ marginRight: '2px' }} />
+                    <ArrowButton moveDates={moveDatesBackward} title='Previous Week' isDisabled={false} sx={{ marginRight: '1px', rotate: '90deg' }} />
                     {/* Current range */}
                     <Button
                         variant="text"
@@ -80,7 +87,7 @@ function DatesRangeSelector(props: DatesRangePropsT) {
                         {format(dates[6], 'dd MMM')}
                     </Button>
                     {/* jump to next week */}
-                    <ArrowButton moveDates={moveDatesForward} title={'Next Week'} sx={{ marginLeft: '2px', rotate: '180deg' }} />
+                    <ArrowButton moveDates={moveDatesForward} title={'Next Week'} isDisabled={isNextWeekDisabled} sx={{ marginLeft: '1px', rotate: '-90deg' }} />
                 </Box>
             </Box>
         </>
@@ -89,17 +96,19 @@ function DatesRangeSelector(props: DatesRangePropsT) {
 
 export default DatesRangeSelector;
 
-const ArrowButton = ({ moveDates, title, sx }: { moveDates: () => void; title: string, sx: any }) => {
+const ArrowButton = ({ moveDates, title, isDisabled, sx }: { moveDates: () => void; title: string, isDisabled: boolean, sx: any }) => {
     return (
-        <ButtonBase
+        <IconButton   //replace with IconButton and disable when needed
             title={title}
             onClick={moveDates}
+            disabled={isDisabled}
+            size='medium'
             sx={{
                 borderRadius: '5px',
                 ...(sx || {}),
             }}
         >
-            <ChevronLeftIcon sx={{ scale: '0.9', height: '100%' }} />
-        </ButtonBase>
+            <ExpandCircleDownOutlinedIcon fontSize='inherit' sx={{ scale: '0.9', height: '100%' }} />
+        </IconButton >
     );
 };

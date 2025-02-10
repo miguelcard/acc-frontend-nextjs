@@ -1,7 +1,4 @@
 // 'use client';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import { useRouter } from 'next/navigation';
 import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
@@ -10,11 +7,14 @@ import Toolbar from '@mui/material/Toolbar';
 import NextLink from 'next/link';
 import Image from 'next/image';
 import logo from '@/public/images/headers/avidhabits.png';
+import curvedLogo from '@/public/images/headers/avidhabits-curved.svg';
+import Box from '@mui/material/Box';
 
 // TODO ALL THIS FUNCTIONALITY
 // You'll have to put this in a separate Layout component for sure, if you want to use data Dynamically in this Navbar
 // with this I mean setting the right user profile picture for example, or operations where you have to pass props to this navbar I think
-export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+// { children }: { children: React.ReactNode }
+export default function AuthenticatedLayout() {
     // const router = useRouter();
 
     // TODO do logout with
@@ -40,75 +40,116 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
         });
     }
 
+
+
+
     return (
         <>
-            {/* use sticky navigation on (Desktop view mainly) when home page gets bigger <AppBar position="sticky" */}
-            <AppBar position="static" elevation={0} sx={{ p: 1 }}>
-                <Container maxWidth="xl">
-                    <Toolbar>
-                        {/*
-                        The responsiveness of the elements can be handled by the display property, if xs: 'none' it means
-                        the element is not shown on small screens, this way we can show or hide the blocks we need for each screen size.
-                        we can further add rules for larger screen sizes if required (xs, sm, md, lg, xl...)
-                        */}
-
-                        {/*
-                        Elements for medium (md) screens and above:
-                        */}
-                        <Link
-                            sx={{
-                                flexGrow: 1,
-                                display: { xs: 'flex', md: 'flex' },
-                                mr: 1,
-                            }}
-                            component={NextLink}
-                            href="/"
-                        >
-                            <Image
-                                src={logo}
-                                width={130}
-                                height={0}
-                                alt="logo"
-                                // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
-                            />
-                        </Link>
-                        {/* <Box
-                            sx={{ flexGrow: 1, gap: '20px', display: { xs: 'none', md: 'flex' } }}
-                        >
-                            {Object.entries(navbarPages).map(([key, page]) => (
-                                <Button
-                                    variant='text'
-                                    className={styles['landing-header__menu__item']}
-                                    component={NextLink}
-                                    href={page.linkTo}
-                                    key={key}
-                                    sx={{ my: 2, color: 'white' }}
-                                >
-                                    {page.name}
-                                </Button>
-                            ))}
-                        </Box> */}
-
-                        {/* further elements on the end of the NavBar */}
-                        <IconButton
-                            // onClick={logout}
-                            sx={{ p: 0 }}
-                        >
-                            <Avatar
-                                alt="Memy Sharp"
-                                // src="/static/images/avatar/2.jpg"
-                            />
-                        </IconButton>
-
-                        {/* Navigation bar content for small screens and below */}
-                    </Toolbar>
-                </Container>
-            </AppBar>
-            {/* Sidebar (Drawer) used for menu on small screens */}
-            {children}
+            {/* Box to center the image */}
+            <Box display="flex" alignItems="center" justifyContent="center" >
+                {/* Box to control the size of the image responsively */}
+                <Box
+                    display="flex"
+                    sx={{
+                        maxWidth: 270, // Default size
+                        '@media (max-width: 600px)': {
+                            maxWidth: 210, // Below 600px
+                        },
+                        '@media (max-width: 350px)': {
+                            maxWidth: 190, // Below 350px
+                        },
+                    }}
+                >
+                    <Image
+                        src={curvedLogo}
+                        alt="logo"
+                        style={{
+                            width: '100%', // Fill the parent Box
+                            height: 'auto',
+                        }}
+                    />
+                </Box>
+            </Box>
         </>
     );
 }
+
+
+
+
+
+
+const OldNavBarMenu= () => {
+  return (
+    <>
+    {/* use sticky navigation on (Desktop view mainly) when home page gets bigger <AppBar position="sticky" */}
+    <AppBar position="static" elevation={0} sx={{ p: 1 }}>
+    <Container maxWidth="xl">
+        <Toolbar>
+            {/*
+            The responsiveness of the elements can be handled by the display property, if xs: 'none' it means
+            the element is not shown on small screens, this way we can show or hide the blocks we need for each screen size.
+            we can further add rules for larger screen sizes if required (xs, sm, md, lg, xl...)
+            */}
+
+            {/*
+            Elements for medium (md) screens and above:
+            */}
+            <Link
+                sx={{
+                    flexGrow: 1,
+                    display: { xs: 'flex', md: 'flex' },
+                    mr: 1,
+                }}
+                component={NextLink}
+                href="/"
+            >
+                <Image
+                    src={logo}
+                    width={130}
+                    height={0}
+                    alt="logo"
+                    // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
+                />
+            </Link>
+            {/* <Box
+                sx={{ flexGrow: 1, gap: '20px', display: { xs: 'none', md: 'flex' } }}
+            >
+                {Object.entries(navbarPages).map(([key, page]) => (
+                    <Button
+                        variant='text'
+                        className={styles['landing-header__menu__item']}
+                        component={NextLink}
+                        href={page.linkTo}
+                        key={key}
+                        sx={{ my: 2, color: 'white' }}
+                    >
+                        {page.name}
+                    </Button>
+                ))}
+            </Box> */}
+
+            {/* further elements on the end of the NavBar */}
+            {/* <IconButton
+                // onClick={logout}
+                sx={{ p: 0 }}
+            >
+                <Avatar
+                    alt="Memy Sharp"
+                    // src="/static/images/avatar/2.jpg"
+                />
+            </IconButton> */}
+
+            {/* Navigation bar content for small screens and below */}
+        </Toolbar>
+    </Container>
+</AppBar>
+{/* Sidebar (Drawer) used for menu on small screens */}
+{/* {children} */}
+</>
+  )
+}
+
 
 // Read in case you want to customize the nextjs layouts with props or something similar:
 // https://stackoverflow.com/questions/75190344/how-to-pass-props-to-layout-js-from-page-js-in-the-app-directory-of-next-js

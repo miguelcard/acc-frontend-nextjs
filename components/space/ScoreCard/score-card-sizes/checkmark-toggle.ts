@@ -3,7 +3,15 @@ import { format } from 'date-fns';
 import { addCheckmark, deleteCheckmark } from '@/lib/actions';
 import toast from 'react-hot-toast';
 
-// Toggle the checkmark for a specific date
+
+/**
+ * Add or delete a checkmark for a specific date of a specific habit. This function calls the server actions.
+ * @param date 
+ * @param habit 
+ * @param checkmark 
+ * @param setCheckedDates 
+ * @returns 
+ */
 export const toggleCheckmark = async (
     date: Date,
     habit: HabitT,

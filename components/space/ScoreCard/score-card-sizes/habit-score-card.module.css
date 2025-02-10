@@ -1,0 +1,45 @@
+
+  /* ====================================================== ScoreCard/calendar Habit container styles ======================================================*/
+
+  .habit_title_container {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 1px;
+  }
+
+  .habit_title {
+     font-size: clamp(10px, 4vw, 14px);
+     text-overflow: 'ellipsis';
+     overflow: 'hidden';
+     cursor: pointer;
+     transition: color 0.2s ease-in-out;
+  }
+
+  .habit_title:hover {
+   color: #84cec1;
+}
+
+
+  .habit_title::first-letter {
+     text-transform: capitalize;
+  }
+
+
+  /* ====================================================== breakpoint Screen 600px bellow ======================================================*/
+  @media screen and (max-width: 600px) {
+     .habit_title_container {
+        padding-bottom: 1px;
+        margin-bottom: 4px;
+     }
+  }
+
+  /* ====================================================== Break Screen 600px ======================================================*/
+  @media screen and (min-width: 600px) {
+     .habit_title {
+        position: relative;
+        font-size: clamp(1rem, 3vw, 1.1rem);
+        font-weight: 500;
+        width: (150px, 8vw, 200px);
+     }
+  }

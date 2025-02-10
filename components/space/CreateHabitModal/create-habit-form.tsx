@@ -25,7 +25,7 @@ async function submitNewHabit(value: any, id: number, action: FormikHelpers<Form
         return;
     }
 
-    toast.success(`${res.title} is created successfully`);
+    toast.success(`Habit created successfully`);
 }
 
 type CreateHabitFormProps = {
@@ -62,7 +62,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                 {/* =================== Title */}
                 <FormikStep
                     validationSchema={object({
-                        title: string().max(70).required('Habit title is required'),
+                        title: string().max(35).required('Habit title is required'),
                     })}
                 >
                     <Box paddingBottom={2}>

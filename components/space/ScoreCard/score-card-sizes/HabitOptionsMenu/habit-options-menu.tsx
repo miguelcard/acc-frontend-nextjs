@@ -1,5 +1,5 @@
 import { Box, ButtonBase, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material';
-import styles from '../scorecard-habits.module.css';
+import styles from './habit-options-menu.module.css';
 import { useState } from 'react';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { grey } from '@mui/material/colors';

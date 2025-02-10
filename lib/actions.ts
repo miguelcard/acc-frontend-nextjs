@@ -87,6 +87,7 @@ export async function signUp(formData: FormData) {
         }
 
         setAuthCookie(res);
+        revalidateTag('users');
         return res.json();
     } catch (error: any) {
         console.warn('Signup server action error: ', getErrorMessage(error));
@@ -123,7 +124,7 @@ export async function createSpace(formData: FormikValues) {
             return { error: GENERIC_ERROR_MESSAGE };
         }
 
-        revalidatePath('/home');
+        revalidatePath('/spaces');
         return await res.json();
     } catch (error) {
         console.warn('createSpace server action Error: ', getErrorMessage(error));
@@ -321,6 +322,7 @@ export async function getUsernameEmailSuggestions(member: string, resultsNumber:
             'Content-Type': 'application/json',
             Cookie: `${getAuthCookie()}`,
         },
+        next: { revalidate: 3000, tags: ['users'] }
     };
 
     try {
@@ -361,6 +363,7 @@ export async function checkUsernameOrEmailExist(username: string | null, email: 
         headers: {
             'Content-Type': 'application/json',
         },
+        next: { revalidate: 300, tags: ['users'] }
     };
 
     try {

@@ -17,8 +17,8 @@ import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { toggleCheckmark } from './checkmark-toggle';
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
-import styles from '../scorecard-habits.module.css';
-import { HabitOptionsMenu } from '../HabitOptions/habit-options-menu';
+import styles from './habit-score-card.module.css';
+import { HabitOptionsMenu } from './HabitOptionsMenu/habit-options-menu';
 
 type FullScreenHabitScoreCardPropsT = {
     dates: Date[];
@@ -95,7 +95,7 @@ export const FullScreenHabitScoreCard = ({ dates, ownerHabits, checkedDates, use
                                         <StyledTableCell key={i} align="right">
                                             <Checkbox
                                                 title={`"${habit.title}": ${date.toDateString()}`}
-                                                disabled={isWithinLast7Days(date) || habit.owner !== user.id}
+                                                disabled={ !isWithinLast7Days(date) || habit.owner !== user.id}
                                                 checked={Boolean(checkmark)}
                                                 onChange={toggle}
                                                 sx={{

@@ -54,8 +54,10 @@ export default function SignUp() {
                 const res: NextResponse | any = await signUp(formData);
                 if (res?.error) {
                     setSignupError(res.error);
-                    // sue user id to fetch users data and redirect to users page...
+                    // use user id to fetch users data and redirect to users page...
+                    return;
                 }
+                router.push(`/spaces`);
             }
         }
 

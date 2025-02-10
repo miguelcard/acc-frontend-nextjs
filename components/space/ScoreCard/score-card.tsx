@@ -4,13 +4,13 @@ import { CheckedDatesT, HabitT, MembersT, UserT } from '@/lib/types-and-constant
 import { Avatar, Box, ButtonBase, Typography } from '@mui/material';
 import React, { useCallback, useMemo, useState } from 'react';
 import { checkedDatesMap, createWeekUUID, generateWeekDays } from '@/lib/client-utils';
-import DatesRangeSelector from './ScoreCard/dates-range-selector';
-import { FullScreenHabitScoreCard } from './ScoreCard/full-screen-habit-score-card';
-import { SmallScreenHabitScoreCard } from './ScoreCard/small-screen-habit-score-card';
+import DatesRangeSelector from './dates-range-selector';
+import { FullScreenHabitScoreCard } from './score-card-sizes/full-screen-habit-score-card'
+import { SmallScreenHabitScoreCard } from './score-card-sizes/small-screen-habit-score-card';
 import { getAllHabitsAndCheckmarksFromSpace } from '@/lib/actions';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { ubuntu } from '@/styles/fonts/fonts';
-import { getLetter, stringToColor } from '@/components/home/SpacesOverview/avatar-utils';
+import { getLetter, stringToColor } from '@/components/spaces/SpacesOverview/avatar-utils';
 
 type ScoreCardPropsT = {
     currentUser: UserT;

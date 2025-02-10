@@ -2,11 +2,12 @@ import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import AddRoundedIcon  from '@mui/icons-material/AddRounded';
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import Image from 'next/image';
 import createHabitImage from '@/public/images/spaces/create-habit-hand.svg';
 import CreateHabitForm from './create-habit-form';
 import { ButtonBase, Container, IconButton } from '@mui/material';
-import styles from './scorecard-habits.module.css';
+import styles from './create-habit-modal.module.css';
 
 type CreateHabitPropsT = 
 { 
@@ -28,12 +29,16 @@ export default function CreateHabitModal(props: CreateHabitPropsT) {
             <IconButton sx={{ marginInline: 'auto' }}
                 className={`${styles['new_habit_button']} ${isFirstSpaceHabit ? styles['pulse_animation'] : ''}`}
             >
-                <Typography fontWeight={600} fontSize={`clamp(1rem, 4.5vw, 1.3rem)`}
+                <Typography fontWeight={600}
                     className={`${isFirstSpaceHabit ? '' : styles['new_habit_button_text']}`}
                 >
                     {isFirstSpaceHabit ? 'Add your first habit' : 'Habit'}
                 </Typography>
-                <AddRoundedIcon sx={{ scale: { xs: 1, sm: 1.2, md: 1.3 } }} />
+                {isFirstSpaceHabit ?
+                    <AddCircleRoundedIcon sx={{ marginLeft: 1, scale: { xs: 1, sm: 1.2, md: 1.3 } }} />
+                    :
+                    <AddRoundedIcon sx={{ scale: { xs: 1, sm: 1.2, md: 1.3 } }} />
+                }
             </IconButton>
         </Container>
     );

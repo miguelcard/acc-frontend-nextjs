@@ -2,8 +2,9 @@ import { format } from 'date-fns';
 import { CheckedDatesT, HabitT } from './types-and-constants';
 
 /**
+ * Takes a date no matter which date of the week it is, and returns the week from monday to sunday where this date belongs
  * @param date is the reference date from which the days of the week are going to get created
- * @return dates and formated days
+ * @return corresponding week dates
  */
 export function generateWeekDays(arg0?: Date): Date[] {
     let date = arg0;
@@ -26,11 +27,11 @@ export function generateWeekDays(arg0?: Date): Date[] {
 
 /**
  * isWithinLast7Days checks is input date is within last 7 days of current date
- * @param arg0
- * @return dates and formetedays
+ * @param date
+ * @return boolean, true if date is within the last 7 days and false otherwise
  */
-export function isWithinLast7Days(arg0: Date): boolean {
-    const dateToCheck = new Date(arg0);
+export function isWithinLast7Days(date: Date): boolean {
+    const dateToCheck = new Date(date);
     const currentDate = new Date();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(currentDate.getDate() - 6);
@@ -40,7 +41,7 @@ export function isWithinLast7Days(arg0: Date): boolean {
     sevenDaysAgo.setHours(0, 0, 0, 0);
     dateToCheck.setHours(0, 0, 0, 0);
 
-    return !(dateToCheck >= sevenDaysAgo && dateToCheck <= currentDate);
+    return (dateToCheck >= sevenDaysAgo && dateToCheck <= currentDate);
 }
 
 /**
