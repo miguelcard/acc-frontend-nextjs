@@ -27,7 +27,7 @@ const NewSpaceButton = () => {
     return (
         <Button variant="outlined" color="secondary"
             startIcon={<><AddIcon /><GroupsIcon /></>}
-            sx={{ py: 1, marginBottom: 4 }}
+            sx={{ py: 1, mb: 2 }}
         >
             <Typography fontWeight={600} fontSize={"1.1em"}
             >
