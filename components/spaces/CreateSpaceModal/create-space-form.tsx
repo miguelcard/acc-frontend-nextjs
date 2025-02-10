@@ -55,7 +55,7 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
             >
                 <FormikStep
                     validationSchema={object({
-                        name: string().max(20).required('Space name is required'),
+                        name: string().max(32).required('Space name is required'),
                     })}
                 >
                     <Box paddingBottom={2}>
