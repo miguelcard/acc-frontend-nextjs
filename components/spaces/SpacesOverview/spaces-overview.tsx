@@ -1,42 +1,11 @@
 import 'server-only';
-import { getAuthCookie, getErrorMessage } from '@/lib/utils';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import React from 'react';
-import { GENERIC_ERROR_MESSAGE, PaginatedResponse, SpaceDetailed, SpaceT } from '@/lib/types-and-constants';
+import { PaginatedResponse, SpaceDetailed } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
 import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
-import { setMaxStringLength } from '@/lib/client-utils';
+import { getUserSpaces } from '@/lib/fetch-functions';
 
-
-/**
- * Gets all the spaces that belong to the user
- * @returns list of spaces
- */
-async function getUserSpaces() {
-    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&page_size=4&ordering=-updated_at`; // For the future load automatically on scrolling
-    const requestOptions: RequestInit = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
-        },
-        cache: 'no-store', // just in case, but it isn't necessary if we use cookies above
-    };
-
-    try {
-        const res = await fetch(url, requestOptions);
-        const spaces = await res.json();
-        if (!res.ok) {
-            console.warn("Fetching user spaces didn't work");
-            console.warn(getErrorMessage(spaces));
-            return { error: GENERIC_ERROR_MESSAGE };
-        }
-        return spaces;
-    } catch (error) {
-        console.warn('An error ocurred: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
-    }
-}
 
 /**
  * Overview of all the spaces where the user belongs
@@ -46,8 +15,6 @@ async function getUserSpaces() {
  */
 export default async function SpacesOverview() {
     const spaces: PaginatedResponse<SpaceDetailed> = await getUserSpaces();
-    const maxDescLength: number = 77;
-    const maxTitleLength: number = 54;
 
     if (spaces?.error) {
         // TODO how do I display this error messages in the gui without having to create a client component?

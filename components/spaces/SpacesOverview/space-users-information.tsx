@@ -3,7 +3,7 @@ import { PaginatedResponse } from '@/lib/types-and-constants';
 import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import { getLetter, stringToColor } from './avatar-utils';
-import { getUsersFromSpace } from './fetch-functions';
+import { getUsersFromSpace } from '@/lib/fetch-functions';
 
 interface SpaceUser {
     id: number;

@@ -1,3 +1,8 @@
+// This is a file defining ONLY server actions with the directive below
+//  - Designed for operations that trigger side effects (mutations, form submissions, etc.) / can handle handle user-triggered events.
+//  - Can be invoked from client components (via form submissions or onClick handlers) while running on the server.
+// See difference "fetch-functions.ts"
+
 'use server';
 import 'server-only';
 import { revalidatePath, revalidateTag } from 'next/cache';
@@ -168,37 +173,6 @@ export async function patchSpace(formData: FormikValues, id: number) {
     }
 }
 
-/**
- * Get Space by its ID
- * @param id
- * @returns space
- */
-export async function getSpace(id: number) {
-    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/${id}`;
-    const requestOptions: RequestInit = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
-        },
-        next: { revalidate: 60, tags: ['spaces'] },
-    };
-
-    try {
-        const res = await fetch(url, requestOptions);
-        const space = await res.json();
-
-        if (!res.ok) {
-            console.warn("Fetching individual space didn't work");
-            console.warn(getErrorMessage(space));
-            return { error: GENERIC_ERROR_MESSAGE };
-        }
-        return space;
-    } catch (error) {
-        console.warn('getSpace server action Error: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
-    }
-}
 
 /**
  * Server action to get all habits from an space based on its Id and the date range query params
@@ -313,37 +287,6 @@ export async function deleteSpaceRole(spaceId: number) {
 
 // ------ Users Actions ------
 
-/**
- * This function gets logged-in users data
- * @returns user who is logged-in
- */
-export async function getUser() {
-    const getUserUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/user/`;
-
-    const requestOptions: RequestInit = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
-        },
-    };
-
-    try {
-        const res = await fetch(getUserUrl, requestOptions);
-
-        if (!res.ok) {
-            const errorResp = await res.json();
-            console.warn('getUser server action Error: ' + getErrorMessage(errorResp));
-            console.warn(JSON.stringify(errorResp));
-            return { error: GENERIC_ERROR_MESSAGE };
-        }
-
-        return await res.json();
-    } catch (error) {
-        console.warn('getUser server action Error: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
-    }
-}
 
 /**
  * This function calls the endpoint which retrieves a list of users which match either by username or email the value
