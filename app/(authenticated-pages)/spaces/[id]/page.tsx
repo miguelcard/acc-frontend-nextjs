@@ -13,11 +13,11 @@ import Link from 'next/link';
 import { IconButton, Paper } from '@mui/material';
 import CreateHabitModal from '@/components/space/CreateHabitModal/create-habit-modal';
 import { ScoreCard } from '@/components/space/ScoreCard/score-card';
-import { getSpace, getUser } from '@/lib/actions';
 import { redirect } from 'next/navigation';
 import { setMaxStringLength } from '@/lib/client-utils';
 import { grey } from '@mui/material/colors';
 import { ArrowBack } from '@mui/icons-material';
+import { getSpace, getUser } from '@/lib/fetch-functions';
 
 export default async function SingleSpace({ params }: { params: { id: number } }) {
     const { id } = params;

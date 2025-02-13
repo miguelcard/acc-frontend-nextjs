@@ -9,12 +9,11 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Paper from '@mui/material/Paper';
 import NextLink from 'next/link';
 import React from 'react';
-import { string } from 'yup';
 
 
 export const BottomNavigationLayout = ({ children }: { children: React.ReactNode }) => {
 
-    const [value, setValue] = React.useState<number | null>(null);
+    const [value, setValue] = React.useState<number | null>(0);
 
     return (
         /* a ref is used to scroll back to the top whenever the value changes (useRef hook + useEffect hook= DO AT THE END IF NEEDED*/
@@ -25,7 +24,7 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
             {children}
 
             <Paper
-                sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 , zIndex: 1200 }}
+                sx={{ position: 'fixed', bottom: -2, left: 0, right: 0 , zIndex: 1200 }}
                 elevation={4}
             >
                 <BottomNavigation
@@ -68,7 +67,7 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
                         place to explore groups and threads? (future gropus or public spaces that you could join??)
                     /> */}
                     {/* <BottomNavigationAction
-                        label="Habits Overview"
+                        label="All Habits Overview"
                         icon={<FontAwesomeIcon icon={?} />}
                         disabled
                         place to show an overview of all the habits and how the user is doing?...

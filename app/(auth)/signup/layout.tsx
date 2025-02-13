@@ -1,4 +1,5 @@
 import AuthNavbar from "@/components/auth/AuthNavbar/auth-navbar";
+import CssBaseline from "@mui/material/CssBaseline";
 
 
 export default function SignupLayout({
@@ -8,6 +9,7 @@ export default function SignupLayout({
 }) {
     return (
         <>
+            <CssBaseline/>
             <AuthNavbar
                 actionMessage={`Already have an account?`}
                 buttonLinkTo={'/login'}

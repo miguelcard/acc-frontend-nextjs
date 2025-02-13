@@ -19,6 +19,7 @@ interface EditSpaceTitleProps {
  * @returns
  */
 export function EditSpaceTitle({ space, handleCloseDialog }: EditSpaceTitleProps) {
+    
     const [spaceTitle, setSpaceTitle] = useState<string | undefined>(space.name);
 
     /**
@@ -49,7 +50,7 @@ export function EditSpaceTitle({ space, handleCloseDialog }: EditSpaceTitleProps
             >
                 <FormikStep
                     validationSchema={object({
-                        name: string().required('Space name is required'),
+                        name: string().max(32).required('Space name is required'),
                     })}
                 >
                     <Box paddingBottom={2}>
