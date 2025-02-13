@@ -19,6 +19,7 @@ interface EditSpaceTitleProps {
  * @returns
  */
 export function EditSpaceTitle({ space, handleCloseDialog }: EditSpaceTitleProps) {
+    
     const [spaceTitle, setSpaceTitle] = useState<string | undefined>(space.name);
 
     /**

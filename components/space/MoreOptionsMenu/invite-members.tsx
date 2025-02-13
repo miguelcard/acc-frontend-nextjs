@@ -28,6 +28,7 @@ interface UsernameEmailResult {
  * @returns
  */
 export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: InviteMembersProps) {
+    
     const [autocompleteOptions, setAutocompleteOptions] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>();
 

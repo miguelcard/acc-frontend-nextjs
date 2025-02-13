@@ -7,6 +7,10 @@ import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { stringIconMapper } from '@/lib/fa-icons-mapper';
 import grey from '@mui/material/colors/grey';
+import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
+import { SpaceDetailed, SpaceT } from '@/lib/types-and-constants';
+import { setMaxStringLength } from '@/lib/client-utils';
+import { SpaceDefaultDescription } from './space-users-information';
 
 
 /**
@@ -65,40 +69,41 @@ const styles = {
 };
 
 interface CustomCardProps {
-    spaceId: number;
-    icon: string;
-    title: string;
-    subtitle: string;
-    description: any;
+    space: SpaceDetailed;
+    defaultDescription: React.ReactNode;
     children: React.ReactNode;
 }
 
 export const CustomCard = ({
-    spaceId,
-    icon,
-    title,
-    subtitle,
-    description,
+    space,
+    defaultDescription,
     children
 }: CustomCardProps) => {
     const router = useRouter();
+    const maxDescLength: number = 77;
+    const maxTitleLength: number = 54;
 
     return (
-        <Box onClick={() => router.push(`/spaces/${spaceId}`)} sx={styles.root}>
+        <Box onClick={() => router.push(`/spaces/${space.id}`)} sx={styles.root}>
             <Box sx={styles.card} display='flex' flexDirection='column'>
-                <Box p={2} gap={2} display='flex' flexDirection='row'>
-                    <Avatar sx={styles.logo} variant={'rounded'} >
-                        <FontAwesomeIcon icon={stringIconMapper[icon]} size='xl' />
-                    </Avatar>
-                    <Box alignSelf='center'>
-                        {/* Note future: make this fonts responsive, use @media */}
-                        <Typography fontWeight={700} >
-                            {title}
-                        </Typography>
-                        <Typography component='div' fontSize={'0.8em'} fontWeight={400} color={'grey.600'}>
-                            {/* TODO if this stays the "created by" make it clickable to the user creator profile */}
-                            {subtitle}
-                        </Typography>
+                <Box display='flex'>
+                    <Box py={2} pl={2} gap={1} display='flex' flexDirection='row'>
+                        <Avatar sx={styles.logo} variant={'rounded'} >
+                            <FontAwesomeIcon icon={stringIconMapper[space.icon_alias || 'rocket']} size='xl' />
+                        </Avatar>
+                        <Box alignSelf='center'>
+                            {/* Note future: make this fonts responsive, use @media */}
+                            <Typography fontWeight={700} >
+                                {setMaxStringLength(space.name, maxTitleLength)}
+                            </Typography>
+                            <Typography component='div' fontSize={'0.8em'} fontWeight={400} color={'grey.600'}>
+                                {/* TODO if this stays the "created by" make it clickable to the user creator profile */}
+                                {space.creator != undefined ? 'Created by ' + space.creator.username : ''}
+                            </Typography>
+                        </Box>
+                    </Box>
+                    <Box  py={1} pr={0} onClick={(e) => e.stopPropagation()} sx={{ marginLeft: 'auto' }} >
+                        <MoreOptionsMenu space={space} />
                     </Box>
                 </Box>
                 <Box
@@ -107,8 +112,14 @@ export const CustomCard = ({
                     color={'grey.600'}
                     fontSize={'0.9rem'}
                 >
-                    <Typography component='div' className={ubuntu.className} sx={{pt:1}} >
-                        {description}
+                    <Typography component='div' className={ubuntu.className} sx={{ pt: 1 }} >
+                        {space.description ? (
+                            setMaxStringLength(space.description, maxDescLength)
+                        ) : (
+                            <span>
+                                {defaultDescription}
+                            </span>
+                        )}
                     </Typography>
                 </Box>
                 <Box p={2} gap={2} display='flex' alignSelf='stretch' flexDirection='row'>

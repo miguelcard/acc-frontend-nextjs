@@ -9,6 +9,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 import grey from '@mui/material/colors/grey';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
@@ -22,6 +23,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Slide from '@mui/material/Slide';
 import Alert from '@mui/material/Alert';
 import { ChangeAvatar } from './change-avatar';
+import { LeaveSpace } from './leave-space';
 
 interface MoreOptionsMenuProps {
     space: SpaceT;
@@ -72,7 +74,7 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
 
     const menuOptions: MenuOption[] = [
         {
-            name: 'Space info',
+            name: 'Space description',
             click: () => {
                 handleCloseOptionsMenu();
             },
@@ -80,7 +82,7 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
             childrenBody: <EditSpaceDescription space={space} />,
         },
         {
-            name: 'Rename Space',
+            name: 'Rename space',
             click: () => {
                 handleCloseOptionsMenu();
             },
@@ -96,17 +98,26 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
             childrenBody: <InviteMembers space={space} handleToastOpen={handleToastOpen} />,
         },
         {
-            name: 'Change Avatar',
+            name: 'Change avatar',
             click: () => {
                 handleCloseOptionsMenu();
             },
             icon: <InsertEmoticonIcon sx={sxIconStyle} />,
             childrenBody: <ChangeAvatar space={space} />,
         },
+        {
+            name: 'Leave space',
+            click: () => {
+                handleCloseOptionsMenu();
+            },
+            icon: <LogoutIcon sx={sxIconStyle} />,
+            childrenBody: <LeaveSpace space={space} handleToastOpen={handleToastOpen} />,
+        },
     ];
 
     return (
         <>
+
             <Snackbar
                 open={openToast}
                 autoHideDuration={8000}
@@ -119,6 +130,7 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
                     Success! The user has been added to the Space. They can now view and contribute habits.
                 </Alert>
             </Snackbar>
+
             <Tooltip title="More options">
                 <IconButton onClick={handleOpenOptionsMenu} aria-label="More options" sx={{ ml: 'auto' }}>
                     <MoreVertIcon />

@@ -36,6 +36,21 @@ export type SpaceT = {
     error?: string; // just in case we add an error to the response
 };
 
+export interface CreatorUser {
+    id: number;
+    username: string;
+    name: string | null;
+    last_name: string | null;
+    profile_photo: string | null;
+    // email: string;
+    // about?: string | null;
+    // is_active?: boolean;
+}
+
+export interface SpaceDetailed extends SpaceT {
+    creator: CreatorUser;
+}
+
 export type HabitT = {
     id: number;
     tags: any[];

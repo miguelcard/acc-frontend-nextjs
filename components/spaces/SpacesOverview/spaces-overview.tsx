@@ -2,25 +2,11 @@ import 'server-only';
 import { getAuthCookie, getErrorMessage } from '@/lib/utils';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import React from 'react';
-import { GENERIC_ERROR_MESSAGE, PaginatedResponse, SpaceT } from '@/lib/types-and-constants';
+import { GENERIC_ERROR_MESSAGE, PaginatedResponse, SpaceDetailed, SpaceT } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
 import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
 import { setMaxStringLength } from '@/lib/client-utils';
 
-interface CreatorUser {
-    id: number;
-    username: string;
-    name: string | null;
-    last_name: string | null;
-    profile_photo: string | null;
-    // email: string;
-    // about?: string | null;
-    // is_active?: boolean;
-}
-
-interface SpaceDetailed extends SpaceT {
-    creator: CreatorUser;
-}
 
 /**
  * Gets all the spaces that belong to the user
@@ -80,19 +66,8 @@ export default async function SpacesOverview() {
                     {spaces.results.map((space) => (
                         <Grid item xs={12} md={6} lg={4} key={space.id}>
                             <CustomCard
-                                spaceId={space.id}
-                                icon={space.icon_alias || 'rocket'}
-                                title={setMaxStringLength(space.name, maxTitleLength)}
-                                subtitle={space.creator != undefined ? 'Created by ' + space.creator.username : ''}
-                                description={
-                                    space.description ? (
-                                        setMaxStringLength(space.description, maxDescLength)
-                                    ) : (
-                                        <span>
-                                            <SpaceDefaultDescription spaceId={space.id} />
-                                        </span>
-                                    )
-                                }
+                                space={space}
+                                defaultDescription={<SpaceDefaultDescription spaceId={space.id} />}
                             >
                                 <Box>
                                     <AvatarsGroup spaceId={space.id} />

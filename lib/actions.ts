@@ -241,7 +241,7 @@ export async function getAllHabitsAndCheckmarksFromSpace(spaceId: number, dateSt
  * @param formData
  * @returns space information
  */
-export async function createSpaceRole(formData: FormikValues, SpaceId: number) {
+export async function createSpaceRole(formData: FormikValues, spaceId: number) {
     const createSpaceRoleUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/spaceroles/invite/`;
 
     const requestOptions: RequestInit = {
@@ -263,13 +263,53 @@ export async function createSpaceRole(formData: FormikValues, SpaceId: number) {
             return { error: GENERIC_ERROR_MESSAGE };
         }
 
-        revalidatePath(`/spaces/${SpaceId}`);
+        revalidatePath(`/spaces/${spaceId}`);
         return await res.json();
     } catch (error) {
         console.warn('createSpaceRole server action Error: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }
+
+
+/**
+ * Server action to call the delete Spacerole endpoint.
+ * Unlinks a user from a space by deleting the space role associated with 
+ * it also changes the user role to another user, if the one leaving was the creator of the space
+ * unlinks all habits from that user in that space (but the habits are not deleted)
+ * deletes space IF the space has no more members in it
+ * @returns deletion status
+ */
+export async function deleteSpaceRole(spaceId: number) {
+    const deleteSpaceRoleUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/spaceroles/delete/${spaceId}`;
+
+    const requestOptions: RequestInit = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            Cookie: `${getAuthCookie()}`,
+        },
+    };
+
+    try {
+        const res = await fetch(deleteSpaceRoleUrl, requestOptions);
+
+        if (!res.ok) {
+            const errorResp = await res.json();
+            console.warn('deleteSpaceRole server action Error: ' + getErrorMessage(errorResp));
+            console.warn(JSON.stringify(errorResp));
+            return { error: GENERIC_ERROR_MESSAGE };
+        }
+
+        revalidatePath(`/spaces`);
+        revalidatePath(`/spaces/${spaceId}`);
+        return {}; // empty body as the delete response has no body to parse
+    } catch (error) {
+        console.warn('deleteSpaceRole server action Error: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
 
 // ------ Users Actions ------
 
@@ -485,7 +525,7 @@ export async function deleteHabit(habit: HabitT) {
         }
 
         revalidateTag('spaces');
-        return { error: null };
+        return {};
     } catch (error) {
         console.warn('deleteHabit server action Error: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
