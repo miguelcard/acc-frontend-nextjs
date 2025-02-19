@@ -34,9 +34,10 @@ export default function HeroText() {
                     meets Partner.
                 </Typography>
                 <Typography className={styles['hero__secondary-text']}>
-                    Improve your habits and achieve your goals,
+                    Improve your habits and achieve your goals
                     {isXsScreenOrBelow ? ' ' : <br />}
-                    while taking your journey along with others.
+                    while sharing your journey with others.
+                    {/* alternative: "Transform your habits, reach your goals, and thrive alongside others on a shared journey of growth." */}
                 </Typography>
             </Box>
             <Box>
