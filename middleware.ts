@@ -7,8 +7,6 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get('auth_token')?.value;
   const { pathname } = req.nextUrl;
   const authPaths: string[] = ["/login", "/signup"];
-
-  console.log("is not authenticated" + !token);
   
   // User has no cookie and the path is other than /login and /signup
   if (!token && !authPaths.includes(pathname)) {
