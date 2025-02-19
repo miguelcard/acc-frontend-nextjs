@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { IconButton, Paper } from '@mui/material';
 import CreateHabitModal from '@/components/space/CreateHabitModal/create-habit-modal';
 import { ScoreCard } from '@/components/space/ScoreCard/score-card';
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { setMaxStringLength } from '@/lib/client-utils';
 import { grey } from '@mui/material/colors';
 import { ArrowBack } from '@mui/icons-material';
@@ -26,14 +26,11 @@ export default async function SingleSpace({ params }: { params: { id: number } }
     let user: UserT;
 
 
-    // this is the error comming from the space request
+    // If the user does not belong to the space or the space does not exist, both scenarios just return an 404 not found error
     if (error) {
-        console.log("This error can happen if the user does not have access to the space he is requesting ");
-        console.log("if the space does not exist the request continues here anyway");
-        // both scenarios just return an 404 not found error
-
-        // just show 404 error message
-        // write an error message (NOT FOUND) in the GUI manually or throw an error to be handled by next error boundry.
+        console.log('User entered requested a space where he does not belong / does not exist');
+        // go to not found page
+        notFound();
     }
 
 
@@ -43,7 +40,6 @@ export default async function SingleSpace({ params }: { params: { id: number } }
         // TODO
         console.log("TODO write error message in the GUI, the error can appear here because the user could not be retrieved BUT he was authenticated");
         console.log(" this is unlikely to happen becuse this can only happen if the backend is down or something like that");
-        
         return;
     }
 

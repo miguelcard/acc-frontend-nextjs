@@ -36,6 +36,11 @@ export const euclidA = localFont({
             weight: '700',
             style: 'bold',
         },
+        {
+            path: './EuclidCircularA-Bold.woff2',
+            weight: '800',
+            style: 'bold',
+        },
     ],
 });
 
