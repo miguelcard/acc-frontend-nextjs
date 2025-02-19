@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { IconButton, Paper } from '@mui/material';
 import CreateHabitModal from '@/components/space/CreateHabitModal/create-habit-modal';
 import { ScoreCard } from '@/components/space/ScoreCard/score-card';
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { setMaxStringLength } from '@/lib/client-utils';
 import { grey } from '@mui/material/colors';
 import { ArrowBack } from '@mui/icons-material';
@@ -25,15 +25,25 @@ export default async function SingleSpace({ params }: { params: { id: number } }
     const { members, space_habits, name, description, icon_alias, error } = space;
     let user: UserT;
 
+
+    // If the user does not belong to the space or the space does not exist, both scenarios just return an 404 not found error
+    if (error) {
+        console.log('User entered requested a space where he does not belong / does not exist');
+        // go to not found page
+        notFound();
+    }
+
+
     const res = await getUser();
 
-    // TODO this is checking right now if the user is authenticated based on an error. Improve proactively
-    if (res.error) return redirect(`/login`);
-    user = res;
-
-    if (error) {
-        // write an error message in the GUI manually or throw an error to be handled by next error boundry.
+    if (res.error) {
+        // TODO
+        console.log("TODO write error message in the GUI, the error can appear here because the user could not be retrieved BUT he was authenticated");
+        console.log(" this is unlikely to happen becuse this can only happen if the backend is down or something like that");
+        return;
     }
+
+    user = res;
 
     return (
         <Container component="section" maxWidth="lg"
@@ -52,7 +62,7 @@ export default async function SingleSpace({ params }: { params: { id: number } }
             >
                 {/* Enclosing box for space header */}
                 <Paper
-                    elevation={2}
+                    // elevation={2}
                     variant="outlined"
                     square
                     sx={{
