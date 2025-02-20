@@ -1,6 +1,5 @@
 import 'server-only';
 import { Box, Grid, Typography } from '@mui/material';
-import React from 'react';
 import { PaginatedResponse, SpaceDetailed } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
 import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
