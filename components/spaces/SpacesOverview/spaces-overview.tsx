@@ -1,10 +1,12 @@
 import 'server-only';
-import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import React from 'react';
 import { PaginatedResponse, SpaceDetailed } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
 import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
 import { getUserSpaces } from '@/lib/fetch-functions';
+import introImage from '@/public/images/spaces/spaces-intro.png';
+import Image from 'next/image';
 
 
 /**
@@ -52,21 +54,32 @@ export default async function SpacesOverview() {
 
 const NoExistingSpacesText = () => {
     return (
-        <Card
-            variant="outlined"
-            sx={{
-                my: 3,
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                backgroundColor: '#E8EAED',
-            }}
+        <Box
+            display='flex'
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='center'
         >
-            <CardContent>
-                <Typography fontWeight="500" sx={{ py: 3 }}>
-                    You currently have no spaces, create one to get started.
-                </Typography>
-            </CardContent>
-        </Card>
+            <Typography fontWeight="600" fontSize='1.1em' sx={{ pt: 3, pb: 1 }}>
+                Welcome to Habit Habits 👋
+            </Typography>
+
+            <Typography textAlign='left' fontWeight="600" fontSize='0.9em' sx={{ py: 3 }}>
+                On this page, you can create a new space 🌎, a dedicated area where you can track your habits and share them with others to progress together. 
+                <br /><br />You can also get invited by someone to a space, by sharing your username with them.
+            </Typography>
+
+            <Image
+                src={introImage}
+                width={180}
+                height={0}
+                alt="into"
+            />
+
+            <Typography textAlign='center' fontWeight="600" fontSize='0.9em' sx={{ py: 3 }}>
+                Click the button below to create your first space 👇
+            </Typography>
+
+        </Box>
     );
 };
