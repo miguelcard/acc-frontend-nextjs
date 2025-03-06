@@ -81,7 +81,7 @@ export default function DialogModal({ button, childrenTitle, childrenBody }: Dia
 }
 
 /**
- * Helper function to add the step and setStep properties to the children components only if they accept these props
+ * Helper function to add the step, setStep and handleCloseDialog properties to the children components only if they accept these props
  * @returns the child component with the added props if needed
  */
 function BodyWrapper({ childrenBody, step, setStep, handleCloseDialog }: any) {

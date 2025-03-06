@@ -366,6 +366,42 @@ export async function checkUsernameOrEmailExist(username: string | null, email: 
     }
 }
 
+/**
+ * Server action to call the patch User endpoint
+ * @param formData
+ * @returns space object
+ */
+export async function patchUser(formData: FormikValues) {
+    const url: string = `${process.env.NEXT_PUBLIC_API}/v1/user/`;
+
+    const requestOptions: RequestInit = {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            Cookie: `${getAuthCookie()}`,
+        },
+        body: JSON.stringify(formData),
+    };
+
+    try {
+        const res = await fetch(url, requestOptions);
+
+        if (!res.ok) {
+            const errorResp = await res.json();
+            console.warn('patchUser server action Error: ' + getErrorMessage(errorResp));
+            console.warn(JSON.stringify(errorResp));
+            return { error: GENERIC_ERROR_MESSAGE };
+        }
+
+        revalidatePath(`/profile`);
+        return await res.json();
+    } catch (error) {
+        console.warn('patchUser server action Error: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
+
 //==================================== Habit actions =======================================
 
 /**

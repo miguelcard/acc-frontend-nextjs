@@ -31,7 +31,7 @@ export type SpaceT = {
     created_at?: string;
     updated_at?: string;
     // creator?: ?;
-    members?: MembersT[];
+    members?: MemberT[];
     icon_alias?: string;
     error?: string; // just in case we add an error to the response
 };
@@ -41,7 +41,7 @@ export interface CreatorUser {
     username: string;
     name: string | null;
     last_name: string | null;
-    profile_photo: string | null;
+    avatar_seed: string | null;
     // email: string;
     // about?: string | null;
     // is_active?: boolean;
@@ -109,26 +109,27 @@ export type UserT = {
     is_staff: boolean;
     is_superuser: boolean;
     profile_photo: string | null;
+    avatar_seed: string | null;
     // TODO  Not defined yet but define them as req needs
     // tags: any;
     // languages: any;
     // age: any;
     // owned_spaces: any;
     // last_login: Date;
-    // profile_photo: any;
     // birthdate: any;
     // gender: any;
     // about: any;
     // groups: any;
     // user_permissions: any;
+    error?: string;
 };
 
-export type MembersT = {
+export type MemberT = {
     id: number;
     username: string;
     name: string | null;
     last_name: string | null;
-    profile_photo: string | null;
+    avatar_seed: string | null;
     email: string;
     about: any;
     is_active: boolean;

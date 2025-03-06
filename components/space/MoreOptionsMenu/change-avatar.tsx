@@ -17,6 +17,7 @@ interface ChangeAvatarProps {
  * @returns
  */
 export function ChangeAvatar({ space, handleCloseDialog }: ChangeAvatarProps) {
+
     /**
      * Submits the request to the server action which patches the space
      */

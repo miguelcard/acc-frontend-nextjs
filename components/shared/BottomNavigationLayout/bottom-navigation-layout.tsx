@@ -78,7 +78,7 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
                         label={<NavigationText text='Profile'/>}
                         icon={<FontAwesomeIcon icon={faUserAstronaut} />}
                         component={NextLink}
-                        href={'/'}
+                        href={'/profile'}
                         key={'profile'}
                     />
                 </BottomNavigation>

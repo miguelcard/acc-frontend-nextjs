@@ -32,11 +32,9 @@ export function stringToColor(string: string):  string {
  * @param username its username
  * @returns A letter or 2 letters
  */
-export function getLetter(name: string | null, lastName: string | null, username: string): string {
-  if (name !== null && lastName !== null) {
-    return (name[0] + lastName[0]).toUpperCase();
-  } else if (name !== null) {
-    return name[0].toUpperCase();
+export function getLetter(name: string | null, username: string): string {
+  if (name !== null) {
+    return `${name.split(/\s+/)[0][0]}${name.split(/\s+/)[1]?.[0] ?? ''}`.toUpperCase();
   } else {
     return username[0].toUpperCase();
   }

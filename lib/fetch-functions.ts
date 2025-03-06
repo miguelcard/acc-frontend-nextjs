@@ -15,6 +15,9 @@ import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
  * @returns space
  */
 export async function getSpace(id: number) {
+
+    // console.log("space id : " + id); // TODO fix the ID null after migrations
+    
     const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/${id}`;
     const requestOptions: RequestInit = {
         method: 'GET',
@@ -54,7 +57,7 @@ export async function getUserSpaces() {
             'Content-Type': 'application/json',
             Cookie: `${getAuthCookie()}`,
         },
-        cache: 'no-store', // just in case, but it isn't necessary if we use cookies above
+        // cache: 'no-store', // just in case, but it isn't necessary if we use cookies above
     };
 
     try {
