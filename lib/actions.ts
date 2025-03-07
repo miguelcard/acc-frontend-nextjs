@@ -9,6 +9,7 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 import { createUrl, formDataToReqBody, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
 import { FormikValues } from 'formik';
 import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarkT, HabitT } from './types-and-constants';
+import { number } from 'yup';
 
 // for now all server actions will be included here, later we can opt out for more modularity, i.e. separating them in different files.
 type FormBodyObject = {
@@ -392,8 +393,9 @@ export async function patchUser(formData: FormikValues) {
             console.warn(JSON.stringify(errorResp));
             return { error: GENERIC_ERROR_MESSAGE };
         }
-
+        
         revalidatePath(`/profile`);
+        revalidatePath('/(authenticated-pages)/spaces/[id]', 'page'); // would revalidate all the spaces
         return await res.json();
     } catch (error) {
         console.warn('patchUser server action Error: ', getErrorMessage(error));

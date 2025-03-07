@@ -16,18 +16,11 @@ export default function UserAvatarSelector({ user }: UserAvatarSelectorProps) {
 
     const [seed, setSeed] = useState<string>(user.avatar_seed ?? '');
     const defferedSeed: string = useDeferredValue(seed);
-    const [prevUrl, setPrevUrl] = useState<string>("");
-    const baseRobotAvatarUrl: string = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=";
     const formikCtx = useFormikContext();
     
     useEffect(() => {
         // This effect will run only when deferredValue updates (i.e. after seed stops changing quickly)
-        if (defferedSeed) {
-            setPrevUrl(baseRobotAvatarUrl + seed);
-            formikCtx.setFieldValue('avatar_seed', seed);
-        } else {
-            setPrevUrl("");
-        }
+        formikCtx.setFieldValue('avatar_seed', seed);
     }, [defferedSeed]);
 
     
@@ -38,7 +31,7 @@ export default function UserAvatarSelector({ user }: UserAvatarSelectorProps) {
                     Type anything to generate a unique avatar or choose one from the options below!
                 </Typography>
                 <Box display='flex' flexDirection='row' alignItems='center' gap={3} >
-                    <UserAvatar user={user} circleDiameter={70} initialsFontSize="3rem" initialsFontWeight={600} previewUrl={prevUrl} />
+                    <UserAvatar user={user} circleDiameter={70} initialsFontSize="3rem" initialsFontWeight={600} seed={defferedSeed} />
                     <TextField id="outlined-search" label="Seed" type="search" variant="standard" autoComplete="off" value={seed} onChange={(e) => setSeed(e.target.value)} inputProps={{ maxLength: 13 }} />
                 </Box>
                 {/* Grid showing possible avatars, the click changes the value of the seed */}
@@ -49,7 +42,7 @@ export default function UserAvatarSelector({ user }: UserAvatarSelectorProps) {
                                 <UserAvatar
                                     user={user}
                                     circleDiameter={50}
-                                    previewUrl={baseRobotAvatarUrl + word}
+                                    seed={word}
                                 />
                             </Box>
                         </Grid>

@@ -16,8 +16,6 @@ export default function ChangeUserAvatarFormikStepper({ user, handleCloseDialog 
      * Submits values to the server action which patches the user
      */
     async function submitPatchUser(values: FormikValues) {
-
-        console.log(values);
         
         const updatedUser: UserT = await patchUser(values);
         if (updatedUser?.error) {

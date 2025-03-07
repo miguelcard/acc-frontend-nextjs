@@ -17,7 +17,7 @@ interface ChangeUserAvatarModalProps {
 }
 
 /**
- * 
+ * The modal which contains the formik form to change the user's avatar
  */
 export default function ChangeUserAvatarModal({user} : ChangeUserAvatarModalProps) {
 
