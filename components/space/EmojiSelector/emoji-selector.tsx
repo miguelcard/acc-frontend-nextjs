@@ -36,7 +36,11 @@ export function EmojiSelector({ title }: EmojiSelectorProps) {
             <Grid container spacing={{ xs: 2, md: 2 }} columns={{ xs: 14, sm: 16, md: 20 }}>
                 {Object.entries(stringIconMapper).map(([key]) => (
                     <Grid item xs={2} sm={2} md={2} key={key} >
-                        <FontAwesomeIcon icon={stringIconMapper[`${key}`]} size='lg' className={styles[key === hightlightedAvatar ? 'fa-icon--hightlited' : 'fa-icon']} onClick={() => updateFomrikFieldValue(key)} />
+                        <FontAwesomeIcon 
+                            icon={stringIconMapper[`${key}`]} size='lg'
+                            className={styles[key === hightlightedAvatar ? 'fa-icon--hightlited' : 'fa-icon']}
+                            onClick={() => updateFomrikFieldValue(key)}
+                        />
                     </Grid>
                 ))}
             </Grid>

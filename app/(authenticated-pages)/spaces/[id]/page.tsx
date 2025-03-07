@@ -23,7 +23,6 @@ export default async function SingleSpace({ params }: { params: { id: number } }
     const { id } = params;
     const space: SpaceT = await getSpace(id);
     const { members, space_habits, name, description, icon_alias, error } = space;
-    let user: UserT;
 
 
     // If the user does not belong to the space or the space does not exist, both scenarios just return an 404 not found error
@@ -36,14 +35,15 @@ export default async function SingleSpace({ params }: { params: { id: number } }
 
     const res = await getUser();
 
+    // TODO
     if (res.error) {
         // TODO
         console.log("TODO write error message in the GUI, the error can appear here because the user could not be retrieved BUT he was authenticated");
         console.log(" this is unlikely to happen becuse this can only happen if the backend is down or something like that");
-        return;
+        notFound();
     }
 
-    user = res;
+    const user: UserT = res;
 
     return (
         <Container component="section" maxWidth="lg"

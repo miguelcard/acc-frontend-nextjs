@@ -23,5 +23,5 @@ export async function middleware(req: NextRequest) {
 
 // Apply this middleware to specific routes
 export const config = {
-    matcher: ['/spaces/:path*', '/login', '/signup'], // pattern of routes you want to protect, keep adding matchers this way: ['/spaces/:path*', '/profile/:path*'],
+    matcher: ['/spaces/:path*', '/profile/:path*', '/login', '/signup'], // pattern of routes you want to protect, keep adding matchers this way: ['/spaces/:path*', '/profile/:path*'],
   };

@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckedDatesT, HabitT, MembersT, UserT } from '@/lib/types-and-constants';
+import { CheckedDatesT, HabitT, MemberT, UserT } from '@/lib/types-and-constants';
 import { Avatar, Box, ButtonBase, Typography } from '@mui/material';
 import React, { useCallback, useMemo, useState } from 'react';
 import { checkedDatesMap, createWeekUUID, generateWeekDays } from '@/lib/client-utils';
@@ -10,12 +10,12 @@ import { SmallScreenHabitScoreCard } from './score-card-sizes/small-screen-habit
 import { getAllHabitsAndCheckmarksFromSpace } from '@/lib/actions';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { ubuntu } from '@/styles/fonts/fonts';
-import { getLetter, stringToColor } from '@/components/spaces/SpacesOverview/avatar-utils';
+import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
 
 type ScoreCardPropsT = {
     currentUser: UserT;
     spaceHabits: HabitT[];
-    members: MembersT[];
+    members: MemberT[];
     spaceId: number;
 };
 
@@ -81,29 +81,13 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
                                 height: '100%',
                                 marginBottom: 0.5,
                                 color: member.id === currentUser.id ? 'black' : 'gray',
+                                marginX: 1
                             }}
                         >
                             {/* avatar picture or initials of the user in his scorecard */}
-                            <Avatar
-                                key={member.id}
-                                src={`${member.profile_photo}`}
-                                sx={{
-                                    bgcolor: member.profile_photo ? 'inherit' : stringToColor(member.username + member.id),
-                                    width: 28,
-                                    height: 28,
-                                    marginX: 1,
-                                }}
-                            >
-                                <Typography
-                                    sx={{
-                                        fontSize: '0.9rem',
-                                        fontWeight: 500,
-                                    }}
-                                >
-                                    {getLetter(member.name, member.last_name, member.username)}
-                                </Typography>
-                                {/* {getLetter(member.name, member.last_name, member.username)} */}
-                            </Avatar>
+                            <Box mx={1}>
+                                <UserAvatar user={member} circleDiameter={28} initialsFontSize="0.9rem" initialsFontWeight={500} />
+                            </Box>
                             {/* username on top of the scorecard */}
                             <Typography
                                 className={ubuntu.className}
