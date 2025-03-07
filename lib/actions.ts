@@ -9,7 +9,6 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 import { createUrl, formDataToReqBody, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
 import { FormikValues } from 'formik';
 import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarkT, HabitT } from './types-and-constants';
-import { number } from 'yup';
 
 // for now all server actions will be included here, later we can opt out for more modularity, i.e. separating them in different files.
 type FormBodyObject = {
