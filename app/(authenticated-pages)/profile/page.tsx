@@ -6,6 +6,7 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ChangeUserAvatarModal from '@/components/profile/ChangeUserAvatarModal/change-user-avatar-modal';
+import ChangeUserFields from '@/components/profile/ChangeUserFields/change-user-fields';
 
 
 /**
@@ -37,23 +38,12 @@ export default async function Profile() {
                             {user.username}
                         </Typography>
                     </Box>
+                    <Typography fontSize='1em' fontWeight={500} pt={3}>
+                        {user.email}
+                    </Typography>
 
-
-                        <br/><br/><br/>
-                    {user.email}
-                    {user.name}
-
-                    {/* other info to put in here KISS:
-                    email
-                    name
-                    last name // delete in back end
-                    birthdate?
-                    gender?
-                    tags (future)
-                    languages (future) */}
-
-                    logout option KISS!
-
+                    <ChangeUserFields user={user} />
+                    
                 </Box>
             </Container>
         </>

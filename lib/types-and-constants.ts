@@ -40,7 +40,6 @@ export interface CreatorUser {
     id: number;
     username: string;
     name: string | null;
-    last_name: string | null;
     avatar_seed: string | null;
     // email: string;
     // about?: string | null;
@@ -101,7 +100,6 @@ export type UserT = {
     user_spaces: number[];
     username: string;
     name: any | null;
-    last_name: any | null;
     email: string;
     created_at: Date;
     updated_at: Date;
@@ -128,7 +126,6 @@ export type MemberT = {
     id: number;
     username: string;
     name: string | null;
-    last_name: string | null;
     avatar_seed: string | null;
     email: string;
     about: any;

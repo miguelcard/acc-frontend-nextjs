@@ -6,7 +6,7 @@
 'use server';
 import 'server-only';
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { createUrl, formDataToReqBody, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
+import { createUrl, deleteAuthCookie, formDataToReqBody, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
 import { FormikValues } from 'formik';
 import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarkT, HabitT } from './types-and-constants';
 
@@ -580,6 +580,39 @@ export async function deleteCheckmark(checkmark: CheckMarkT) {
         return { error: null };
     } catch (error) {
         console.warn('deleteCheckmark server action Error: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
+
+
+// ----------- Logout Endpoint ---------
+
+export async function logout() {
+    const url: string = `${process.env.NEXT_PUBLIC_API}/v1/logout/`;
+
+    const requestOptions: RequestInit = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Cookie: `${getAuthCookie()}`,
+        },
+    };
+
+    try {
+        const res = await fetch(url, requestOptions);
+
+        if (!res.ok) {
+            const errorResp = await res.json();
+            console.warn('logout server action Error: ' + getErrorMessage(errorResp));
+            console.warn(JSON.stringify(errorResp));
+            return { error: GENERIC_ERROR_MESSAGE };
+        }
+
+        deleteAuthCookie();
+        return {};
+    } catch (error) {
+        console.warn('logout server action Error: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }

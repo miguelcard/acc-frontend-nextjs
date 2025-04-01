@@ -75,6 +75,22 @@ export const getAuthCookie = (): string => {
 };
 
 /**
+ * Deletes the auth_token cookie so that the client no longer has access to resources (used for logout e.g.)
+ */
+export const deleteAuthCookie = ():void => {
+
+    cookies().set({
+        name: 'auth_token',
+        value: '',
+        httpOnly: true,
+        path: '/',
+        domain: '.localhost', // put enviroment variable here process.env.NODE_ENV === 'development' ? '.localhost' : '.yourdomain.com',
+        secure: process.env.NODE_ENV !== 'development',
+        maxAge: 0, // Immediate expiration
+      })
+}
+
+/**
  * Utility function to create a URL, delete this one if not needed / used
  */
 export const createUrl = (pathname: string, params: URLSearchParams | ReadonlyURLSearchParams) => {

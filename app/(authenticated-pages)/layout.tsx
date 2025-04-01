@@ -2,11 +2,7 @@ import { BottomNavigationLayout } from "@/components/shared/BottomNavigationLayo
 import Box from "@mui/material/Box";
 import grey from "@mui/material/colors/grey";
 
-export default function AuthenticatedLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function AuthenticatedLayout({children,}: {children: React.ReactNode;}) {
     return (
         <>
             <Box
