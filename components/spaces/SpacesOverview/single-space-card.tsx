@@ -10,7 +10,7 @@ import grey from '@mui/material/colors/grey';
 import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
 import { SpaceDetailed, SpaceT } from '@/lib/types-and-constants';
 import { setMaxStringLength } from '@/lib/client-utils';
-import { SpaceDefaultDescription } from './space-users-information';
+import ContentCard from '@/components/shared/ContentCard/content-card';
 
 
 /**
@@ -19,7 +19,7 @@ import { SpaceDefaultDescription } from './space-users-information';
 const styles = {
     root: {
         cursor: 'pointer',
-        height: '100%',
+        // height: '100%',
         transition: '0.3s',
         position: 'relative',
         '&:before': {
@@ -42,16 +42,6 @@ const styles = {
                 boxShadow: '-12px 12px 64px 0 #bcc3d6',
             },
         },
-    },
-    card: {
-        zIndex: 1,
-        position: 'relative',
-        borderRadius: '1rem',
-        boxShadow: '0 6px 20px 0 #dbdbe8',
-        backgroundColor: '#fff',
-        // backgroundColor: '#d9daf1',
-        transition: '0.4s',
-        height: '100%',
     },
     logo: {
         width: 48,
@@ -85,8 +75,8 @@ export const CustomCard = ({
 
     return (
         <Box onClick={() => router.push(`/spaces/${space.id}`)} sx={styles.root}>
-            <Box sx={styles.card} display='flex' flexDirection='column'>
-                <Box display='flex'>
+            <ContentCard >
+                <Box display='flex' >
                     <Box py={2} pl={2} gap={1} display='flex' flexDirection='row'>
                         <Avatar sx={styles.logo} variant={'rounded'} >
                             <FontAwesomeIcon icon={stringIconMapper[space.icon_alias || 'rocket']} size='xl' />
@@ -133,11 +123,12 @@ export const CustomCard = ({
                             variant={'contained'}
                             color={'primary'}
                         >
-                            {'Needed?'}
+                            {/* needed?? */}
+                            {'Invite Members +'} 
                         </Button>
                     </Box>
                 </Box>
-            </Box>
+            </ContentCard>
         </Box>
     );
 };

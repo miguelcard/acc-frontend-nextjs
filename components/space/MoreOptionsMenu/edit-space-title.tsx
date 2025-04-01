@@ -46,7 +46,7 @@ export function EditSpaceTitle({ space, handleCloseDialog }: EditSpaceTitleProps
                 }}
                 onSubmit={async (values) => submitEditSpace(values, space.id)}
                 step={0}
-                setStep={() => console.info('setStep is undefined')}
+                setStep={() => { }}
             >
                 <FormikStep
                     validationSchema={object({

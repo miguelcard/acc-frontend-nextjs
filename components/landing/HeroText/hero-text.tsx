@@ -24,6 +24,7 @@ export default function HeroText() {
             className={`${styles['hero__text-and-button-container']} ${isSmScreenOrBelow ? styles['hero__text-and-button-container--sm'] : ''}`}
         >
             <Box
+                px={{ xs: 3, sm: 2}}
                 className={`${styles['hero__text-container']} ${isXsScreenOrBelow ? styles['hero__text-container--xs'] : ''} `}
             >
                 <Typography

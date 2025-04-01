@@ -11,6 +11,7 @@ import { getAllHabitsAndCheckmarksFromSpace } from '@/lib/actions';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { ubuntu } from '@/styles/fonts/fonts';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
+import ContentCard from '@/components/shared/ContentCard/content-card';
 
 type ScoreCardPropsT = {
     currentUser: UserT;
@@ -117,18 +118,7 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
                             </ButtonBase>
                         </Box>
                         {/* ============== Habits and checkmaks =========== */}
-                        <Box
-                            hidden={collapsedOwners.includes(member.id)}
-                            marginBottom={4}
-                            width={'100%'}
-                            flexGrow={1}
-                            maxHeight={{ sm: '70vh' }}
-                            overflow={'auto'}
-                            borderRadius={'1rem'}
-                            boxShadow={'0 6px 20px 0 #dbdbe8'}
-                            border={'1px solid #dbdbe8'}
-                            bgcolor={'#fff'}
-                        >
+                        <ContentCard hidden={collapsedOwners.includes(member.id)} sx={{mb: 3}} >
                             {ownerHabits.length > 0 ? (
                                 <>
                                     <FullScreenHabitScoreCard
@@ -149,7 +139,7 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
                             ) : (
                                 <Box sx={{ padding: '10px', textAlign: 'center' }}> No habits created yet</Box>
                             )}
-                        </Box>
+                        </ContentCard>
                     </Box>
                 );
             })}
