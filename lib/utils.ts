@@ -30,7 +30,7 @@ export async function fetcher<JSON = any>(input: RequestInfo, init?: RequestInit
  * Takes the cookie from a response and sets the cookie in the backend and also sets it to the client (browser)
  * @param authToken
  */
-export const setAuthCookie = (res: Response): void => {
+export const setAuthCookie = async (res: Response): Promise<void> => {
     const cookie = require('cookie');
     const authToken: string = cookie.parse(
         res.headers.getSetCookie().find((c) => c.startsWith('auth_token')) || 'token not found'
@@ -42,7 +42,8 @@ export const setAuthCookie = (res: Response): void => {
     }
 
     //This also sets the 'Set-Cookie' automatically to the client, but if we need to send it from client components we have to enable CORS in the backend
-    cookies().set({
+    const cookieStore = await cookies();
+    cookieStore.set({
         name: 'auth_token',
         value: authToken,
         httpOnly: true,
@@ -57,8 +58,9 @@ export const setAuthCookie = (res: Response): void => {
 /**
  * Retrieves the authentication token from the cookie and serializes it in a string to be able to send it in a header
  */
-export const getAuthCookie = (): string => {
-    const authCookie = cookies().get('auth_token');
+export const getAuthCookie = async (): Promise<string> => {
+    const cookieStore = await cookies();
+    const authCookie = cookieStore.get('auth_token');
     if (authCookie === undefined) {
         console.info('Authentication cookie is undefined');
         return '';
@@ -77,9 +79,9 @@ export const getAuthCookie = (): string => {
 /**
  * Deletes the auth_token cookie so that the client no longer has access to resources (used for logout e.g.)
  */
-export const deleteAuthCookie = ():void => {
-
-    cookies().set({
+export const deleteAuthCookie = async ():Promise<void> => {
+    const cookieStore = await cookies();
+    cookieStore.set({
         name: 'auth_token',
         value: '',
         httpOnly: true,

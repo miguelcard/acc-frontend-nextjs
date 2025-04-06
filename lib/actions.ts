@@ -55,8 +55,8 @@ export async function login(formData: FormData) {
         }
 
         const jsonResp = await res.json();
+        await setAuthCookie(res);
 
-        setAuthCookie(res);
         return jsonResp;
     } catch (error) {
         console.warn('Login server action Error: ', getErrorMessage(error));
@@ -91,7 +91,7 @@ export async function signUp(formData: FormData) {
             return { error: GENERIC_ERROR_MESSAGE };
         }
 
-        setAuthCookie(res);
+        await setAuthCookie(res);
         revalidateTag('users');
         return res.json();
     } catch (error: any) {
@@ -114,7 +114,7 @@ export async function createSpace(formData: FormikValues) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         body: JSON.stringify(formData),
     };
@@ -149,7 +149,7 @@ export async function patchSpace(formData: FormikValues, id: number) {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         body: JSON.stringify(formData),
     };
@@ -187,7 +187,7 @@ export async function getAllHabitsAndCheckmarksFromSpace(spaceId: number, dateSt
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         next: { revalidate: 600, tags: ['spaces'] },
     };
@@ -222,7 +222,7 @@ export async function createSpaceRole(formData: FormikValues, spaceId: number) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         body: JSON.stringify(formData),
     };
@@ -261,7 +261,7 @@ export async function deleteSpaceRole(spaceId: number) {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
     };
 
@@ -303,7 +303,7 @@ export async function getUsernameEmailSuggestions(member: string, resultsNumber:
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         next: { revalidate: 3000, tags: ['users'] }
     };
@@ -378,7 +378,7 @@ export async function patchUser(formData: FormikValues) {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         body: JSON.stringify(formData),
     };
@@ -417,7 +417,7 @@ export async function createHabit(habit: CreateHabitT) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         body: JSON.stringify(habit),
     };
@@ -452,7 +452,7 @@ export async function patchHabit(newHabitData: any, id: number) {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         body: JSON.stringify(newHabitData),
     };
@@ -488,7 +488,7 @@ export async function deleteHabit(habit: HabitT) {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         body: JSON.stringify(habit),
     };
@@ -526,7 +526,7 @@ export async function addCheckmark(checkmark: { habit: number; status: string; d
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         body: JSON.stringify(checkmark),
     };
@@ -561,7 +561,7 @@ export async function deleteCheckmark(checkmark: CheckMarkT) {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         body: JSON.stringify(checkmark),
     };
@@ -595,7 +595,7 @@ export async function logout() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
     };
 
@@ -609,7 +609,7 @@ export async function logout() {
             return { error: GENERIC_ERROR_MESSAGE };
         }
 
-        deleteAuthCookie();
+        await deleteAuthCookie();
         return {};
     } catch (error) {
         console.warn('logout server action Error: ', getErrorMessage(error));
