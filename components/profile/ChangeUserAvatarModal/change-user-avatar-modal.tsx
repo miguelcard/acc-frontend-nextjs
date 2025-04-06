@@ -2,7 +2,7 @@
 import { UserT } from "@/lib/types-and-constants";
 import Avatar from "@mui/material/Avatar";
 import Badge from "@mui/material/Badge";
-import grey from "@mui/material/colors/grey";
+import { grey } from '@mui/material/colors';
 import Typography from "@mui/material/Typography";
 import EditIcon from '@mui/icons-material/Edit';
 import DialogModal from "@/components/shared/DialogModal/dialog-modal";

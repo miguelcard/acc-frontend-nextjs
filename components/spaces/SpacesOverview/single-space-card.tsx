@@ -6,7 +6,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { stringIconMapper } from '@/lib/fa-icons-mapper';
-import grey from '@mui/material/colors/grey';
+import { grey } from '@mui/material/colors';
 import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
 import { SpaceDetailed, SpaceT } from '@/lib/types-and-constants';
 import { setMaxStringLength } from '@/lib/client-utils';

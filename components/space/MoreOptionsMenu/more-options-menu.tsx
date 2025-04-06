@@ -11,7 +11,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-import grey from '@mui/material/colors/grey';
+import { grey } from '@mui/material/colors';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { SpaceT } from '@/lib/types-and-constants';
 import ListItemIcon from '@mui/material/ListItemIcon';
