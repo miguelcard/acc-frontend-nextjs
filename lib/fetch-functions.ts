@@ -23,7 +23,7 @@ export async function getSpace(id: number) {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         next: { revalidate: 60, tags: ['spaces'] },
     };
@@ -55,7 +55,7 @@ export async function getUserSpaces() {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
         // cache: 'no-store', // just in case, but it isn't necessary if we use cookies above
     };
@@ -91,7 +91,7 @@ export async function getUser() {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
     };
 
@@ -124,7 +124,7 @@ export async function getUsersFromSpace(spaceId: number, resultsNumber: number) 
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            Cookie: `${getAuthCookie()}`,
+            Cookie: `${await getAuthCookie()}`,
         },
     };
 

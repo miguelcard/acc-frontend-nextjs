@@ -21,12 +21,12 @@ export default function HeroBanner() {
                 sx={{ pt: 7 }}
                 rowSpacing={{ xs: 5, sm: 7 }}
             >
-                <Grid container item md={6}
+                <Grid container size={{ md: 6 }}
                     justifyContent="center"
                 >
                     <HeroText />
                 </Grid>
-                <Grid item md={6}
+                <Grid size={{ md: 6 }}
                     sx={{ textAlign: 'center' }}
                 >
                     <Image

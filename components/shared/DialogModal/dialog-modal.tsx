@@ -89,11 +89,17 @@ function BodyWrapper({ childrenBody, step, setStep, handleCloseDialog }: any) {
         return childrenBody;
     }
 
-    const childrenBodyWithStepProps = React.cloneElement(childrenBody as React.ReactElement<any>, { step: step, setStep: setStep });
-    const childrenBodyWithHandleCloseProps = React.cloneElement(childrenBodyWithStepProps as React.ReactElement<any>, {
-        handleCloseDialog: handleCloseDialog,
-    });
-    // TODO if we pass a component which does not have the step and setStep props,
-    // we get a warning in the console for trying to assign them
-    return childrenBodyWithHandleCloseProps;
+    // Determine if the child is a DOM element (e.g., `<div>`) or a React component
+    const isDOMElement: boolean = typeof childrenBody.type === 'string';
+
+    // Props to conditionally inject (only for React components, not DOM elements)
+    const propsToInject: Record<string, any> = {};
+    if (!isDOMElement) {
+        // Inject custom props only if the child is a React component
+        propsToInject.step = step;
+        propsToInject.setStep = setStep;
+        propsToInject.handleCloseDialog = handleCloseDialog;
+    }
+
+    return React.cloneElement(childrenBody, propsToInject);
 }

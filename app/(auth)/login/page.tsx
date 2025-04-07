@@ -17,7 +17,7 @@ import { login } from '@/lib/actions';
 import styles from '../auth.module.css';
 import { useRouter } from 'next/navigation';
 import { NextResponse } from 'next/server';
-import { experimental_useFormStatus as useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState<boolean>(false);

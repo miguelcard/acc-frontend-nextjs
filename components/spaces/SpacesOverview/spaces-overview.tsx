@@ -32,7 +32,7 @@ export default async function SpacesOverview() {
             ) : (
                 <Grid container spacing={4} py={4}>
                     {spaces.results.map((space) => (
-                        <Grid item xs={12} md={6} lg={4} key={space.id}>
+                        <Grid size={{ xs: 12, md: 6, lg: 4 }} key={space.id}>
                             <CustomCard
                                 space={space}
                                 defaultDescription={<SpaceDefaultDescription spaceId={space.id} />}

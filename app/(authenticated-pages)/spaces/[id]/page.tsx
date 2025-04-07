@@ -19,7 +19,8 @@ import { grey } from '@mui/material/colors';
 import { ArrowBack } from '@mui/icons-material';
 import { getSpace, getUser } from '@/lib/fetch-functions';
 
-export default async function SingleSpace({ params }: { params: { id: number } }) {
+export default async function SingleSpace(props: { params: Promise<{ id: number }> }) {
+    const params = await props.params;
     const { id } = params;
     const space: SpaceT = await getSpace(id);
     const { members, space_habits, name, description, icon_alias, error } = space;
