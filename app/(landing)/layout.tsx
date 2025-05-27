@@ -23,7 +23,7 @@ export default function LandingLayout({ children,}: { children: React.ReactNode;
                         textAlign: "center",
                     }}
                 >a Miguel Cardenas production <br />
-                    AvidHabits &copy; 2023
+                    AvidHabits &copy; 2025
                 </span>
             </Box>
         </>

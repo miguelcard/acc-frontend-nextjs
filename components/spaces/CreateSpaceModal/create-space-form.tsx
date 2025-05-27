@@ -11,6 +11,8 @@ import { useRouter } from 'next/navigation';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import Typography from '@mui/material/Typography';
 import { EmojiSelector } from '@/components/space/EmojiSelector/emoji-selector';
+import Link from '@mui/material/Link';
+import NextLink from 'next/link';
 
 async function submitCreateSpace(
     values: FormikValues,
@@ -61,6 +63,12 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                     <Box paddingBottom={2}>
                         <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant="standard" />
                     </Box>
+
+                    <Typography fontSize={"0.8em"} >
+                        <Link href="/how-to-join-spaces" underline="hover" color='secondary' component={NextLink}>
+                            {'Trying to join an existing space instead?'}
+                        </Link>
+                    </Typography>
                 </FormikStep>
                 <FormikStep>
                     <EmojiSelector title="Choose a space avatar..." />
@@ -98,11 +106,11 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                 </FormikStep>
                 {/* TODO step to add other users to your space by UN /  PW -> InviteMembers Component */}
             </FormikStepper>
-            {errorMessage ? (
+            {errorMessage &&
                 <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light">
                     {errorMessage}
                 </Typography>
-            ) : null}
+            }
         </Box>
     );
 }

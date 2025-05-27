@@ -1,11 +1,12 @@
 import 'server-only';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, Link, Typography } from '@mui/material';
 import { PaginatedResponse, SpaceDetailed } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
 import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
 import { getUserSpaces } from '@/lib/fetch-functions';
 import introImage from '@/public/images/spaces/spaces-intro.png';
 import Image from 'next/image';
+import NextLink from 'next/link';
 
 
 /**
@@ -65,9 +66,12 @@ const NoExistingSpacesText = () => {
 
             <Typography textAlign='left' fontWeight="600" fontSize='0.9em' sx={{ py: 3 }}>
                 On this page, you can create a new space 🌎, a dedicated area where you can track your habits and share them with others to progress together. 
-                <br /><br />You can also get invited by someone to a space, by sharing your username with them.
+                <br /><br />You can also get invited by someone to a space, by sharing your username with them.{" "}
+                <Link href="/how-to-join-spaces" underline="always" color='secondary' component={NextLink}>
+                    {'Learn how to join an existing space.'}
+                </Link>
             </Typography>
-
+            
             <Image
                 src={introImage}
                 width={180}
@@ -76,7 +80,7 @@ const NoExistingSpacesText = () => {
             />
 
             <Typography textAlign='center' fontWeight="600" fontSize='0.9em' sx={{ py: 3 }}>
-                Click the button below to create your first space 👇
+                If you want to create your first space click on the button below 👇
             </Typography>
 
         </Box>
