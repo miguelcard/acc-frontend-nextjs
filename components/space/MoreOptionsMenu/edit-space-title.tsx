@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { object, string } from 'yup';
 import { patchSpace } from '@/lib/actions';
 import { SpaceT } from '@/lib/types-and-constants';
+import Typography from '@mui/material/Typography';
 
 interface EditSpaceTitleProps {
     space: SpaceT;
@@ -21,6 +22,7 @@ interface EditSpaceTitleProps {
 export function EditSpaceTitle({ space, handleCloseDialog }: EditSpaceTitleProps) {
     
     const [spaceTitle, setSpaceTitle] = useState<string | undefined>(space.name);
+    const [errorMessage, setErrorMessage] = useState<String>();
 
     /**
      * Submits the request to the server action which patches the space
@@ -28,11 +30,13 @@ export function EditSpaceTitle({ space, handleCloseDialog }: EditSpaceTitleProps
     async function submitEditSpace(values: FormikValues, spaceId: number) {
         const updatedSpace: SpaceT = await patchSpace(values, spaceId);
         if (updatedSpace?.error) {
-            // setErrorMessage(space.error); // this would be to put an error in the UI, should I?
+            setErrorMessage("Unable to update the space name, please try again later.");
             console.log('error message: ', updatedSpace.error);
             return;
         }
+
         setSpaceTitle(updatedSpace.name);
+
         if (handleCloseDialog !== undefined) {
             handleCloseDialog();
         }
@@ -56,6 +60,11 @@ export function EditSpaceTitle({ space, handleCloseDialog }: EditSpaceTitleProps
                     <Box paddingBottom={2}>
                         <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant="standard" />
                     </Box>
+                    {errorMessage &&
+                        <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light">
+                            {errorMessage}
+                        </Typography>
+                    }
                 </FormikStep>
             </FormikStepper>
         </>

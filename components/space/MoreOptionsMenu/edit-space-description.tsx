@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import { object, string } from 'yup';
 import { patchSpace } from '@/lib/actions';
 import { SpaceT } from '@/lib/types-and-constants';
+import Typography from '@mui/material/Typography';
 
 
 
@@ -23,6 +24,7 @@ interface EditSpaceDescriptionProps {
 export function EditSpaceDescription({ space, handleCloseDialog }: EditSpaceDescriptionProps) {
 
     const [spaceDescripton, setSpaceDescripton] = useState<string | undefined>(space.description);
+    const [errorMessage, setErrorMessage] = useState<string>();
 
     /**
      * Submits the request to the server action which patches the space
@@ -30,7 +32,7 @@ export function EditSpaceDescription({ space, handleCloseDialog }: EditSpaceDesc
     async function submitEditSpace(values: FormikValues, spaceId: number) {
         const updatedSpace: SpaceT = await patchSpace(values, spaceId);
         if (updatedSpace?.error) {
-            // setErrorMessage(space.error); // this would be to put an error in the UI, should I?
+            setErrorMessage("Unable to update the space description. Please try again later."); // this would be to put an error in the UI, should I?
             console.log('error message: ', updatedSpace.error);
             return;
         }
@@ -79,6 +81,11 @@ export function EditSpaceDescription({ space, handleCloseDialog }: EditSpaceDesc
                             )}
                         </Field>
                     </Box>
+                    {errorMessage &&
+                        <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light">
+                            {errorMessage}
+                        </Typography>
+                    }
                 </FormikStep>
             </FormikStepper>
         </>
