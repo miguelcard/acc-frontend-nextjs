@@ -6,7 +6,7 @@
 'use server';
 import 'server-only';
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { createUrl, deleteAuthCookie, formDataToReqBody, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
+import { createUrl, deleteAuthCookie, extractCustomErrorMessageIfExists, formDataToReqBody, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
 import { FormikValues } from 'formik';
 import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarkT, HabitT } from './types-and-constants';
 
@@ -126,7 +126,9 @@ export async function createSpace(formData: FormikValues) {
             const errorResp = await res.json();
             console.warn('createSpace server action Error: ' + getErrorMessage(errorResp));
             console.warn(JSON.stringify(errorResp));
-            return { error: GENERIC_ERROR_MESSAGE };
+            // returning the error message based on my backend i.e. this form of object: {"errors":{"creator":["User may not create more than 2 spaces."]}
+            const customErrorMessageIfExists: string | undefined = extractCustomErrorMessageIfExists(errorResp);
+            return { error: customErrorMessageIfExists ?? GENERIC_ERROR_MESSAGE };
         }
 
         revalidatePath('/spaces');
@@ -234,7 +236,9 @@ export async function createSpaceRole(formData: FormikValues, spaceId: number) {
             const errorResp = await res.json();
             console.warn('createSpaceRole server action Error: ' + getErrorMessage(errorResp));
             console.warn(JSON.stringify(errorResp));
-            return { error: GENERIC_ERROR_MESSAGE };
+            // returning the error message based on my backend i.e. this form of object: {"errors":{"creator":["User may not create more than 2 spaces."]}
+            const customErrorMessageIfExists: string | undefined = extractCustomErrorMessageIfExists(errorResp);
+            return { error: customErrorMessageIfExists ?? 'Unable to invite user, please check that the username or email are correct or try again later.' };
         }
 
         revalidatePath(`/spaces/${spaceId}`);

@@ -1,9 +1,6 @@
   /* ====================================================== Create Habit Button styles ======================================================*/
   .new_habit_button {
      display: flex;
-     position: fixed;
-     right: clamp(6px, 3vw, 110px);
-     bottom: clamp(65px, 6vw, 70px);
      background-color: #655dff;
      color: #ffffff;
      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
@@ -43,7 +40,7 @@
    padding-block: 6px;
    border-radius: 10px;
    background-color: #655dff;
-   margin-bottom: 1em;
+   margin-bottom: 0.5em;
    
    background: linear-gradient(to top, #638ef0, #82e7fe) !important; 
    border-radius: 50px !important;

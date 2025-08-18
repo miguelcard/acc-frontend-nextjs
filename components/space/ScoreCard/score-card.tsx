@@ -22,6 +22,7 @@ type ScoreCardPropsT = {
 
 export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreCardPropsT) {
     // ============================= States initialization prepration
+
     const weedDays = useMemo(() => generateWeekDays(), []);
     const newCheckedDates = useCallback((spaceHabits: HabitT[]) => checkedDatesMap(spaceHabits), []);
     const todayUUID = useMemo(() => createWeekUUID(), []);
@@ -69,7 +70,7 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
         <>
             <DatesRangeSelector dates={dates} setDates={setDates} updateCheckedDates={updateCheckedDates} />
             {members.map((member) => {
-                const ownerHabits = spaceHabits.filter((habit) => habit.owner === member.id);
+                const ownerHabits = spaceHabits?.filter((habit) => habit.owner === member.id);
                 return (
                     <Box key={member.id}>
                         {/* =========================================== Owner name */}

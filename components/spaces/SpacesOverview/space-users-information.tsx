@@ -11,12 +11,16 @@ import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
  */
 export async function AvatarsGroup({ spaceId }: {spaceId: number}) {
     const maxPhotosShown: number = 4;
-    const users: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxPhotosShown);
+    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxPhotosShown);
+
+    if (response?.error) {
+        return <></>
+    }
 
     return (
         <AvatarGroup
             max={maxPhotosShown}
-            total={users.count}
+            total={response.count}
             sx={{
                 avatar: {
                     fontSize: '0.875rem',
@@ -25,7 +29,7 @@ export async function AvatarsGroup({ spaceId }: {spaceId: number}) {
                 cursor: 'default',
             }}
         >
-            {users.results.map((user: MemberT) => (
+            {response.results.map((user: MemberT) => (
 
                 <UserAvatar key={user.id} user={user} initialsFontSize='1.2rem' />
             ))}
@@ -39,18 +43,18 @@ export async function AvatarsGroup({ spaceId }: {spaceId: number}) {
  * space and the total of users who belong there.
  */
 export async function SpaceDefaultDescription({ spaceId }: {spaceId: number}) {
-    const users: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, 3);
-    const results: MemberT[] = users.results;
+    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, 3);
+    const members: MemberT[] = response.results;
 
-    if (results.length > 0) {
-        const randomIndex = Math.floor(Math.random() * results.length);
-        const user: MemberT = results[randomIndex];
+    if (members?.length > 0) {
+        const randomIndex = Math.floor(Math.random() * members.length);
+        const user: MemberT = members[randomIndex];
 
         // This is automatically wrapped with a Typography element on the CustomCard component
         // even more meaningful would be to show total number of habits shared in this space ?
         return (
             <>
-                <b>{user.username}</b> and {users.count - 1} others are members of this group.
+                <b>{user.username}</b> and {response.count - 1} others are members of this group.
             </>
         );
     } else {

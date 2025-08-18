@@ -5,7 +5,8 @@ export default function Error({error, reset,}: {error: Error; reset: () => void;
   return (
     <html>
       <body>
-        <h2>This error is not being shown on form submission? Something went wrong! Error: {error.message}</h2>
+        <h2>Oops! Something went wrong: {error.message}</h2>
+        <p>please reload the page and try again</p>
         <button onClick={() => reset()}>Try again</button>
       </body>
     </html>

@@ -1,6 +1,6 @@
 import 'server-only';
 import { getUser } from '@/lib/fetch-functions';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { UserT } from '@/lib/types-and-constants';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -19,7 +19,8 @@ export default async function Profile() {
     if (res.error) {
         console.log("TODO write error message in the GUI, the error can appear here because the user could not be retrieved BUT he was authenticated");
         console.log(" this is unlikely to happen becuse this can only happen if the backend is down or something like that");
-        notFound(); // go to custom error page rather.
+        // delete auth_token from the user which might be no longer valid, to retrigger authentication
+        redirect('/api/delete-cookie');
     }
 
     const user: UserT = res;
