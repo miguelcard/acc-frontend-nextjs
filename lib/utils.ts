@@ -118,6 +118,10 @@ export function isJsonString(str: string): boolean {
 /**
  * Extracts the error message from different possible types of errors, useful when catching errors
  * @param error message
+ * TODO this is not such a good practice, a better practice would be to send specific error codes from
+ * the backend response like LIMIT_CREATED_SPACES and just map those errors to the front end and let the 
+ * frontend handle the specific messages for those standard errors.
+ * Then we wouldn't neeed the extractCustomErrorMessageIfExists() method either
  */
 export const getErrorMessage = (error: unknown): string => {
     let message: string;
@@ -129,6 +133,8 @@ export const getErrorMessage = (error: unknown): string => {
             message = String(error.message);
         } else if ('detail' in error) {
             message = String(error.detail);
+        } else if ('errors' in error) {
+            message = JSON.stringify(error.errors);
         } else {
             message = 'Something went wrong';
         }
@@ -140,6 +146,22 @@ export const getErrorMessage = (error: unknown): string => {
 
     return message;
 };
+
+/**
+ *  Returns the error message based on my backend object i.e. this form of object: {"errors":{"creator":["User may not create more than 2 spaces."]}
+ * @param errorResponse the http response
+ */
+export const extractCustomErrorMessageIfExists = (errorResp: any): string | undefined => {
+    // extracts the first error shown under errors object
+    if (errorResp && errorResp.errors && Object.keys(errorResp.errors).length > 0) {
+        const errorKey: string = Object.keys(errorResp.errors)[0];
+        const errorMessage: string = errorResp.errors[errorKey][0];
+        return errorMessage 
+    } else if(errorResp && errorResp.error) {
+        return errorResp.error;
+    }
+    return undefined;
+}
 
 type FormBodyObject = {
     [key: string]: FormDataEntryValue;

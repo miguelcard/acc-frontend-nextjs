@@ -15,8 +15,6 @@ import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
  * @returns space
  */
 export async function getSpace(id: number) {
-
-    // console.log("space id : " + id); // TODO fix the ID null after migrations
     
     const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/${id}`;
     const requestOptions: RequestInit = {
@@ -50,7 +48,7 @@ export async function getSpace(id: number) {
  * @returns list of spaces
  */
 export async function getUserSpaces() {
-    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&page_size=4&ordering=-updated_at`; // For the future load automatically on scrolling
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&page_size=10&ordering=-updated_at`; // TODO user wont be able too see more results than the page size at the moment, possible bug
     const requestOptions: RequestInit = {
         method: 'GET',
         headers: {

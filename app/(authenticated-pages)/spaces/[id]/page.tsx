@@ -11,9 +11,9 @@ import React from 'react';
 import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
 import Link from 'next/link';
 import { IconButton, Paper } from '@mui/material';
-import CreateHabitModal from '@/components/space/CreateHabitModal/create-habit-modal';
+import CreateHabitAndInviteMembersModals from '@/components/space/CreateHabitModal/create-habit-modal';
 import { ScoreCard } from '@/components/space/ScoreCard/score-card';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { setMaxStringLength } from '@/lib/client-utils';
 import { grey } from '@mui/material/colors';
 import { ArrowBack } from '@mui/icons-material';
@@ -24,6 +24,8 @@ export default async function SingleSpace(props: { params: Promise<{ id: number 
     const { id } = params;
     const space: SpaceT = await getSpace(id);
     const { members, space_habits, name, description, icon_alias, error } = space;
+    const spaceHasExistingHabits: boolean = Boolean(space_habits && space_habits.length > 0);
+    const spaceHasExistingMembers: boolean = Boolean(members && members.length > 0)
 
 
     // If the user does not belong to the space or the space does not exist, both scenarios just return an 404 not found error
@@ -36,12 +38,12 @@ export default async function SingleSpace(props: { params: Promise<{ id: number 
 
     const res = await getUser();
 
-    // TODO
+
     if (res.error) {
-        // TODO
         console.log("TODO write error message in the GUI, the error can appear here because the user could not be retrieved BUT he was authenticated");
         console.log(" this is unlikely to happen becuse this can only happen if the backend is down or something like that");
-        notFound();
+        // delete auth_token from the user which might be no longer valid, to retrigger authentication
+        redirect('/api/delete-cookie');
     }
 
     const user: UserT = res;
@@ -168,16 +170,8 @@ export default async function SingleSpace(props: { params: Promise<{ id: number 
                 </Paper>
 
                 {/* Habits and their score cards */}
-                {space_habits && space_habits.length > 0 && members && members.length > 0 ? (
-                    <>
-                        <ScoreCard currentUser={user} spaceHabits={space_habits} members={members} spaceId={id} />
-                        {/* Create newHabits */}
-                        <CreateHabitModal spaceId={id} isFirstSpaceHabit={false} />
-                    </>
-                ) : (
-                    <CreateHabitModal spaceId={id} isFirstSpaceHabit={true} />
-                )}
-
+                {spaceHasExistingMembers && <ScoreCard currentUser={user} spaceHabits={space_habits ?? []} members={members ?? []} spaceId={id} />}
+                <CreateHabitAndInviteMembersModals spaceId={id} isFirstSpaceHabit={!spaceHasExistingHabits} />
             </Box>
         </Container>
     );

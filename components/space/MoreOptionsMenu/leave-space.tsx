@@ -12,7 +12,6 @@ import { useRouter } from 'next/navigation';
 interface EditSpaceTitleProps {
     space: SpaceT;
     handleCloseDialog?: () => void;
-    handleToastOpen: () => void;
 }
 
 /**
@@ -24,7 +23,7 @@ interface EditSpaceTitleProps {
  * @param space
  * @returns
  */
-export function LeaveSpace({ space, handleCloseDialog, handleToastOpen }: EditSpaceTitleProps) {
+export function LeaveSpace({ space, handleCloseDialog }: EditSpaceTitleProps) {
     
     const [errorMessage, setErrorMessage] = useState<string>();
     const router = useRouter();

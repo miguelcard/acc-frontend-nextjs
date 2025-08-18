@@ -66,7 +66,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                     })}
                 >
                     <Box paddingBottom={2}>
-                        <Field fullWidth name="title" label="Title" variant="standard" component={TextFieldFormikMui} />
+                        <Field fullWidth name="title" label="Title" variant="standard" component={TextFieldFormikMui} autoComplete="off" />
                     </Box>
                 </FormikStep>
                 {/* ==== Time frame */}

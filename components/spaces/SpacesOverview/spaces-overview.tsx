@@ -31,9 +31,9 @@ export default async function SpacesOverview() {
             {spaces.results.length === 0 ? (
                 <NoExistingSpacesText />
             ) : (
-                <Grid container spacing={4} py={4}>
+                <Grid container rowSpacing={4} columnSpacing={{ xs: 2, sm: 2, md: 3, lg: 3 }} py={4} >
                     {spaces.results.map((space) => (
-                        <Grid size={{ xs: 12, md: 6, lg: 4 }} key={space.id}>
+                        <Grid  size={spaces.results.length == 1 ? 12 : { xs: 12, md: 6, lg: 6 }} key={space.id} >
                             <CustomCard
                                 space={space}
                                 defaultDescription={<SpaceDefaultDescription spaceId={space.id} />}

@@ -10,7 +10,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import LogoutIcon from '@mui/icons-material/Logout';
-
 import { grey } from '@mui/material/colors';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { SpaceT } from '@/lib/types-and-constants';
@@ -19,11 +18,9 @@ import ListItemText from '@mui/material/ListItemText';
 import { EditSpaceDescription } from './edit-space-description';
 import { InviteMembers } from './invite-members';
 import { EditSpaceTitle } from './edit-space-title';
-import Snackbar from '@mui/material/Snackbar';
-import Slide from '@mui/material/Slide';
-import Alert from '@mui/material/Alert';
 import { ChangeAvatar } from './change-avatar';
 import { LeaveSpace } from './leave-space';
+import { CustomSnackbar } from '@/components/shared/Snackbar/snackbar';
 
 interface MoreOptionsMenuProps {
     space: SpaceT;
@@ -46,20 +43,21 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
         setAnchorOptions(null);
     };
 
-    // Toast message of user added successfully
+    // Sets toast open when user added successfully
     const [openToast, setOpenToast] = useState<boolean>(false);
-
-    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setOpenToast(false);
-    };
 
     const handleToastOpen = () => {
         setOpenToast(true);
     };
+    
+    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        // if the user clicked somewhere outside the snackbar, do not close it.
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenToast(false);
+    };
+    // end of specific toast functionalities
 
     type ClickHandler = (event: React.MouseEvent<HTMLElement>) => void;
 
@@ -95,7 +93,7 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
                 handleCloseOptionsMenu();
             },
             icon: <PersonAddIcon sx={sxIconStyle} />,
-            childrenBody: <InviteMembers space={space} handleToastOpen={handleToastOpen} />,
+            childrenBody: <InviteMembers spaceId={space.id} handleToastOpen={handleToastOpen} />,
         },
         {
             name: 'Change avatar',
@@ -111,26 +109,18 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
                 handleCloseOptionsMenu();
             },
             icon: <LogoutIcon sx={sxIconStyle} />,
-            childrenBody: <LeaveSpace space={space} handleToastOpen={handleToastOpen} />,
+            childrenBody: <LeaveSpace space={space} />,
         },
     ];
 
     return (
         <>
-
-            <Snackbar
-                open={openToast}
-                autoHideDuration={8000}
-                onClose={handleToastClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                TransitionComponent={Slide}
-                sx={{ pt: 2 }}
-            >
-                <Alert onClose={handleToastClose} severity="success" sx={{ width: '100%', py: 3, fontWeight: 600 }}>
-                    Success! The user has been added to the Space. They can now view and contribute habits.
-                </Alert>
-            </Snackbar>
-
+            <CustomSnackbar
+                isOpen={openToast}
+                text={'Success! The user has been added to the Space. They can now view and contribute habits.'}
+                handleCloseToast={handleToastClose}
+            />
+            {/* if you wanted to add other snackbars here you would add the other ones here with different states triggered by other modals */}
             <Tooltip title="More options">
                 <IconButton onClick={handleOpenOptionsMenu} aria-label="More options" sx={{ ml: 'auto' }}>
                     <MoreVertIcon />

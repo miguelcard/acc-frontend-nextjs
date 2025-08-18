@@ -6,20 +6,19 @@ import { Field, FormikContextType, FormikValues, useFormikContext } from 'formik
 import React, { useState } from 'react';
 import { object, string } from 'yup';
 import { createSpaceRole, getUsernameEmailSuggestions } from '@/lib/actions';
-import { PaginatedResponse, SpaceT } from '@/lib/types-and-constants';
+import { PaginatedResponse } from '@/lib/types-and-constants';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 interface InviteMembersProps {
-    space: SpaceT;
+    spaceId: number;
     handleCloseDialog?: () => void;
-    handleToastOpen: () => void;
+    handleToastOpen?: () => void;
 }
 
-interface UsernameEmailResult {
+interface UsernameResult {
     id: number;
     username: string;
-    email: string;
 }
 
 /**
@@ -27,7 +26,7 @@ interface UsernameEmailResult {
  * @param space
  * @returns
  */
-export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: InviteMembersProps) {
+export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen }: InviteMembersProps) {
     
     const [autocompleteOptions, setAutocompleteOptions] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>();
@@ -44,7 +43,7 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
 
         // Make a request to the backend to fetch the possible values based on value
         const pageLength: number = 5;
-        const paginatedUsersList: PaginatedResponse<UsernameEmailResult> = await getUsernameEmailSuggestions(value, pageLength);
+        const paginatedUsersList: PaginatedResponse<UsernameResult> = await getUsernameEmailSuggestions(value, pageLength);
 
         if (paginatedUsersList?.error) {
             console.log('error getting user suggestions: ', paginatedUsersList.error);
@@ -52,7 +51,7 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
             setAutocompleteOptions([]);
         }
 
-        const suggestedUsersResult: UsernameEmailResult[] = paginatedUsersList.results;
+        const suggestedUsersResult: UsernameResult[] = paginatedUsersList.results;
 
         // Loop of the results and add the usernames or emails that match the value to a list
         const autocompleteOptionsList: string[] = [];
@@ -60,10 +59,6 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
         suggestedUsersResult?.forEach((result) => {
             if (result.username.includes(value)) {
                 autocompleteOptionsList.push(result.username);
-            }
-
-            if (result.email.includes(value)) {
-                autocompleteOptionsList.push(result.email);
             }
         });
 
@@ -82,17 +77,16 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
         const createdSpaceRole = await createSpaceRole(values, spaceId);
 
         if (createdSpaceRole?.error) {
-            setErrorMessage('Unable to invite user, please check that the username or email are correct or try again later.');
+            setErrorMessage(createdSpaceRole.error);
             console.log('error while creating spacerole / adding user to space: ', createdSpaceRole.error);
             return;
         }
 
         // Show a toast message if the user was added sucesfully
-        handleToastOpen();
-
-        if (handleCloseDialog !== undefined) {
-            handleCloseDialog();
-        }
+        // callback called it if its not undefined
+        handleToastOpen?.();
+        // callback called if not undefined
+        handleCloseDialog?.();
     }
 
     return (
@@ -101,7 +95,7 @@ export function InviteMembers({ space, handleCloseDialog, handleToastOpen }: Inv
                 initialValues={{
                     username_email: '',
                 }}
-                onSubmit={async (values) => submitAddUserToSpace(values, space.id)}
+                onSubmit={async (values) => submitAddUserToSpace(values, spaceId)}
                 step={0}
                 setStep={() => {}} // empty function, not needed
                 submitButtonText="Invite"

@@ -11,6 +11,8 @@ import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options
 import { SpaceDetailed, SpaceT } from '@/lib/types-and-constants';
 import { setMaxStringLength } from '@/lib/client-utils';
 import ContentCard from '@/components/shared/ContentCard/content-card';
+import { InviteMembers } from '@/components/space/MoreOptionsMenu/invite-members';
+import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 
 
 /**
@@ -43,13 +45,13 @@ const styles = {
             },
         },
     },
-    logo: {
+    space_avatar: {
         width: 48,
         height: 48,
         borderRadius: '0.75rem',
         bgcolor: grey[500]
     },
-    join: {
+    invite_button: {
         background: 'linear-gradient(to top, #638ef0, #82e7fe)',
         borderRadius: 50,
         '& > *': {
@@ -78,7 +80,7 @@ export const CustomCard = ({
             <ContentCard >
                 <Box display='flex' >
                     <Box py={2} pl={2} gap={1} display='flex' flexDirection='row'>
-                        <Avatar sx={styles.logo} variant={'rounded'} >
+                        <Avatar sx={styles.space_avatar} variant={'rounded'} >
                             <FontAwesomeIcon icon={stringIconMapper[space.icon_alias || 'rocket']} size='xl' />
                         </Avatar>
                         <Box alignSelf='center'>
@@ -114,18 +116,23 @@ export const CustomCard = ({
                 </Box>
                 <Box p={2} gap={2} display='flex' alignSelf='stretch' flexDirection='row'>
                     {/* this is the avatars group server component that can be passed as props to this client component */}
-                    <div onClick={(e) => e.stopPropagation()}>
+                    <div onClick={(e) => e.stopPropagation()} >
                         {children}
                     </div>
-                    <Box alignSelf='center' marginLeft='auto'>
-                        <Button
-                            sx={styles.join}
-                            variant={'contained'}
-                            color={'primary'}
-                        >
-                            {/* needed?? */}
-                            {'Invite Members +'} 
-                        </Button>
+                    <Box alignSelf='center' marginLeft='auto' onClick={(e) => e.stopPropagation()}>
+                        <DialogModal
+                            button={
+                                <Button
+                                    sx={styles.invite_button}
+                                    variant={'contained'}
+                                    color={'primary'}
+                                >
+                                    {'Invite Members +'}
+                                </Button>
+                            }
+                            childrenTitle={'Invite Members'}
+                            childrenBody={<InviteMembers spaceId={space.id} />}
+                        />
                     </Box>
                 </Box>
             </ContentCard>

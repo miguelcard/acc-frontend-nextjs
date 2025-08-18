@@ -23,7 +23,6 @@ async function submitCreateSpace(
     if (space?.error) {
         setErrorMessage(space.error);
         console.log('error message: ', space.error);
-
         return;
     }
 
@@ -107,7 +106,7 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                 {/* TODO step to add other users to your space by UN /  PW -> InviteMembers Component */}
             </FormikStepper>
             {errorMessage &&
-                <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light">
+                <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light" whiteSpace='pre-line' >
                     {errorMessage}
                 </Typography>
             }
