@@ -129,8 +129,7 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                         <Box
                             component={'div'}
                             sx={{ width: { xs: '100%', sm: '48%' } }}
-                            onChange={(e: any) => setHabitTimes(parseInt(e.target.value))}
-                        >
+                            onChange={(e: any) => setHabitTimes(e.target.value) }>
                             <Field
                                 fullWidth
                                 name="times"
