@@ -64,7 +64,7 @@ export default function UserAvatarSelector({ user }: UserAvatarSelectorProps) {
 
 
 const seedsExamplesList: string[] = [
-    "ZapCat",
+    "ZapCats",
     "FizzFox",
     "Walle",
     "Rooster",
