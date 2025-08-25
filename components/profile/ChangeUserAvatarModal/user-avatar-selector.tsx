@@ -77,7 +77,7 @@ const seedsExamplesList: string[] = [
     "rit",
     "Megatron",
     "Munchkin",
-    "BuzzHawk",
+    "R2S",
     "SizzleWolf",
     "BuzzH",
 ];
