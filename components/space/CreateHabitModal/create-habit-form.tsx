@@ -11,7 +11,12 @@ import toast from 'react-hot-toast';
 import { MenuItem, Typography } from '@mui/material';
 import { useState } from 'react';
 
-async function submitNewHabit(value: any, id: number, action: FormikHelpers<FormikValues>, setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>) {
+async function submitNewHabit(
+    value: any,
+    id: number,
+    action: FormikHelpers<FormikValues>,
+    setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>
+): Promise<string | undefined> {
 
     action.setSubmitting(true);
     const habit: CreateHabitT = value;
@@ -20,14 +25,14 @@ async function submitNewHabit(value: any, id: number, action: FormikHelpers<Form
 
     if (res?.error) {
         setErrorMessage(res.error);
-        // toast.error(res.error); -> not needed, toast that closes vs error message that does not let the modal close.
+        // toast.error(res.error); -> not needed, toast that closes
         console.log('error message: ', res);
-        return;
+        return res.error;
     }
 
     action.setSubmitting(false);   
     toast.success(`Habit created successfully`);
-    // close modal here
+    return undefined; // no error
 }
 
 type CreateHabitFormProps = {
@@ -40,7 +45,7 @@ type CreateHabitFormProps = {
 export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDialog }: CreateHabitFormProps) {
     
     const [istimeFrameWeekly, setIstimeFrameWeekly] = useState<boolean>(true);
-    const [errorMessage, setErrorMessage] = useState<string>()
+    const [errorMessage, setErrorMessage] = useState<string>();
 
     return (
         <Box
@@ -56,8 +61,8 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                     time_frame: 'W',
                 }}
                 onSubmit={async (values, action) => {
-                    await submitNewHabit(values, spaceId, action, setErrorMessage);
-                    if (errorMessage?.trim()) { // only close the modal if there is no error message
+                    const error = await submitNewHabit(values, spaceId, action, setErrorMessage);
+                    if (!error?.trim()) { // only close the modal if there is no error message
                         handleCloseDialog && handleCloseDialog();
                     }
                 }}

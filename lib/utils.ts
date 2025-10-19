@@ -116,7 +116,7 @@ export function isJsonString(str: string): boolean {
     }
 }
 
-/**
+/** @deprecated
  * Extracts the error message from different possible types of errors, useful when catching errors
  * @param error message
  * TODO this is not such a good practice, a better practice would be to send specific error codes from
