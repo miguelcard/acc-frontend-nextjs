@@ -1,6 +1,7 @@
 import 'server-only';
 import { ReadonlyURLSearchParams } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { getTranslations } from 'next-intl/server';
 
 /**
  * Utility function to fetch data
@@ -147,7 +148,56 @@ export const getErrorMessage = (error: unknown): string => {
     return message;
 };
 
+
+type ApiError = {
+  status: number;
+  detail: string;
+  error?: {
+    code: string;
+    meta?: Record<string, any>;
+  };
+};
+
 /**
+ * Maps the standard error message codes that come from the backend, to custom messages to be shown to the client in the frontend. 
+ * this decouples the backend from the frontend and supports future translations as well 
+ * @param errorResponse 
+ * @returns 
+ */
+export const getApiErrorMessage = async (errorResponse: ApiError): Promise<string> => {
+    const code = errorResponse.error?.code;
+    const metaData = errorResponse.error?.meta || {};
+    const t = await getTranslations('errors');
+
+    // map the error code to key in the i18n file
+    switch (code?.toUpperCase()) {
+        case 'FREE_GROUP_CREATE_LIMIT_REACHED':
+            return t(code,
+                {
+                    limit: metaData.limit, current: metaData.current
+                }
+            );
+        case 'FREE_GROUP_JOIN_LIMIT_REACHED':
+            return t(code, 
+                {
+                    limit: metaData.limit, current: metaData.current, username: metaData.username
+                }
+            );
+        case 'FREE_HABIT_CREATE_LIMIT_REACHED':
+            return t('FREE_HABIT_CREATE_LIMIT_REACHED',
+                {
+                    limit: metaData.limit, current: metaData.current
+                }
+            );
+        default:
+            // fallback
+            return t('GENERIC_ERROR_MESSAGE');
+    }
+}
+
+
+/**
+ * @deprecated This method is no longer recommended. Use `getApiErrorMessage` instead.
  *  Returns the error message based on my backend object i.e. this form of object: {"errors":{"creator":["User may not create more than 2 spaces."]}
  * @param errorResponse the http response
  */

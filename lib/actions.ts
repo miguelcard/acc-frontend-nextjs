@@ -6,7 +6,7 @@
 'use server';
 import 'server-only';
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { createUrl, deleteAuthCookie, extractCustomErrorMessageIfExists, formDataToReqBody, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
+import { createUrl, deleteAuthCookie, extractCustomErrorMessageIfExists, formDataToReqBody, getApiErrorMessage, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
 import { FormikValues } from 'formik';
 import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarkT, HabitT } from './types-and-constants';
 
@@ -433,7 +433,10 @@ export async function createHabit(habit: CreateHabitT) {
             const errorResp = await res.json();
             console.warn('createHabit server action Error: ' + getErrorMessage(errorResp));
             console.warn(JSON.stringify(errorResp));
-            return { error: GENERIC_ERROR_MESSAGE };
+            // handle error and map the correct message that is going to be shown to the client
+            const userFacingErrorMessage: string = await getApiErrorMessage(errorResp);
+            console.warn(userFacingErrorMessage);
+            return { error: userFacingErrorMessage };
         }
 
         revalidatePath(`/spaces/${habit.spaces[0]}`);

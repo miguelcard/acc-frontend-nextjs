@@ -1,0 +1,8 @@
+{
+  "errors": {
+    "FREE_GROUP_CREATE_LIMIT_REACHED": "You can create up to {limit} groups in the first version of the app. You currently have {current} created groups.",
+    "FREE_GROUP_JOIN_LIMIT_REACHED": "The user {username} already belongs to a maximum of {limit} groups.",
+    "FREE_HABIT_CREATE_LIMIT_REACHED": "You have already reached the maximum amount of {limit} habits that each user can create in this space.",
+    "GENERIC_ERROR_MESSAGE": "Something went wrong. Please refresh the page or try again."
+  }
+}

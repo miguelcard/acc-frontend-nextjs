@@ -8,24 +8,26 @@ import TextField from '@mui/material/TextField';
 import { CreateHabitT, timeFrames } from '@/lib/types-and-constants';
 import { createHabit } from '@/lib/actions';
 import toast from 'react-hot-toast';
-import { MenuItem } from '@mui/material';
+import { MenuItem, Typography } from '@mui/material';
 import { useState } from 'react';
 
-async function submitNewHabit(value: any, id: number, action: FormikHelpers<FormikValues>) {
+async function submitNewHabit(value: any, id: number, action: FormikHelpers<FormikValues>, setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>) {
 
     action.setSubmitting(true);
     const habit: CreateHabitT = value;
     habit.spaces = [id];
-    const res = await createHabit(habit);
-    action.setSubmitting(false);
+    const res = await createHabit(habit); 
 
     if (res?.error) {
-        toast.error(res.error);
+        setErrorMessage(res.error);
+        // toast.error(res.error); -> not needed, toast that closes vs error message that does not let the modal close.
         console.log('error message: ', res);
         return;
     }
 
+    action.setSubmitting(false);   
     toast.success(`Habit created successfully`);
+    // close modal here
 }
 
 type CreateHabitFormProps = {
@@ -38,6 +40,7 @@ type CreateHabitFormProps = {
 export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDialog }: CreateHabitFormProps) {
     
     const [istimeFrameWeekly, setIstimeFrameWeekly] = useState<boolean>(true);
+    const [errorMessage, setErrorMessage] = useState<string>()
 
     return (
         <Box
@@ -53,8 +56,10 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                     time_frame: 'W',
                 }}
                 onSubmit={async (values, action) => {
-                    await submitNewHabit(values, spaceId, action);
-                    handleCloseDialog && handleCloseDialog();
+                    await submitNewHabit(values, spaceId, action, setErrorMessage);
+                    if (errorMessage?.trim()) { // only close the modal if there is no error message
+                        handleCloseDialog && handleCloseDialog();
+                    }
                 }}
                 step={step === undefined ? 0 : step}
                 setStep={setStep === undefined ? () => console.warn('setStep is undefined!') : setStep}
@@ -150,6 +155,11 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                     </Box>
                 </FormikStep>
             </FormikStepper>
+            {errorMessage &&
+                <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light" whiteSpace='pre-line' >
+                    {errorMessage}
+                </Typography>
+            }
         </Box>
     );
 }

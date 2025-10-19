@@ -3,6 +3,7 @@ import './globals.css';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import { Toaster } from 'react-hot-toast';
+import {NextIntlClientProvider} from 'next-intl';
 config.autoAddCss = false;
 
 // see Metadata  documentation: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
@@ -32,7 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             duration: 3000,
                         }}
                     />
-                    {children}
+                    <NextIntlClientProvider>
+                        {children}
+                    </NextIntlClientProvider>
                 </ThemeRegistry>
             </body>
         </html>
