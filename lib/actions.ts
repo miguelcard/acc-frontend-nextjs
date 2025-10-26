@@ -526,7 +526,7 @@ export async function deleteHabit(habit: HabitT) {
  * @param CheckMarkT
  * @returns habit information
  */
-export async function addCheckmark(checkmark: { habit: number; status: string; date: string }) {
+export async function addCheckmark(checkmark: { habit: number; status: string; date: string, client_date: string }) {
     const addCheckmarkUrl: string = `${API}/v1/habits/recurrent/${checkmark.habit}/checkmarks/`;
 
     const requestOptions: RequestInit = {

@@ -20,7 +20,11 @@ export const toggleCheckmark = async (
 ) => {
     const habitId :number = habit.id;
     const dateString :string = date.toDateString();
-    const formatedDateString: string = format(date, 'yyyy-MM-dd'); 
+    const formatedDateString: string = format(date, 'yyyy-MM-dd'); // this is just one of the dates shown in the fronted, it can be today or in the past.
+    // Get current date in user's timezone. This is the actual current date in the user's timezone.
+    const localDate: Date = new Date();
+    // convert client date to UTC date for comparison in backend
+    const currentUTCDate = localDate.toISOString().split('T')[0];
 
     try {
         if (Boolean(checkmark)) {
@@ -44,7 +48,7 @@ export const toggleCheckmark = async (
             toast.success('Removed successfully', { duration: 1000 });
         } else {
             // Create new checkmark object to add to database
-            const newCheckmark = { habit: habitId, status: 'DONE', date: formatedDateString };
+            const newCheckmark = { habit: habitId, status: 'DONE', date: formatedDateString, client_date: currentUTCDate };
 
             // Api call to add checkmark to database
             const res = await addCheckmark(newCheckmark);
