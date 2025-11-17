@@ -12,6 +12,7 @@ const themeOptions: ThemeOptions = {
     },
     secondary: {
       main: '#655dff',
+      // main: '#4133b3', // test with darker shade for now...
       contrastText: '#ffffff',
     },
   },

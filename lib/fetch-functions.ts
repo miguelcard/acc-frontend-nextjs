@@ -2,8 +2,9 @@
 // They’re not meant to be triggered by client events.
 // Typically called directly in server components or route handlers to get data for rendering.
 // They benefit from Next.js’s built-in caching and revalidation when used in a server component.
+// This is why these are different from server actions.
 import 'server-only';
-import { getAuthCookie, getErrorMessage } from "@/lib/utils";
+import { getAuthCookie, getErrorMessage } from "@/lib/utils/utils";
 import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
 
 
@@ -48,7 +49,7 @@ export async function getSpace(id: number) {
  * @returns list of spaces
  */
 export async function getUserSpaces() {
-    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&page_size=10&ordering=-updated_at`; // TODO user wont be able too see more results than the page size at the moment, possible bug
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&page_size=20&ordering=-updated_at`; // TODO user wont be able too see more results than the page size at the moment, possible bug
     const requestOptions: RequestInit = {
         method: 'GET',
         headers: {
@@ -135,6 +136,38 @@ export async function getUsersFromSpace(spaceId: number, resultsNumber: number) 
             return { error: GENERIC_ERROR_MESSAGE };
         }
         return users;
+    } catch (error) {
+        console.warn('An error ocurred: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
+
+// ----- Habits -----
+
+/**
+ * This function gets logged-in user's recurrent habits
+ */
+export async function getAllUserRecurrentHabits() {
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/habits/recurrent/?page=1&page_size=100&ordering=-spaces__id`; // TODO user wont be able too see more results than the page size at the moment, possible bug
+    const requestOptions: RequestInit = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Cookie: `${await getAuthCookie()}`,
+        },
+        // cache: 'no-store', // just in case, but it isn't necessary if we use cookies above
+    };
+
+    try {
+        const res = await fetch(url, requestOptions);
+        const habits = await res.json();
+        if (!res.ok) {
+            console.warn("Fetching user recurring habits didn't work");
+            console.warn(getErrorMessage(habits));
+            return { error: GENERIC_ERROR_MESSAGE };
+        }
+        return habits;
     } catch (error) {
         console.warn('An error ocurred: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };

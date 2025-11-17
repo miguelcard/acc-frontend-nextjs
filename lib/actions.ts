@@ -6,7 +6,7 @@
 'use server';
 import 'server-only';
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { createUrl, deleteAuthCookie, extractCustomErrorMessageIfExists, formDataToReqBody, getApiErrorMessage, getAuthCookie, getErrorMessage, setAuthCookie } from './utils';
+import { createUrl, deleteAuthCookie, extractCustomErrorMessageIfExists, formDataToReqBody, getApiErrorMessage, getAuthCookie, getErrorMessage, setAuthCookie } from './utils/utils';
 import { FormikValues } from 'formik';
 import { CreateHabitT, GENERIC_ERROR_MESSAGE, CheckMarkT, HabitT } from './types-and-constants';
 

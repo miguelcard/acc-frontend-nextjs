@@ -1,5 +1,5 @@
 'use client'
-import { faEarthEurope, faRocket, faStar, faUserAstronaut } from '@fortawesome/free-solid-svg-icons';
+import { faEarthEurope, faRocket, faUserAstronaut, faCheckDouble } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Typography } from '@mui/material';
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -54,10 +54,10 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
                     
                     />
                     <BottomNavigationAction
-                        label={<NavigationText text='Favourite'/>}
-                        icon={<FontAwesomeIcon icon={faStar} />}
+                        label={<NavigationText text='All my Habits'/>}
+                        icon={<FontAwesomeIcon icon={faCheckDouble} />}
                         component={NextLink}
-                        href={'/spaces/1'}
+                        href={'/all-habits'}
                         key={'favorite'}
                     />
                     {/* <BottomNavigationAction
