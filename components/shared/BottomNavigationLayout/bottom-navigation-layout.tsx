@@ -8,12 +8,20 @@ import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Paper from '@mui/material/Paper';
 import NextLink from 'next/link';
+import { usePathname } from 'next/navigation';
 import React from 'react';
 
 
 export const BottomNavigationLayout = ({ children }: { children: React.ReactNode }) => {
 
-    const [value, setValue] = React.useState<number | null>(0);
+    const pathname: string  = usePathname();
+
+    const getPathValue = () => {
+        if (pathname.startsWith('/spaces')) return 0;
+        if (pathname.startsWith('/all-habits')) return 1;
+        if (pathname.startsWith('/profile')) return 2;
+        return 0;
+    }
 
     return (
         /* a ref is used to scroll back to the top whenever the value changes (useRef hook + useEffect hook= DO AT THE END IF NEEDED*/
@@ -29,10 +37,7 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
             >
                 <BottomNavigation
                     showLabels
-                    value={value}
-                    onChange={(event, newValue) => {
-                        setValue(newValue);
-                    }}
+                    value={getPathValue()}
                     sx={{
                         '& .MuiBottomNavigationAction-root': {
                           color: 'grey.400', // Unselected icon color
