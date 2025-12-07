@@ -4,20 +4,18 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { stringIconMapper } from '@/lib/fa-icons-mapper';
 import Avatar from '@mui/material/Avatar';
 import React from 'react';
 import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
-import Link from 'next/link';
-import { IconButton, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
 import CreateHabitAndInviteMembersModals from '@/components/space/CreateHabitModal/create-habit-modal';
 import { ScoreCard } from '@/components/space/ScoreCard/score-card';
 import { notFound, redirect } from 'next/navigation';
 import { setMaxStringLength } from '@/lib/client-utils';
 import { grey } from '@mui/material/colors';
-import { ArrowBack } from '@mui/icons-material';
 import { getSpace, getUser } from '@/lib/fetch-functions';
+import { BackButtonAutoRouted } from '@/components/shared/back-button-auto-routed';
+import { SpaceIconLogic } from '@/components/shared/space-icon';
 
 export default async function SingleSpace(props: { params: Promise<{ id: number }> }) {
     const params = await props.params;
@@ -86,14 +84,8 @@ export default async function SingleSpace(props: { params: Promise<{ id: number 
                         }}>
 
                         {/* Back button box */}
-                        <Box>
-                            <Link href={'/spaces'}>
-                                <IconButton
-                                    aria-label="spaces" size="medium">
-                                    <ArrowBack />
-                                </IconButton>
-                            </Link>
-                        </Box>
+                        <BackButtonAutoRouted />
+                        
                         {/* Space avatar and title box */}
                         <Box sx={{
                             margin: "auto",
@@ -134,7 +126,7 @@ export default async function SingleSpace(props: { params: Promise<{ id: number 
                                         },
                                     }}
                                 >
-                                    <FontAwesomeIcon icon={stringIconMapper[`${icon_alias || 'rocket'}`]} />
+                                    <SpaceIconLogic iconAlias={icon_alias}  />
                                 </Box>
                             </Avatar>
                             {/* Space title */}

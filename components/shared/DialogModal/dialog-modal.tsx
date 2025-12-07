@@ -15,9 +15,10 @@ interface DialogModalProps {
     button: ReactElement<any, string | JSXElementConstructor<any>>;
     childrenTitle?: React.ReactNode;
     childrenBody?: React.ReactNode;
+    onOpenChange?: (isOpen: boolean) => void;
 }
 
-export default function DialogModal({ button, childrenTitle, childrenBody }: DialogModalProps) {
+export default function DialogModal({ button, childrenTitle, childrenBody, onOpenChange }: DialogModalProps) {
     const [open, setOpen] = React.useState<boolean>(false);
     // we need this state here only for the Back arrow button in the Modal in case of multi step forms
     const [step, setStep] = React.useState<number>(0);
@@ -29,11 +30,13 @@ export default function DialogModal({ button, childrenTitle, childrenBody }: Dia
         }
         setOpen(true);
         setStep(0);
+        onOpenChange?.(true);
     };
 
     const handleClose = () => {
         setOpen(false);
         setStep(0);
+        onOpenChange?.(false);
     };
 
     return (

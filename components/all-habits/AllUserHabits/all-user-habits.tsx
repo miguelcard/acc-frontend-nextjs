@@ -1,19 +1,24 @@
 'use client';
 
 import { HabitT } from '@/lib/types-and-constants';
-import { Avatar, Box, ButtonBase, Typography } from '@mui/material';
-import React, { useMemo, useState } from 'react';
+import { Avatar, Box, ButtonBase, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
+import React, { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
 import DatesRangeSelector from '@/components/space/ScoreCard/dates-range-selector';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ContentCard from '@/components/shared/ContentCard/content-card';
 import { SmallScreenHabitScoreCard } from '@/components/space/ScoreCard/score-card-sizes/small-screen-habit-score-card';
 import { useHabitScorecard } from '@/lib/hooks/useHabitScorecard';
 import { SpaceHabitsGroup } from '@/lib/utils/group-habits-by-space';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { stringIconMapper } from '@/lib/fa-icons-mapper';
+import { SizeProp } from '@fortawesome/fontawesome-svg-core';
 import { setMaxStringLength } from '@/lib/client-utils';
 import { grey } from '@mui/material/colors';
 import { useRouter } from 'next/navigation';
+import CreateHabitForm from '@/components/space/CreateHabitModal/create-habit-form';
+import DialogModal from '@/components/shared/DialogModal/dialog-modal';
+import { CreateHabitDialogTitle } from '@/components/space/CreateHabitModal/create-habit-modal';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import AddIcon from '@mui/icons-material/Add';
+import { SpaceIconLogic } from '@/components/shared/space-icon';
 
 
 type UserAllHabitsViewPropsT = {
@@ -84,41 +89,30 @@ export function AllUserHabitsView({
                         >
                             <Box pb={1} gap={1.5} display='flex' flexDirection='row'>
                                 {/* ==== Space Avatar surrounded by colorful gradient ring =====*/}
-                                <Box
-                                    onClick={() => router.push(`/spaces/${space.id}`)}
-                                    sx={{
-                                        cursor: 'pointer',
-                                        width: 39,
-                                        height: 39,
-                                        p: '2px',
-                                        borderRadius: '0.75rem',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        background: "conic-gradient(from 0deg, #9A00FF, #4A00FF, #00E5FF, #00FFC8, #5E00FF, #B400FF, #FF00E5, #9A00FF)",
-                                    }}
-                                >
-                                    <Avatar
-                                        variant="rounded"
-                                        sx={{
-                                            width: '100%',
-                                            height: '100%',
-                                            borderRadius: '0.75rem',
-                                            bgcolor: grey[500],
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={stringIconMapper[space.icon_alias || 'rocket']} size="lg" />
-                                    </Avatar>
-                                </Box>
-                                {/* =================== Space title ========================  */}
+                                <DialogModal
+                                    button={
+                                        <ColorfulSpaceAvatar spaceIcon={space.icon_alias || ''} />
+                                    }
+                                    childrenTitle={<SpaceModalTitle iconAlias={space.icon_alias} spaceName={space.name} />}
+                                    childrenBody={
+                                        <SpaceModalOptions spaceId={space.id} />
+                                    }
+                                />
+                                {/* =================== Space title (is in button attribute) With Modal to  create a new habit in that space and to go to space ===========  */}
                                 <Box alignSelf='center'>
-                                    {/* Note future: make this fonts responsive, use @media */}
-                                    <Typography fontWeight={700} fontSize={`clamp(0.9rem, 2.5vw, 1.6rem)`} color='secondary' 
-                                        sx={{ cursor: 'pointer' }}
-                                        onClick={() => handleCollapseSpaceCard(space.id)}
-                                    >
-                                        {setMaxStringLength(space.name)}
-                                    </Typography>
+                                    <DialogModal
+                                        button={
+                                            <Typography fontWeight={700} fontSize={`clamp(0.9rem, 2.5vw, 1.2rem)`} color='secondary'
+                                                sx={{ cursor: 'pointer' }}
+                                            >
+                                                {setMaxStringLength(space.name)}
+                                            </Typography>
+                                        }
+                                        childrenTitle={<SpaceModalTitle iconAlias={space.icon_alias} spaceName={space.name} />}
+                                        childrenBody={
+                                            <SpaceModalOptions spaceId={space.id} />
+                                        }
+                                    />
                                 </Box>
                             </Box>
                             {/* ======================== Collapse button ======================  */}
@@ -167,3 +161,104 @@ export function AllUserHabitsView({
         </Box>
     );
 }
+
+const ColorfulSpaceAvatar = ({ spaceIcon, onClick }: { spaceIcon: string, onClick?: React.MouseEventHandler<HTMLDivElement> }) => (
+    <Box
+        onClick={onClick}
+        sx={{
+            cursor: 'pointer',
+            width: 39,
+            height: 39,
+            p: '2px',
+            borderRadius: '0.75rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: "conic-gradient(from 0deg, #9A00FF, #4A00FF, #00E5FF, #00FFC8, #5E00FF, #B400FF, #FF00E5, #9A00FF)",
+        }}
+    >
+        <Avatar
+            variant="rounded"
+            sx={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '0.75rem',
+                bgcolor: grey[500],
+            }}
+        >
+            <SpaceIconAvatar iconAlias={spaceIcon} size={"lg"} />
+        </Avatar>
+    </Box>
+);
+
+const SpaceModalTitle = ({iconAlias, spaceName} : {iconAlias : string | undefined, spaceName: string  }) => (
+    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
+        <Box sx={{ my: 2 }}>
+            <SpaceIconAvatar iconAlias={iconAlias} size="3x" />
+        </Box>
+        <Typography fontWeight={600} fontSize="1em" pb={2} color='secondary' >
+            {spaceName}
+        </Typography>
+    </Box>
+);
+
+const SpaceIconAvatar = ({ iconAlias, size }: { iconAlias: string | undefined, size?: SizeProp }) => (
+    <Avatar
+        variant='circular'
+        sx={{
+            width: 100,
+            height: 100,
+            bgcolor: grey[500],
+            '@media (max-width: 600px)': {
+                width: 100,
+                height: 100,
+            },
+            '@media (max-width: 450px)': {
+                width: 100,
+                height: 100,
+            },
+        }}
+    >
+        <SpaceIconLogic iconAlias={iconAlias} size={size} />
+    </Avatar>
+);
+
+const SpaceModalOptions = ({ spaceId, handleCloseDialog}: { spaceId: number, handleCloseDialog?: () => void }) => {
+    const router = useRouter()
+    const [isChildModalOpen, setisChildModalOpen] = useState(true);
+
+    // if this child modal is closed then handleCloseDialog...
+    useEffect(() => {
+        if (isChildModalOpen === false) {
+            handleCloseDialog && handleCloseDialog();
+        }
+    }, [isChildModalOpen, handleCloseDialog]);
+
+    return (
+        <List>
+            <ListItem disablePadding>
+                <ListItemButton onClick={() => router.push(`/spaces/${spaceId}`)} >
+                    <ListItemText primary={'Go to Space'} sx={{color: 'dimgrey'}} />
+                    <ArrowForwardIcon fontSize='small' sx={{color: 'grey'}} />
+                </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+                <WrapInCreateHabitModal spaceId={spaceId} onModalStateChange={setisChildModalOpen} >
+                    <ListItemButton>
+                        <ListItemText primary={'Add new Habit'} sx={{ color: 'dimgrey' }} />
+                        <AddIcon fontSize='small' sx={{ color: 'grey' }} />
+                    </ListItemButton>
+                </WrapInCreateHabitModal>
+            </ListItem>
+        </List>
+    )
+}
+
+const WrapInCreateHabitModal = ({ children, spaceId, onModalStateChange }: { children: ReactElement, spaceId: number, onModalStateChange?: (isOpen: boolean) => void }) => (
+    <DialogModal
+        button={children}
+        childrenTitle={<CreateHabitDialogTitle />}
+        childrenBody={<CreateHabitForm spaceId={spaceId} />}
+        onOpenChange={onModalStateChange}
+    />
+);

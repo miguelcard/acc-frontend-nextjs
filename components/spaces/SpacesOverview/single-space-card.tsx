@@ -4,15 +4,14 @@ import { Avatar, Button, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { stringIconMapper } from '@/lib/fa-icons-mapper';
 import { grey } from '@mui/material/colors';
 import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
-import { SpaceDetailed, SpaceT } from '@/lib/types-and-constants';
+import { SpaceDetailed } from '@/lib/types-and-constants';
 import { setMaxStringLength } from '@/lib/client-utils';
 import ContentCard from '@/components/shared/ContentCard/content-card';
 import { InviteMembers } from '@/components/space/MoreOptionsMenu/invite-members';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
+import { SpaceIconLogic } from '@/components/shared/space-icon';
 
 
 /**
@@ -81,7 +80,7 @@ export const CustomCard = ({
                 <Box display='flex' >
                     <Box py={2} pl={2} gap={1} display='flex' flexDirection='row'>
                         <Avatar sx={styles.space_avatar} variant={'rounded'} >
-                            <FontAwesomeIcon icon={stringIconMapper[space.icon_alias || 'rocket']} size='xl' />
+                            <SpaceIconLogic iconAlias={space.icon_alias} size={'xl'} />
                         </Avatar>
                         <Box alignSelf='center'>
                             {/* Note future: make this fonts responsive, use @media */}

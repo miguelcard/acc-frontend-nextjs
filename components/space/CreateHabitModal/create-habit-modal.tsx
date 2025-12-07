@@ -43,16 +43,6 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
         </Box>
     );
 
-    const CreateHabitDialogTitle = () => (
-        <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
-            <Box sx={{ my: 2 }}>
-                <Image src={createHabitImage} width={200} height={0} alt="habit" />
-            </Box>
-            <Typography fontWeight={600} fontSize="1em" pb={2}>
-                Create new Habit
-            </Typography>
-        </Box>
-    );
     return (
         <Box
             sx={{
@@ -77,3 +67,15 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
         </Box>
     );
 }
+
+
+export const CreateHabitDialogTitle = () => (
+    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
+        <Box sx={{ my: 2 }}>
+            <Image src={createHabitImage} width={200} height={0} alt="habit" />
+        </Box>
+        <Typography fontWeight={600} fontSize="1em" pb={2}>
+            Create new Habit
+        </Typography>
+    </Box>
+);
