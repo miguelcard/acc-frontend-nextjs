@@ -14,6 +14,7 @@ interface InviteMembersProps {
     spaceId: number;
     handleCloseDialog?: () => void;
     handleToastOpen?: () => void;
+    children?: React.ReactNode;
 }
 
 interface UsernameResult {
@@ -26,7 +27,7 @@ interface UsernameResult {
  * @param space
  * @returns
  */
-export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen }: InviteMembersProps) {
+export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, children }: InviteMembersProps) {
     
     const [autocompleteOptions, setAutocompleteOptions] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>();
@@ -91,6 +92,14 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen }: I
 
     return (
         <>
+            {children && (
+                <Box mb={2}>
+                    {children}
+                </Box>
+            )}
+            <Typography variant="subtitle2" fontWeight={600} color="text.secondary" pb={1}>
+                Invite New Member
+            </Typography>
             <FormikStepper
                 initialValues={{
                     username_email: '',

@@ -24,6 +24,7 @@ import { CustomSnackbar } from '@/components/shared/Snackbar/snackbar';
 
 interface MoreOptionsMenuProps {
     space: SpaceT;
+    membersOverview?: React.ReactNode;
 }
 
 /**
@@ -31,7 +32,7 @@ interface MoreOptionsMenuProps {
  * choose between different options to edit the space, this options include:
  * Changing the space title and description, adding members, etc...
  */
-export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
+export function MoreOptionsMenu({ space, membersOverview }: MoreOptionsMenuProps) {
     // Anchor element to open menu
     const [anchorElOptions, setAnchorOptions] = useState<null | HTMLElement>(null);
 
@@ -88,12 +89,12 @@ export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
             childrenBody: <EditSpaceTitle space={space} />,
         },
         {
-            name: 'Invite members',
+            name: 'Members',
             click: () => {
                 handleCloseOptionsMenu();
             },
             icon: <PersonAddIcon sx={sxIconStyle} />,
-            childrenBody: <InviteMembers spaceId={space.id} handleToastOpen={handleToastOpen} />,
+            childrenBody: <InviteMembers spaceId={space.id} handleToastOpen={handleToastOpen}>{membersOverview}</InviteMembers>,
         },
         {
             name: 'Change avatar',

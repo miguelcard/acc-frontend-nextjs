@@ -2,7 +2,7 @@ import 'server-only';
 import { Box, Grid, Link, Typography } from '@mui/material';
 import { PaginatedResponse, SpaceDetailed } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
-import { AvatarsGroup, SpaceDefaultDescription } from './space-users-information';
+import { AvatarsGroup, SpaceDefaultDescription, MembersList } from './space-users-information';
 import { getUserSpaces } from '@/lib/fetch-functions';
 import introImage from '@/public/images/spaces/spaces-intro.png';
 import Image from 'next/image';
@@ -37,6 +37,7 @@ export default async function SpacesOverview() {
                             <CustomCard
                                 space={space}
                                 defaultDescription={<SpaceDefaultDescription spaceId={space.id} />}
+                                membersOverview={<MembersList spaceId={space.id} />}
                             >
                                 <Box>
                                     <AvatarsGroup spaceId={space.id} />

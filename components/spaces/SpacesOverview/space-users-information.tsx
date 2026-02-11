@@ -1,8 +1,10 @@
 import 'server-only';
+import React from 'react';
 import { MemberT, PaginatedResponse } from '@/lib/types-and-constants';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import { getUsersFromSpace } from '@/lib/fetch-functions';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
+import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography, Divider } from '@mui/material';
 
 /**
  * Group of avatars from users fetched from a specific space
@@ -37,6 +39,58 @@ export async function AvatarsGroup({ spaceId }: {spaceId: number}) {
     );
 }
 
+
+/**
+ * Detailed list of all members in a space showing avatar, username, and name
+ * This is a server component that fetches all members and displays them in a list format
+ */
+export async function MembersList({ spaceId }: { spaceId: number }) {
+    const maxMembersShown: number = 20;
+    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxMembersShown);
+
+    if (response?.error || !response.results.length) {
+        return (
+            <Box py={2}>
+                <Typography variant="body2" color="text.secondary">
+                    No members found in this space.
+                </Typography>
+            </Box>
+        );
+    }
+
+    return (
+        <Box>
+            <Typography variant="subtitle2" fontWeight={600} color="text.secondary" >
+                Members ({response.count})
+            </Typography>
+            <List sx={{ width: '100%', bgcolor: 'background.paper', maxHeight: 300, overflow: 'auto' }}>
+                {response.results.map((member: MemberT, index: number) => (
+                    <React.Fragment key={member.id}>
+                        <ListItem alignItems="flex-start" sx={{ px: 0, py: 0.5 }}>
+                            <ListItemAvatar>
+                                <UserAvatar user={member} circleDiameter={40} />
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={
+                                    <Typography component="span" variant="body1" fontWeight={500}>
+                                        {member.username}
+                                    </Typography>
+                                }
+                                secondary={
+                                    <Typography component="span" variant="body2" color="text.secondary">
+                                        {member.name || ''}
+                                    </Typography>
+                                }
+                            />
+                        </ListItem>
+                        {index < response.results.length - 1 && <Divider component="li" />}
+                    </React.Fragment>
+                ))}
+            </List>
+            <Divider sx={{ my: 0 }} />
+        </Box>
+    );
+}
 
 /**
  * Its the default description of the space if none exists, just shows a random username that is member of that

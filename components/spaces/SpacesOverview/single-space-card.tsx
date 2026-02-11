@@ -63,12 +63,14 @@ interface CustomCardProps {
     space: SpaceDetailed;
     defaultDescription: React.ReactNode;
     children: React.ReactNode;
+    membersOverview?: React.ReactNode;
 }
 
 export const CustomCard = ({
     space,
     defaultDescription,
-    children
+    children,
+    membersOverview
 }: CustomCardProps) => {
     const router = useRouter();
     const maxDescLength: number = 77;
@@ -94,7 +96,7 @@ export const CustomCard = ({
                         </Box>
                     </Box>
                     <Box  py={1} pr={0} onClick={(e) => e.stopPropagation()} sx={{ marginLeft: 'auto' }} >
-                        <MoreOptionsMenu space={space} />
+                        <MoreOptionsMenu space={space} membersOverview={membersOverview} />
                     </Box>
                 </Box>
                 <Box
@@ -118,6 +120,7 @@ export const CustomCard = ({
                     <div onClick={(e) => e.stopPropagation()} >
                         {children}
                     </div>
+                    {/* this is the invite members button */}
                     <Box alignSelf='center' marginLeft='auto' onClick={(e) => e.stopPropagation()}>
                         <DialogModal
                             button={
@@ -130,7 +133,7 @@ export const CustomCard = ({
                                 </Button>
                             }
                             childrenTitle={'Invite Members'}
-                            childrenBody={<InviteMembers spaceId={space.id} />}
+                            childrenBody={<InviteMembers spaceId={space.id}>{membersOverview}</InviteMembers>}
                         />
                     </Box>
                 </Box>
