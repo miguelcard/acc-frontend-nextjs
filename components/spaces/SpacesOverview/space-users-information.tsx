@@ -4,6 +4,7 @@ import { getUsersFromSpace } from '@/lib/fetch-functions';
 
 // Re-export shared components for backwards compatibility
 export { AvatarsGroup, MembersList } from '@/components/shared/SpaceMembers/space-members';
+export { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickable-avatars-group';
 
 /**
  * Its the default description of the space if none exists, just shows a random username that is member of that

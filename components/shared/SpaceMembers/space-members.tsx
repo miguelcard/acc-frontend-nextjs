@@ -28,7 +28,7 @@ export async function AvatarsGroup({ spaceId }: {spaceId: number}) {
                     fontSize: '0.875rem',
                     backgroundColor: '#6d7efc',
                 },
-                cursor: 'default',
+                cursor: 'pointer',
             }}
         >
             {response.results.map((user: MemberT) => (

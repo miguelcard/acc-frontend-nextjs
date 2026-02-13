@@ -3,6 +3,7 @@ import { Box, Grid, Link, Typography } from '@mui/material';
 import { PaginatedResponse, SpaceDetailed } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
 import { AvatarsGroup, SpaceDefaultDescription, MembersList } from './space-users-information';
+import { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickable-avatars-group';
 import { getUserSpaces } from '@/lib/fetch-functions';
 import introImage from '@/public/images/spaces/spaces-intro.png';
 import Image from 'next/image';
@@ -39,9 +40,9 @@ export default async function SpacesOverview() {
                                 defaultDescription={<SpaceDefaultDescription spaceId={space.id} />}
                                 membersOverview={<MembersList spaceId={space.id} />}
                             >
-                                <Box>
+                                <ClickableAvatarsGroup membersOverview={<MembersList spaceId={space.id} />}>
                                     <AvatarsGroup spaceId={space.id} />
-                                </Box>
+                                </ClickableAvatarsGroup>
                             </CustomCard>
                         </Grid>
                     ))}
