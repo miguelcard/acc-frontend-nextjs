@@ -1,94 +1,9 @@
 import 'server-only';
-import React from 'react';
 import { MemberT, PaginatedResponse } from '@/lib/types-and-constants';
-import AvatarGroup from '@mui/material/AvatarGroup';
 import { getUsersFromSpace } from '@/lib/fetch-functions';
-import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
-import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography, Divider } from '@mui/material';
 
-/**
- * Group of avatars from users fetched from a specific space
- * This is a server component, it fetches the users pictures and we can pass it down as props/children to a
- * client component.
- */
-export async function AvatarsGroup({ spaceId }: {spaceId: number}) {
-    const maxPhotosShown: number = 4;
-    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxPhotosShown);
-
-    if (response?.error) {
-        return <></>
-    }
-
-    return (
-        <AvatarGroup
-            max={maxPhotosShown}
-            total={response.count}
-            sx={{
-                avatar: {
-                    fontSize: '0.875rem',
-                    backgroundColor: '#6d7efc',
-                },
-                cursor: 'default',
-            }}
-        >
-            {response.results.map((user: MemberT) => (
-
-                <UserAvatar key={user.id} user={user} initialsFontSize='1.2rem' />
-            ))}
-        </AvatarGroup>
-    );
-}
-
-
-/**
- * Detailed list of all members in a space showing avatar, username, and name
- * This is a server component that fetches all members and displays them in a list format
- */
-export async function MembersList({ spaceId }: { spaceId: number }) {
-    const maxMembersShown: number = 20;
-    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxMembersShown);
-
-    if (response?.error || !response.results.length) {
-        return (
-            <Box py={2}>
-                <Typography variant="body2" color="text.secondary">
-                    No members found in this space.
-                </Typography>
-            </Box>
-        );
-    }
-
-    return (
-        <Box>
-            <Typography variant="subtitle2" fontWeight={600} color="text.secondary" >
-                Members ({response.count})
-            </Typography>
-            <List sx={{ width: '100%', bgcolor: 'background.paper', maxHeight: 300, overflow: 'auto' }}>
-                {response.results.map((member: MemberT, index: number) => (
-                    <React.Fragment key={member.id}>
-                        <ListItem alignItems="flex-start" sx={{ px: 0, py: 0.5 }}>
-                            <ListItemAvatar>
-                                <UserAvatar user={member} circleDiameter={40} />
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={
-                                    <Typography component="span" variant="body1" fontWeight={500}>
-                                        {member.username}
-                                    </Typography>
-                                }
-                                secondary={
-                                    <Typography component="span" variant="body2" color="text.secondary">
-                                        {member.name || ''}
-                                    </Typography>
-                                }
-                            />
-                        </ListItem>
-                    </React.Fragment>
-                ))}
-            </List>
-        </Box>
-    );
-}
+// Re-export shared components for backwards compatibility
+export { AvatarsGroup, MembersList } from '@/components/shared/SpaceMembers/space-members';
 
 /**
  * Its the default description of the space if none exists, just shows a random username that is member of that
