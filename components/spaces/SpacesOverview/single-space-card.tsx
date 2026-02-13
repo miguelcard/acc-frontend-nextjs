@@ -53,6 +53,7 @@ const styles = {
     invite_button: {
         background: 'linear-gradient(to top, #638ef0, #82e7fe)',
         borderRadius: 50,
+        whiteSpace: 'nowrap',
         '& > *': {
             textTransform: 'none !important',
         },
@@ -117,11 +118,11 @@ export const CustomCard = ({
                 </Box>
                 <Box p={2} gap={2} display='flex' alignSelf='stretch' flexDirection='row'>
                     {/* this is the avatars group server component that can be passed as props to this client component */}
-                    <div onClick={(e) => e.stopPropagation()} >
+                    <Box onClick={(e) => e.stopPropagation()} sx={{ overflow: 'hidden', flexShrink: 1 }}>
                         {children}
-                    </div>
+                    </Box>
                     {/* this is the invite members button */}
-                    <Box alignSelf='center' marginLeft='auto' onClick={(e) => e.stopPropagation()}>
+                    <Box alignSelf='center' marginLeft='auto' flexShrink={0} onClick={(e) => e.stopPropagation()}>
                         <DialogModal
                             button={
                                 <Button

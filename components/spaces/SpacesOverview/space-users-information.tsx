@@ -83,11 +83,9 @@ export async function MembersList({ spaceId }: { spaceId: number }) {
                                 }
                             />
                         </ListItem>
-                        {index < response.results.length - 1 && <Divider component="li" />}
                     </React.Fragment>
                 ))}
             </List>
-            <Divider sx={{ my: 0 }} />
         </Box>
     );
 }
