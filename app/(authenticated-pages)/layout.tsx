@@ -9,7 +9,7 @@ export default function AuthenticatedLayout({children,}: {children: React.ReactN
                 sx={{
                     bgcolor: '#f5f5f5',
                     minHeight: '100vh',
-                    position: 'relative',
+                    position: 'static',
                     overflow: 'hidden',
                 }}
             >

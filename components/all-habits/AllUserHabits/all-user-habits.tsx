@@ -74,7 +74,7 @@ export function AllUserHabitsView({
 
                 return (
                     <Box key={space.id} sx={{ mb: 2 }}>
-                        {/* =========================================== Space name header */}
+                        {/* =============================== Space name header */}
                         <Box
                             component={'div'}
                             sx={{
@@ -87,7 +87,7 @@ export function AllUserHabitsView({
                                 color: 'black',
                             }}
                         >
-                            <Box pb={1} gap={1.5} display='flex' flexDirection='row'>
+                            <Box pb={0.5} gap={1.5} display='flex' flexDirection='row'>
                                 {/* ==== Space Avatar surrounded by colorful gradient ring =====*/}
                                 <DialogModal
                                     button={
@@ -169,12 +169,12 @@ const ColorfulSpaceAvatar = ({ spaceIcon, onClick }: { spaceIcon: string, onClic
             cursor: 'pointer',
             width: 39,
             height: 39,
-            p: '2px',
+            p: '0px',
             borderRadius: '0.75rem',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: "conic-gradient(from 0deg, #9A00FF, #4A00FF, #00E5FF, #00FFC8, #5E00FF, #B400FF, #FF00E5, #9A00FF)",
+            // background: "conic-gradient(from 0deg, #9A00FF, #4A00FF, #00E5FF, #00FFC8, #5E00FF, #B400FF, #FF00E5, #9A00FF)",
         }}
     >
         <Avatar
@@ -183,7 +183,6 @@ const ColorfulSpaceAvatar = ({ spaceIcon, onClick }: { spaceIcon: string, onClic
                 width: '100%',
                 height: '100%',
                 borderRadius: '0.75rem',
-                bgcolor: grey[500],
             }}
         >
             <SpaceIconAvatar iconAlias={spaceIcon} size={"lg"} />

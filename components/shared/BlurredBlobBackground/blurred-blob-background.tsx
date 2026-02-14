@@ -11,7 +11,7 @@ export function BlurredBlobBackground() {
             {/* Blurred blob background - top left (cyan blue) */}
             <Box
                 sx={{
-                    position: 'absolute',
+                    position: 'fixed',
                     top: '-150px',
                     left: '-150px',
                     width: '400px',
@@ -27,7 +27,7 @@ export function BlurredBlobBackground() {
             {/* Blurred blob background - bottom right (purple) */}
             <Box
                 sx={{
-                    position: 'absolute',
+                    position: 'fixed',
                     bottom: '-400px',
                     right: '-250px',
                     width: '600px',
