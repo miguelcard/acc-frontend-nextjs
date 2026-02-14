@@ -1,16 +1,19 @@
 import { BottomNavigationLayout } from "@/components/shared/BottomNavigationLayout/bottom-navigation-layout";
+import { BlurredBlobBackground } from "@/components/shared/BlurredBlobBackground/blurred-blob-background";
 import Box from "@mui/material/Box";
-import { grey } from '@mui/material/colors';
 
 export default function AuthenticatedLayout({children,}: {children: React.ReactNode;}) {
     return (
         <>
             <Box
                 sx={{
-                    bgcolor: grey[100],
-                    minHeight: '100vh'
+                    bgcolor: '#f5f5f5',
+                    minHeight: '100vh',
+                    position: 'relative',
+                    overflow: 'hidden',
                 }}
             >
+                <BlurredBlobBackground />
                 <BottomNavigationLayout>
                     {children}
                 </BottomNavigationLayout>

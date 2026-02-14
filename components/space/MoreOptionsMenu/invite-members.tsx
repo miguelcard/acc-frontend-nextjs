@@ -97,7 +97,7 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, chi
                     {children}
                 </Box>
             )}
-            <Typography variant="subtitle2" fontWeight={600} color="text.secondary" pb={1}>
+            <Typography variant="subtitle2" fontWeight={600} pb={1}>
                 Invite New Member
             </Typography>
             <FormikStepper

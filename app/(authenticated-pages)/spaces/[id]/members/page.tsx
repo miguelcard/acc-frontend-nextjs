@@ -27,47 +27,11 @@ export default async function SpaceMembersPage(props: { params: Promise<{ id: nu
             component="section"
             maxWidth="md"
             sx={{
-                bgcolor: '#f5f5f5',
                 minHeight: '100vh',
                 position: 'relative',
-                overflow: 'hidden',
             }}
         >
             <CssBaseline />
-
-            {/* Blurred blob background - top left (cyan blue) */}
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: '-150px',
-                    left: '-150px',
-                    width: '400px',
-                    height: '400px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #00BCD4 0%, #0097A7 100%)',
-                    filter: 'blur(80px)',
-                    opacity: 0.15,
-                    pointerEvents: 'none',
-                    zIndex: 0,
-                }}
-            />
-
-            {/* Blurred blob background - bottom right (purple) */}
-            <Box
-                sx={{
-                    position: 'absolute',
-                    bottom: '-400px',
-                    right: '-250px',
-                    width: '600px',
-                    height: '600px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)',
-                    filter: 'blur(80px)',
-                    opacity: 0.15,
-                    pointerEvents: 'none',
-                    zIndex: 0,
-                }}
-            />
 
             {/* Content wrapper - positioned above blobs */}
             <Box display="flex" flexDirection="column" width="100%" py={3} gap={2} position="relative" zIndex={1}>

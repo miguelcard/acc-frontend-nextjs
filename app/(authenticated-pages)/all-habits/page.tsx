@@ -42,7 +42,7 @@ export default async function AllHabitsOverview() {
         flexDirection="column"
         width="100%"
       >
-        <Typography fontSize='1.3em' fontWeight={800} pb={1} pt={2} color='secondary'>
+        <Typography fontSize='1.3em' fontWeight={800} pb={1} pt={2} >
           All my Habits by Space
         </Typography>
         <AllUserHabitsView userHabitsGroupedBySpace={groupedHabits} ></AllUserHabitsView>

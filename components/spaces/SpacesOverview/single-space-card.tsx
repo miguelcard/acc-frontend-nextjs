@@ -20,27 +20,12 @@ import { SpaceIconLogic } from '@/components/shared/space-icon';
 const styles = {
     root: {
         cursor: 'pointer',
-        // height: '100%',
         transition: '0.3s',
         position: 'relative',
-        '&:before': {
-            transition: '0.2s',
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            content: '""',
-            display: 'block',
-            backgroundColor: '#d9daf1',
-            borderRadius: '1rem',
-            zIndex: 0,
-            bottom: 0,
-        },
         '&:hover': {
-            '&:before': {
-                bottom: -6,
-            },
+            transform: 'translateY(-4px)',
             '& $card': {
-                boxShadow: '-12px 12px 64px 0 #bcc3d6',
+                boxShadow: '0 12px 40px 0 rgba(31, 38, 135, 0.2)',
             },
         },
     },
