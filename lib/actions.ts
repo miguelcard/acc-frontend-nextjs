@@ -241,7 +241,11 @@ export async function createSpaceRole(formData: FormikValues, spaceId: number) {
             return { error: customErrorMessageIfExists ?? 'Unable to invite user, please check that the username or email are correct or try again later.' };
         }
 
+        // Revalidate the members fetch specifically
+        revalidateTag(`space-${spaceId}-members`);
+        // Also revalidate the paths
         revalidatePath(`/spaces/${spaceId}`);
+        revalidatePath(`/spaces/${spaceId}/members`);
         return await res.json();
     } catch (error) {
         console.warn('createSpaceRole server action Error: ', getErrorMessage(error));
@@ -316,8 +320,12 @@ export async function removeUserFromSpace(spaceId: number, userId: number) {
             return { error: extractCustomErrorMessageIfExists(errorResp) };
         }
 
+        // Revalidate the members fetch specifically
+        revalidateTag(`space-${spaceId}-members`);
+        // Also revalidate the paths
         revalidatePath(`/spaces`);
         revalidatePath(`/spaces/${spaceId}`);
+        revalidatePath(`/spaces/${spaceId}/members`);
         return {}; // empty body as the delete response has no body to parse
     } catch (error) {
         console.warn('removeUserFromSpace server action Error: ', getErrorMessage(error));

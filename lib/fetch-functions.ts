@@ -125,6 +125,9 @@ export async function getUsersFromSpace(spaceId: number, resultsNumber: number) 
             'Content-Type': 'application/json',
             Cookie: `${await getAuthCookie()}`,
         },
+        next: {
+            tags: [`space-${spaceId}-members`], // Tag this fetch so it can be revalidated when members change
+        },
     };
 
     try {

@@ -14,7 +14,7 @@ export const CustomSnackbar = ({ text, isOpen, handleCloseToast}: SnackbarProps)
     return (
         <Snackbar
             open={isOpen}
-            autoHideDuration={7000}
+            autoHideDuration={4000}
             onClose={handleCloseToast}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             sx={{ pt: 2 }}

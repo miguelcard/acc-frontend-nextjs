@@ -9,7 +9,7 @@ import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options
 import { SpaceDetailed } from '@/lib/types-and-constants';
 import { setMaxStringLength } from '@/lib/client-utils';
 import ContentCard from '@/components/shared/ContentCard/content-card';
-import { InviteMembers } from '@/components/space/MoreOptionsMenu/invite-members';
+import { InviteMembersModalWithFeedback } from '@/components/space/MoreOptionsMenu/invite-members-modal-with-feedback';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
 
@@ -97,7 +97,7 @@ export const CustomCard = ({
                         </Box>
                     </Box>
                     <Box  py={1} pr={0} onClick={(e) => e.stopPropagation()} sx={{ marginLeft: 'auto' }} >
-                        <MoreOptionsMenu space={space} membersOverview={membersOverview} />
+                        <MoreOptionsMenu space={space} />
                     </Box>
                 </Box>
                 <Box
@@ -134,7 +134,7 @@ export const CustomCard = ({
                                 </Button>
                             }
                             childrenTitle={'Invite Members'}
-                            childrenBody={<InviteMembers spaceId={space.id}>{membersOverview}</InviteMembers>}
+                            childrenBody={<InviteMembersModalWithFeedback spaceId={space.id}>{membersOverview}</InviteMembersModalWithFeedback>}
                         />
                     </Box>
                 </Box>

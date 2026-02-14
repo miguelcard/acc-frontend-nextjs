@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useEffect } from 'react';
 import { MemberT } from '@/lib/types-and-constants';
 import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography, IconButton, CircularProgress } from '@mui/material';
 import { grey } from '@mui/material/colors';
@@ -24,6 +24,21 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
     const [openToast, setOpenToast] = useState<boolean>(false);
+
+    // Update local state when initialMembers prop changes (after server revalidation)
+    useEffect(() => {
+        setMembers(initialMembers);
+    }, [initialMembers]);
+
+    // Auto-close toast after 4 seconds
+    useEffect(() => {
+        if (openToast) {
+            const timer = setTimeout(() => {
+                setOpenToast(false);
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [openToast]);
 
     const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -77,7 +92,7 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
                     {errorMessage}
                 </Typography>
             )}
-            <List sx={{ width: '100%', bgcolor: 'background.paper', maxHeight: 300, overflow: 'auto' }}>
+            <List sx={{ width: '100%', bgcolor: 'transparent', maxHeight: 300, overflow: 'auto' }}>
                 {members.map((member: MemberT) => (
                     <ListItem
                         key={member.id}

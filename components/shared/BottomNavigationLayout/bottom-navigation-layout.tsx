@@ -25,14 +25,19 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
 
     return (
         /* a ref is used to scroll back to the top whenever the value changes (useRef hook + useEffect hook= DO AT THE END IF NEEDED*/
-        <Box sx={{ pb: 11 }} >
+        <Box sx={{ pb: 6 }} >
             <CssBaseline />
 
             {/* TODO: can I add this children from the layout.tsx and not having to pass them as children here? */}
             {children}
-
             <Paper
-                sx={{ position: 'fixed', bottom: -2, left: 0, right: 0 , zIndex: 1200 }}
+                sx={{ 
+                    position: 'fixed', 
+                    bottom: 0, 
+                    left: 0, 
+                    right: 0 , 
+                    zIndex: 1200
+                 }}
                 elevation={4}
             >
                 <BottomNavigation

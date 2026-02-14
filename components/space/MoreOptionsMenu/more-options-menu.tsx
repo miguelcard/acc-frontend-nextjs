@@ -16,15 +16,13 @@ import { SpaceT } from '@/lib/types-and-constants';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { EditSpaceDescription } from './edit-space-description';
-import { InviteMembers } from './invite-members';
 import { EditSpaceTitle } from './edit-space-title';
 import { ChangeAvatar } from './change-avatar';
 import { LeaveSpace } from './leave-space';
-import { CustomSnackbar } from '@/components/shared/Snackbar/snackbar';
+import { useRouter } from 'next/navigation';
 
 interface MoreOptionsMenuProps {
     space: SpaceT;
-    membersOverview?: React.ReactNode;
 }
 
 /**
@@ -32,7 +30,8 @@ interface MoreOptionsMenuProps {
  * choose between different options to edit the space, this options include:
  * Changing the space title and description, adding members, etc...
  */
-export function MoreOptionsMenu({ space, membersOverview }: MoreOptionsMenuProps) {
+export function MoreOptionsMenu({ space }: MoreOptionsMenuProps) {
+    const router = useRouter();
     // Anchor element to open menu
     const [anchorElOptions, setAnchorOptions] = useState<null | HTMLElement>(null);
 
@@ -44,22 +43,6 @@ export function MoreOptionsMenu({ space, membersOverview }: MoreOptionsMenuProps
         setAnchorOptions(null);
     };
 
-    // Sets toast open when user added successfully
-    const [openToast, setOpenToast] = useState<boolean>(false);
-
-    const handleToastOpen = () => {
-        setOpenToast(true);
-    };
-    
-    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        // if the user clicked somewhere outside the snackbar, do not close it.
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpenToast(false);
-    };
-    // end of specific toast functionalities
-
     type ClickHandler = (event: React.MouseEvent<HTMLElement>) => void;
 
     interface MenuOption {
@@ -67,6 +50,7 @@ export function MoreOptionsMenu({ space, membersOverview }: MoreOptionsMenuProps
         click: ClickHandler;
         icon: React.ReactElement;
         childrenBody?: React.ReactElement;
+        isLink?: boolean;
     }
 
     const sxIconStyle = { fontSize: 18, color: grey[500] };
@@ -92,9 +76,10 @@ export function MoreOptionsMenu({ space, membersOverview }: MoreOptionsMenuProps
             name: 'Members',
             click: () => {
                 handleCloseOptionsMenu();
+                router.push(`/spaces/${space.id}/members`);
             },
             icon: <PersonAddIcon sx={sxIconStyle} />,
-            childrenBody: <InviteMembers spaceId={space.id} handleToastOpen={handleToastOpen}>{membersOverview}</InviteMembers>,
+            isLink: true,
         },
         {
             name: 'Change avatar',
@@ -116,12 +101,6 @@ export function MoreOptionsMenu({ space, membersOverview }: MoreOptionsMenuProps
 
     return (
         <>
-            <CustomSnackbar
-                isOpen={openToast}
-                text={'Success! The user has been added to the Space. They can now view and contribute habits.'}
-                handleCloseToast={handleToastClose}
-            />
-            {/* if you wanted to add other snackbars here you would add the other ones here with different states triggered by other modals */}
             <Tooltip title="More options">
                 <IconButton onClick={handleOpenOptionsMenu} aria-label="More options" sx={{ ml: 'auto' }}>
                     <MoreVertIcon />
@@ -144,17 +123,24 @@ export function MoreOptionsMenu({ space, membersOverview }: MoreOptionsMenuProps
                 onClose={handleCloseOptionsMenu}
             >
                 {menuOptions.map((option) => (
-                    <DialogModal
-                        key={option.name}
-                        button={
-                            <MenuItem onClick={option.click}>
-                                <ListItemIcon>{option.icon}</ListItemIcon>
-                                <ListItemText sx={{ color: grey[700], pr: 7, py: 1 }}>{option.name}</ListItemText>
-                            </MenuItem>
-                        }
-                        childrenTitle={option.name}
-                        childrenBody={option.childrenBody}
-                    />
+                    option.isLink ? (
+                        <MenuItem key={option.name} onClick={option.click}>
+                            <ListItemIcon>{option.icon}</ListItemIcon>
+                            <ListItemText sx={{ color: grey[700], pr: 7, py: 1 }}>{option.name}</ListItemText>
+                        </MenuItem>
+                    ) : (
+                        <DialogModal
+                            key={option.name}
+                            button={
+                                <MenuItem onClick={option.click}>
+                                    <ListItemIcon>{option.icon}</ListItemIcon>
+                                    <ListItemText sx={{ color: grey[700], pr: 7, py: 1 }}>{option.name}</ListItemText>
+                                </MenuItem>
+                            }
+                            childrenTitle={option.name}
+                            childrenBody={option.childrenBody}
+                        />
+                    )
                 ))}
             </Menu>
         </>
