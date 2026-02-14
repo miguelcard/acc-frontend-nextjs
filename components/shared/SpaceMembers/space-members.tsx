@@ -5,6 +5,7 @@ import AvatarGroup from '@mui/material/AvatarGroup';
 import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 import { getUsersFromSpace } from '@/lib/fetch-functions';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
+import { MembersListEditable } from './members-list-editable';
 
 /**
  * Group of avatars from users fetched from a specific space
@@ -85,5 +86,32 @@ export async function MembersList({ spaceId }: { spaceId: number }) {
                 ))}
             </List>
         </Box>
+    );
+}
+
+/**
+ * Server component that fetches members and renders MembersListEditable with remove functionality.
+ * Use this in places where users should be able to remove members from the space (e.g., single space page).
+ */
+export async function MembersListWithRemove({ spaceId }: { spaceId: number }) {
+    const maxMembersShown: number = 20;
+    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxMembersShown);
+
+    if (response?.error) {
+        return (
+            <Box py={2}>
+                <Typography variant="body2" color="text.secondary">
+                    Unable to load members.
+                </Typography>
+            </Box>
+        );
+    }
+
+    return (
+        <MembersListEditable
+            members={response.results}
+            totalCount={response.count}
+            spaceId={spaceId}
+        />
     );
 }

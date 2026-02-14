@@ -288,6 +288,43 @@ export async function deleteSpaceRole(spaceId: number) {
     }
 }
 
+/**
+ * Server action to remove another user from a space (admin functionality)
+ * Calls the delete member endpoint with spaceId and userId
+ * @param spaceId The ID of the space
+ * @param userId The ID of the user to remove
+ * @returns deletion status
+ */
+export async function removeUserFromSpace(spaceId: number, userId: number) {
+    const removeUserUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/spaces/${spaceId}/members/${userId}`;
+
+    const requestOptions: RequestInit = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            Cookie: `${await getAuthCookie()}`,
+        },
+    };
+
+    try {
+        const res = await fetch(removeUserUrl, requestOptions);
+
+        if (!res.ok) {
+            const errorResp = await res.json();
+            console.warn('removeUserFromSpace server action Error: ' + getErrorMessage(errorResp));
+            console.warn(JSON.stringify(errorResp));
+            return { error: extractCustomErrorMessageIfExists(errorResp) };
+        }
+
+        revalidatePath(`/spaces`);
+        revalidatePath(`/spaces/${spaceId}`);
+        return {}; // empty body as the delete response has no body to parse
+    } catch (error) {
+        console.warn('removeUserFromSpace server action Error: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
 
 // ------ Users Actions ------
 

@@ -3,7 +3,7 @@ import { MemberT, PaginatedResponse } from '@/lib/types-and-constants';
 import { getUsersFromSpace } from '@/lib/fetch-functions';
 
 // Re-export shared components for backwards compatibility
-export { AvatarsGroup, MembersList } from '@/components/shared/SpaceMembers/space-members';
+export { AvatarsGroup, MembersList, MembersListWithRemove } from '@/components/shared/SpaceMembers/space-members';
 export { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickable-avatars-group';
 
 /**

@@ -16,7 +16,7 @@ import { grey } from '@mui/material/colors';
 import { getSpace, getUser } from '@/lib/fetch-functions';
 import { BackButtonAutoRouted } from '@/components/shared/back-button-auto-routed';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
-import { MembersList } from '@/components/shared/SpaceMembers/space-members';
+import { MembersList, MembersListWithRemove } from '@/components/shared/SpaceMembers/space-members';
 
 export default async function SingleSpace(props: { params: Promise<{ id: number }> }) {
     const params = await props.params;
@@ -157,7 +157,7 @@ export default async function SingleSpace(props: { params: Promise<{ id: number 
 
                         {/* Box for the more options menu */}
                         <Box>
-                            <MoreOptionsMenu space={space} membersOverview={<MembersList spaceId={id} />} />
+                            <MoreOptionsMenu space={space} membersOverview={<MembersListWithRemove spaceId={id} />} />
                         </Box>
                     </Box>
                 </Paper>
