@@ -64,7 +64,7 @@ export default async function SingleSpace(props: { params: Promise<{ id: number 
                 {/* Enclosing box for space header */}
                 <Paper
                     // elevation={2}
-                    variant="outlined"
+                    variant="elevation"
                     square
                     sx={{
                         width: '100vw',
@@ -74,6 +74,8 @@ export default async function SingleSpace(props: { params: Promise<{ id: number 
                         marginRight: '-50vw',
                         position: 'relative',
                         px: 1,
+                        bgcolor: 'transparent',
+                        boxShadow: 'none',
                     }}
                 >
                     <Box display="flex" alignItems="center" justifyContent="space-between"
