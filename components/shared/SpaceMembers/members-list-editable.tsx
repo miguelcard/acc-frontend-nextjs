@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useTransition, useEffect } from 'react';
 import { MemberT } from '@/lib/types-and-constants';
-import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography, IconButton, CircularProgress } from '@mui/material';
+import { Box, Chip, List, ListItem, ListItemAvatar, ListItemText, Typography, IconButton, CircularProgress } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
 import { removeUserFromSpace } from '@/lib/actions';
@@ -12,13 +12,15 @@ interface MembersListEditableProps {
     members: MemberT[];
     totalCount: number;
     spaceId: number;
+    currentUserId?: number;
+    isCurrentUserAdmin?: boolean;
 }
 
 /**
  * Client component that displays a list of members with the ability to remove them from the space.
  * Shows a remove icon next to each member that triggers the removal action when clicked.
  */
-export function MembersListEditable({ members: initialMembers, totalCount, spaceId }: MembersListEditableProps) {
+export function MembersListEditable({ members: initialMembers, totalCount, spaceId, currentUserId, isCurrentUserAdmin }: MembersListEditableProps) {
     const [members, setMembers] = useState<MemberT[]>(initialMembers);
     const [removingUserId, setRemovingUserId] = useState<number | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -99,24 +101,26 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
                         alignItems="flex-start"
                         sx={{ px: 0, py: 0.5 }}
                         secondaryAction={
-                            <IconButton
-                                edge="end"
-                                aria-label="remove member"
-                                onClick={() => handleRemoveUser(member.id)}
-                                disabled={removingUserId === member.id || isPending}
-                                sx={{
-                                    color: grey[500],
-                                    '&:hover': {
-                                        color: 'error.main',
-                                    },
-                                }}
-                            >
-                                {removingUserId === member.id ? (
-                                    <CircularProgress size={20} color="inherit" />
-                                ) : (
-                                    <RemoveCircle fontSize='small' />
-                                )}
-                            </IconButton>
+                            isCurrentUserAdmin && member.id !== currentUserId ? (
+                                <IconButton
+                                    edge="end"
+                                    aria-label="remove member"
+                                    onClick={() => handleRemoveUser(member.id)}
+                                    disabled={removingUserId === member.id || isPending}
+                                    sx={{
+                                        color: grey[500],
+                                        '&:hover': {
+                                            color: 'error.main',
+                                        },
+                                    }}
+                                >
+                                    {removingUserId === member.id ? (
+                                        <CircularProgress size={20} color="inherit" />
+                                    ) : (
+                                        <RemoveCircle fontSize='small' />
+                                    )}
+                                </IconButton>
+                            ) : undefined
                         }
                     >
                         <ListItemAvatar>
@@ -124,9 +128,24 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
                         </ListItemAvatar>
                         <ListItemText
                             primary={
-                                <Typography component="span" variant="body1" fontWeight={500} display="block">
-                                    {member.username}
-                                </Typography>
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <Typography component="span" variant="body1" fontWeight={500}>
+                                        {member.username}
+                                    </Typography>
+                                    {member.spacerole && member.spacerole.role === 'admin' && (
+                                        <Chip
+                                            label="Admin"
+                                            size="small"
+                                            sx={{
+                                                fontSize: '0.7rem',
+                                                height: 20,
+                                                bgcolor: 'rgba(82, 73, 245, 0.15)',
+                                                color: 'rgba(82, 73, 245, 0.95)',
+                                                fontWeight: 600,
+                                            }}
+                                        />
+                                    )}
+                                </Box>
                             }
                             secondary={
                                 <Typography component="span" variant="body2" color="text.secondary" display="block">

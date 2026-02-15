@@ -3,7 +3,7 @@ import React from 'react';
 import { MemberT, PaginatedResponse } from '@/lib/types-and-constants';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
-import { getUsersFromSpace } from '@/lib/fetch-functions';
+import { getUsersFromSpace, getUser } from '@/lib/fetch-functions';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
 import { MembersListEditable } from './members-list-editable';
 
@@ -96,6 +96,7 @@ export async function MembersList({ spaceId }: { spaceId: number }) {
 export async function MembersListWithRemove({ spaceId }: { spaceId: number }) {
     const maxMembersShown: number = 20;
     const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxMembersShown);
+    const currentUser = await getUser();
 
     if (response?.error) {
         return (
@@ -107,11 +108,16 @@ export async function MembersListWithRemove({ spaceId }: { spaceId: number }) {
         );
     }
 
+    const currentUserMember = response.results.find((m: MemberT) => m.id === currentUser?.id);
+    const isCurrentUserAdmin = currentUserMember?.spacerole?.role === 'admin';
+
     return (
         <MembersListEditable
             members={response.results}
             totalCount={response.count}
             spaceId={spaceId}
+            currentUserId={currentUser?.id}
+            isCurrentUserAdmin={isCurrentUserAdmin}
         />
     );
 }

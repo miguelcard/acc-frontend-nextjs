@@ -122,6 +122,13 @@ export type UserT = {
     error?: string;
 };
 
+export type SpaceRoleT = {
+    id: number;
+    role: string;
+    created_at: string;
+    updated_at: string;
+};
+
 export type MemberT = {
     id: number;
     username: string;
@@ -130,4 +137,5 @@ export type MemberT = {
     email: string;
     about: any;
     is_active: boolean;
+    spacerole?: SpaceRoleT;
 };
