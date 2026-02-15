@@ -74,8 +74,11 @@ export default async function SingleSpace(props: { params: Promise<{ id: number 
                         marginRight: '-50vw',
                         position: 'relative',
                         px: 1,
-                        bgcolor: 'transparent',
-                        boxShadow: 'none',
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        bgcolor: 'rgba(255, 255, 255, 0.45)',
+                        border: '1.5px solid rgba(255, 255, 255, 0.9)',
+                        boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
                     }}
                 >
                     <Box display="flex" alignItems="center" justifyContent="space-between"
