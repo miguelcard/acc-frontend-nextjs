@@ -1,7 +1,7 @@
 'use client';
 
 import { HabitT } from '@/lib/types-and-constants';
-import { Avatar, Box, ButtonBase, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
+import { Avatar, Box, ButtonBase, Divider, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import React, { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
 import DatesRangeSelector from '@/components/space/ScoreCard/dates-range-selector';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -149,6 +149,11 @@ export function AllUserHabitsView({
                                 </Box>
                             )}
                         </ContentCard>
+                        
+                        {/* Divider below the habits card */}
+                        {collapsedSpaces.includes(space.id) && (
+                            <Divider sx={{ my: 1, mx: 2 }} />
+                        )}
                     </Box>
                 );
             })}

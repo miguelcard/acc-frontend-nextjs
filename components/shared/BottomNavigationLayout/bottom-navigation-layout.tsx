@@ -36,16 +36,22 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
                     bottom: 0, 
                     left: 0, 
                     right: 0 , 
-                    zIndex: 1200
+                    zIndex: 1200,
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    bgcolor: 'rgba(255, 255, 255, 0.25)',
+                    border: '1.5px solid rgba(255, 255, 255, 0.9)',
+                    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
                  }}
-                elevation={4}
+                elevation={0}
             >
                 <BottomNavigation
                     showLabels
                     value={getPathValue()}
                     sx={{
+                        bgcolor: 'transparent',
                         '& .MuiBottomNavigationAction-root': {
-                          color: 'grey.400', // Unselected icon color
+                          color: 'grey.600', // Unselected icon color
                         },
                         '& .Mui-selected, & .Mui-selected > svg': {
                           color: 'black', // Selected icon and label color
