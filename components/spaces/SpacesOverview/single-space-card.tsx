@@ -36,9 +36,21 @@ const styles = {
         bgcolor: grey[500]
     },
     invite_button: {
-        background: 'linear-gradient(to top, #638ef0, #82e7fe)',
-        borderRadius: 50,
+        backdropFilter: 'blur(7px)',
+        WebkitBackdropFilter: 'blur(7px)',
+        bgcolor: 'rgba(82, 73, 245, 0.75)',
+        border: '1px solid rgba(101, 93, 255, 0.47)',
+        borderRadius: '16px',
         whiteSpace: 'nowrap',
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+        color: '#ffffff',
+        fontWeight: 600,
+        padding: '5px 10px',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+            bgcolor: 'rgba(101, 93, 255, 0.9)',
+            boxShadow: '0 8px 40px rgba(0, 0, 0, 0.15)',
+        },
         '& > *': {
             textTransform: 'none !important',
         },
@@ -113,7 +125,7 @@ export const CustomCard = ({
                                 <Button
                                     sx={styles.invite_button}
                                     variant={'contained'}
-                                    color={'primary'}
+                                    color={'secondary'}
                                 >
                                     {'Invite Members +'}
                                 </Button>

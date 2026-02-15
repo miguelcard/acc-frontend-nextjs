@@ -19,7 +19,7 @@ export function BlurredBlobBackground() {
                     borderRadius: '50%',
                     background: 'linear-gradient(135deg, #00BCD4 0%, #0097A7 100%)',
                     filter: 'blur(80px)',
-                    opacity: 0.15,
+                    opacity: 0.20,
                     pointerEvents: 'none',
                     zIndex: 0,
                 }}
@@ -35,7 +35,7 @@ export function BlurredBlobBackground() {
                     borderRadius: '50%',
                     background: 'linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)',
                     filter: 'blur(80px)',
-                    opacity: 0.15,
+                    opacity: 0.25,
                     pointerEvents: 'none',
                     zIndex: 0,
                 }}
