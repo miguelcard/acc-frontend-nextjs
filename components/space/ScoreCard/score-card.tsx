@@ -62,7 +62,7 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
     };
 
     return (
-        <>
+        <Box mb={9}>
             <DatesRangeSelector dates={dates} setDates={setDates} updateCheckedDates={handleDateRangeUpdate} />
             {orderedMembers.map((member) => {
                 const ownerHabits = spaceHabits?.filter((habit) => habit.owner === member.id);
@@ -148,6 +148,6 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
                     </Box>
                 );
             })}
-        </>
+        </Box>
     );
 }

@@ -5,8 +5,9 @@ import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import Image from 'next/image';
 import createHabitImage from '@/public/images/spaces/create-habit-hand.svg';
 import CreateHabitForm from './create-habit-form';
-import { Button } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import { InviteMembers } from '../MoreOptionsMenu/invite-members';
+import AddRoundedIcon  from '@mui/icons-material/AddRounded';
 
 type Props = 
 { 
@@ -49,14 +50,16 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
         }),
     };
 
-    const BottomActionButton = ({text, icon}: {text: string, icon: React.ReactNode}) => (
-        <Button
-            variant="contained"
-            sx={buttonStyles}
-            endIcon={icon}
-        >
+    const BottomActionButton = ({ text, icon }: { text: string; icon: React.ReactNode }) => (
+        <Button variant="contained" sx={buttonStyles} endIcon={icon}>
             {text}
         </Button>
+    );
+
+    const BottomActionButtonSmall = ({ icon }: { icon: React.ReactNode }) => (
+        <IconButton color="secondary" aria-label="add to shopping cart" size='small' >
+            <AddCircleRoundedIcon sx={{fontSize: '2.3em'}}/>
+        </IconButton>
     );
 
     return (
@@ -69,16 +72,24 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
                 flexDirection: 'column',
                 alignItems: 'flex-end',
                 gap: 2,
-                mb: 2
+                mb: 1,
             }}
         >
-            {isFirstSpaceHabit && <DialogModal
-                button={<BottomActionButton text={'Invite Members'} icon={<AddCircleRoundedIcon />} />}
-                childrenTitle={'Invite Members'}
-                childrenBody={<InviteMembers spaceId={spaceId} />}
-            />}
+            {isFirstSpaceHabit && (
+                <DialogModal
+                    button={<BottomActionButton text={'Invite Members'} icon={<AddCircleRoundedIcon />} />}
+                    childrenTitle={'Invite Members'}
+                    childrenBody={<InviteMembers spaceId={spaceId} />}
+                />
+            )}
             <DialogModal
-                button={<BottomActionButton text={'Add your first habit'} icon={<AddCircleRoundedIcon />} />}
+                button={
+                    isFirstSpaceHabit ? (
+                        <BottomActionButton text={'Add your first habit'} icon={<AddCircleRoundedIcon />} />
+                    ) : (
+                        <BottomActionButtonSmall icon={<AddRoundedIcon />} />
+                    )
+                }
                 childrenTitle={<CreateHabitDialogTitle />}
                 childrenBody={<CreateHabitForm spaceId={spaceId} />}
             />
