@@ -1,13 +1,11 @@
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import AddRoundedIcon  from '@mui/icons-material/AddRounded';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import Image from 'next/image';
 import createHabitImage from '@/public/images/spaces/create-habit-hand.svg';
 import CreateHabitForm from './create-habit-form';
-import IconButton from '@mui/material/IconButton';
-import styles from './create-habit-modal.module.css';
+import { Button } from '@mui/material';
 import { InviteMembers } from '../MoreOptionsMenu/invite-members';
 
 type Props = 
@@ -24,23 +22,41 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
     
     const {spaceId, isFirstSpaceHabit} = props;
 
-    const AddHabitOrInviteMemberButton = ({noExistingHabitsText, existingHabitsText} : { noExistingHabitsText: string, existingHabitsText: string}) => (
-        <Box maxWidth="lg" sx={{ display: 'inline-block' }} >
-            <IconButton 
-                className={`${styles['new_habit_button']} ${isFirstSpaceHabit ? styles['pulse_animation'] : ''}`}
-            >
-                <Typography fontWeight={600} fontSize={'0.6em'}
-                    className={`${isFirstSpaceHabit ? '' : styles['new_habit_button_text']}`}
-                >
-                    {isFirstSpaceHabit ? noExistingHabitsText : existingHabitsText }
-                </Typography>
-                {isFirstSpaceHabit ?
-                    <AddCircleRoundedIcon sx={{ marginLeft: 1, scale: { xs: 1, sm: 1.2, md: 1.3 } }} />
-                    :
-                    <AddRoundedIcon sx={{ scale: { xs: 1, sm: 1.2, md: 1.3 } }} />
-                }
-            </IconButton>
-        </Box>
+    const buttonStyles = {
+        backdropFilter: 'blur(7px)',
+        WebkitBackdropFilter: 'blur(7px)',
+        bgcolor: 'rgba(82, 73, 245, 0.75)',
+        border: '1px solid rgba(101, 93, 255, 0.47)',
+        borderRadius: '32px',
+        whiteSpace: 'nowrap',
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+        color: '#ffffff',
+        fontWeight: 600,
+        padding: '4px 10px',
+        transition: 'all 0.3s ease',
+        textTransform: 'none',
+        '&:hover': {
+            bgcolor: 'rgba(101, 93, 255, 0.9)',
+            boxShadow: '0 8px 40px rgba(0, 0, 0, 0.15)',
+        },
+        ...(isFirstSpaceHabit && {
+            animation: 'pulse 5s infinite',
+            '@keyframes pulse': {
+                '0%': { transform: 'scale(1)' },
+                '50%': { transform: 'scale(1.05)' },
+                '100%': { transform: 'scale(1)' },
+            },
+        }),
+    };
+
+    const BottomActionButton = ({text, icon}: {text: string, icon: React.ReactNode}) => (
+        <Button
+            variant="contained"
+            sx={buttonStyles}
+            endIcon={icon}
+        >
+            {text}
+        </Button>
     );
 
     return (
@@ -52,15 +68,17 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-end',
+                gap: 2,
+                mb: 2
             }}
         >
             {isFirstSpaceHabit && <DialogModal
-                button={<AddHabitOrInviteMemberButton noExistingHabitsText={'Invite Members'} existingHabitsText={''} />}
+                button={<BottomActionButton text={'Invite Members'} icon={<AddCircleRoundedIcon />} />}
                 childrenTitle={'Invite Members'}
                 childrenBody={<InviteMembers spaceId={spaceId} />}
             />}
             <DialogModal
-                button={<AddHabitOrInviteMemberButton noExistingHabitsText={'Add your first habit'} existingHabitsText={'Habit'} />}
+                button={<BottomActionButton text={'Add your first habit'} icon={<AddCircleRoundedIcon />} />}
                 childrenTitle={<CreateHabitDialogTitle />}
                 childrenBody={<CreateHabitForm spaceId={spaceId} />}
             />
