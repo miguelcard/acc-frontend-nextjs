@@ -1,11 +1,14 @@
 'use client';
 import React, { useState, useTransition, useEffect } from 'react';
 import { MemberT } from '@/lib/types-and-constants';
-import { Box, Chip, List, ListItem, ListItemAvatar, ListItemText, Typography, IconButton, CircularProgress } from '@mui/material';
+import { Box, Chip, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Menu, MenuItem, Typography, IconButton, CircularProgress } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
-import { removeUserFromSpace } from '@/lib/actions';
+import { removeUserFromSpace, updateSpaceRole } from '@/lib/actions';
 import { RemoveCircle } from '@mui/icons-material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AddModeratorIcon from '@mui/icons-material/AddModerator';
+import RemoveModeratorIcon from '@mui/icons-material/RemoveModerator';
 import { CustomSnackbar } from '@/components/shared/Snackbar/snackbar';
 
 interface MembersListEditableProps {
@@ -26,18 +29,21 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
     const [openToast, setOpenToast] = useState<boolean>(false);
+    const [toastMessage, setToastMessage] = useState<string>('');
+    const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+    const [menuMemberId, setMenuMemberId] = useState<number | null>(null);
 
     // Update local state when initialMembers prop changes (after server revalidation)
     useEffect(() => {
         setMembers(initialMembers);
     }, [initialMembers]);
 
-    // Auto-close toast after 4 seconds
+    // Auto-close toast after 3 seconds
     useEffect(() => {
         if (openToast) {
             const timer = setTimeout(() => {
                 setOpenToast(false);
-            }, 4000);
+            }, 3000);
             return () => clearTimeout(timer);
         }
     }, [openToast]);
@@ -65,6 +71,34 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
             // Remove the user from the local state
             setMembers((prev) => prev.filter((member) => member.id !== userId));
             setRemovingUserId(null);
+            setToastMessage('Member removed from space successfully.');
+            setOpenToast(true);
+        });
+    };
+
+    const handleToggleAdmin = async (member: MemberT) => {
+        if (!member.spacerole) return;
+        setErrorMessage(null);
+
+        const newRole = member.spacerole.role === 'admin' ? 'member' : 'admin';
+
+        startTransition(async () => {
+            const result = await updateSpaceRole(member.spacerole!.id, newRole, spaceId);
+
+            if (result?.error) {
+                setErrorMessage(result.error);
+                return;
+            }
+
+            // Update the role in local state
+            setMembers((prev) =>
+                prev.map((m) =>
+                    m.id === member.id
+                        ? { ...m, spacerole: { ...m.spacerole!, role: newRole } }
+                        : m
+                )
+            );
+            setToastMessage(newRole === 'admin' ? 'User promoted to admin.' : 'Admin permissions removed.');
             setOpenToast(true);
         });
     };
@@ -83,7 +117,7 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
         <Box>
             <CustomSnackbar
                 isOpen={openToast}
-                text="Member removed from space successfully."
+                text={toastMessage}
                 handleCloseToast={handleToastClose}
             />
             <Typography variant="subtitle2" fontWeight={600} color="text.secondary">
@@ -102,24 +136,63 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
                         sx={{ px: 0, py: 0.5 }}
                         secondaryAction={
                             isCurrentUserAdmin && member.id !== currentUserId ? (
-                                <IconButton
-                                    edge="end"
-                                    aria-label="remove member"
-                                    onClick={() => handleRemoveUser(member.id)}
-                                    disabled={removingUserId === member.id || isPending}
-                                    sx={{
-                                        color: grey[500],
-                                        '&:hover': {
-                                            color: 'error.main',
-                                        },
-                                    }}
-                                >
-                                    {removingUserId === member.id ? (
-                                        <CircularProgress size={20} color="inherit" />
-                                    ) : (
-                                        <RemoveCircle fontSize='small' />
-                                    )}
-                                </IconButton>
+                                <>
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="member options"
+                                        onClick={(e) => {
+                                            setMenuAnchor(e.currentTarget);
+                                            setMenuMemberId(member.id);
+                                        }}
+                                        disabled={removingUserId === member.id || isPending}
+                                        sx={{ color: grey[500] }}
+                                    >
+                                        {removingUserId === member.id ? (
+                                            <CircularProgress size={20} color="inherit" />
+                                        ) : (
+                                            <MoreVertIcon fontSize='small' />
+                                        )}
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={menuAnchor}
+                                        open={menuMemberId === member.id && Boolean(menuAnchor)}
+                                        onClose={() => { setMenuAnchor(null); setMenuMemberId(null); }}
+                                    >
+                                        {member.spacerole && (
+                                            <MenuItem
+                                                onClick={() => {
+                                                    setMenuAnchor(null);
+                                                    setMenuMemberId(null);
+                                                    handleToggleAdmin(member);
+                                                }}
+                                            >
+                                                <ListItemIcon>
+                                                    {member.spacerole.role === 'admin' ? (
+                                                        <RemoveModeratorIcon fontSize='small' sx={{ color: grey[600] }} />
+                                                    ) : (
+                                                        <AddModeratorIcon fontSize='small' sx={{ color: grey[600] }} />
+                                                    )}
+                                                </ListItemIcon>
+                                                <ListItemText>
+                                                    {member.spacerole.role === 'admin' ? 'Remove admin' : 'Make admin'}
+                                                </ListItemText>
+                                            </MenuItem>
+                                        )}
+                                        <MenuItem
+                                            onClick={() => {
+                                                setMenuAnchor(null);
+                                                setMenuMemberId(null);
+                                                handleRemoveUser(member.id);
+                                            }}
+                                            sx={{ color: 'error.main' }}
+                                        >
+                                            <ListItemIcon>
+                                                <RemoveCircle fontSize='small' sx={{ color: 'error.main' }} />
+                                            </ListItemIcon>
+                                            <ListItemText>Remove user from group</ListItemText>
+                                        </MenuItem>
+                                    </Menu>
+                                </>
                             ) : undefined
                         }
                     >

@@ -333,6 +333,46 @@ export async function removeUserFromSpace(spaceId: number, userId: number) {
     }
 }
 
+/**
+ * Server action to update a user's spacerole (e.g., promote to admin or demote to member)
+ * Calls PATCH /api/v1/spaceroles/manage/{spaceroleId}
+ * @param spaceroleId The ID of the spacerole to update
+ * @param role The new role to assign ('admin' or 'member')
+ * @param spaceId The ID of the space (for cache revalidation)
+ * @returns updated spacerole or error
+ */
+export async function updateSpaceRole(spaceroleId: number, role: string, spaceId: number) {
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/spaceroles/manage/${spaceroleId}`;
+
+    const requestOptions: RequestInit = {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            Cookie: `${await getAuthCookie()}`,
+        },
+        body: JSON.stringify({ role }),
+    };
+
+    try {
+        const res = await fetch(url, requestOptions);
+
+        if (!res.ok) {
+            const errorResp = await res.json();
+            console.warn('updateSpaceRole server action Error: ' + getErrorMessage(errorResp));
+            return { error: extractCustomErrorMessageIfExists(errorResp) };
+        }
+
+        const data = await res.json();
+        revalidateTag(`space-${spaceId}-members`);
+        revalidatePath(`/spaces/${spaceId}`);
+        revalidatePath(`/spaces/${spaceId}/members`);
+        return data;
+    } catch (error) {
+        console.warn('updateSpaceRole server action Error: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
 
 // ------ Users Actions ------
 
