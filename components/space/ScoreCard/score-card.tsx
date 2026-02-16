@@ -1,7 +1,7 @@
 'use client';
 
 import { HabitT, MemberT, UserT } from '@/lib/types-and-constants';
-import { Box, ButtonBase, Typography } from '@mui/material';
+import { Box, ButtonBase, Divider, Typography } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import DatesRangeSelector from './dates-range-selector';
 import { SmallScreenHabitScoreCard } from './score-card-sizes/small-screen-habit-score-card';
@@ -140,6 +140,11 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
                                 <Box sx={{ padding: '10px', textAlign: 'center' }}> No habits created yet</Box>
                             )}
                         </ContentCard>
+                        
+                        {/* Divider below the scorecard */}
+                        {collapsedOwners.includes(member.id) && (
+                            <Divider sx={{ my: 1, mx: 2 }} />
+                        )}
                     </Box>
                 );
             })}
