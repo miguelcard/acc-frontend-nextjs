@@ -5,7 +5,6 @@ import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import NextLink from 'next/link';
-import Image from 'next/image';
 import logo from '@/public/images/headers/avidhabits.png';
 import curvedLogo from '@/public/images/headers/avidhabits-curved.svg';
 import Box from '@mui/material/Box';
@@ -60,8 +59,8 @@ export default function AuthenticatedLayout() {
                         },
                     }}
                 >
-                    <Image
-                        src={curvedLogo}
+                    <img
+                        src={curvedLogo.src ?? curvedLogo}
                         alt="logo"
                         style={{
                             width: '100%', // Fill the parent Box
@@ -104,12 +103,11 @@ const OldNavBarMenu= () => {
                 component={NextLink}
                 href="/"
             >
-                <Image
-                    src={logo}
+                <img
+                    src={logo.src ?? logo}
                     width={130}
-                    height={0}
                     alt="logo"
-                    // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
+                    style={{ height: 'auto' }}
                 />
             </Link>
             {/* <Box

@@ -8,7 +8,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import NextLink from 'next/link';
 import logoSecondary from '@/public/images/headers/avidhabits-secondary.png';
-import Image from 'next/image';
+
 import styles from './auth-navbar.module.css';
 
 
@@ -31,12 +31,11 @@ export default function AuthNavbar(props: AuthNavBarProps) {
                             component={NextLink}
                             href="/"
                         >
-                            <Image
-                                src={logoSecondary}
+                            <img
+                                src={logoSecondary.src ?? logoSecondary}
                                 width={130}
-                                height={0}
                                 alt="logo"
-                            // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
+                                style={{ height: 'auto' }}
                             />
                         </Link>
                         <Box

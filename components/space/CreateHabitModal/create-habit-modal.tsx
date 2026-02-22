@@ -2,7 +2,6 @@ import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
-import Image from 'next/image';
 import createHabitImage from '@/public/images/spaces/create-habit-hand.svg';
 import CreateHabitForm from './create-habit-form';
 import { Button, IconButton } from '@mui/material';
@@ -101,7 +100,7 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
 export const CreateHabitDialogTitle = () => (
     <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
         <Box sx={{ my: 2 }}>
-            <Image src={createHabitImage} width={200} height={0} alt="habit" />
+            <img src={createHabitImage.src ?? createHabitImage} width={200} alt="habit" style={{ height: 'auto' }} />
         </Box>
         <Typography fontWeight={600} fontSize="1em" pb={2}>
             Create new Habit

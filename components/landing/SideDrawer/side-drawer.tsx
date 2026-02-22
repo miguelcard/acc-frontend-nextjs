@@ -3,7 +3,7 @@ import Drawer from '@mui/material/Drawer';
 import React from 'react';
 import logoSecondary from '@/public/images/headers/avidhabits-secondary.png';
 import Link from "@mui/material/Link";
-import Image from 'next/image';
+
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
@@ -56,12 +56,11 @@ export default function SideDrawer({ mobileOpen, handleDrawerToggle, navbarPages
                             component={NextLink}
                             href="/"
                         >
-                            <Image
-                                src={logoSecondary}
+                            <img
+                                src={logoSecondary.src ?? logoSecondary}
                                 width={120}
-                                height={0}
                                 alt="logo"
-                            // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
+                                style={{ height: 'auto' }}
                             />
                         </Link>
                         <IconButton

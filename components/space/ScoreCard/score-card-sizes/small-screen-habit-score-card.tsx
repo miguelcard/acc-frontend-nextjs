@@ -6,7 +6,6 @@ import { HabitOptionsMenu } from './HabitOptionsMenu/habit-options-menu';
 import { toggleCheckmark } from './checkmark-toggle';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { ubuntu } from '@/styles/fonts/fonts';
-import Image from 'next/image';
 import checkedImage from '@/public/images/spaces/checkbox-tick.svg';
 import { grey } from '@mui/material/colors';
 
@@ -124,11 +123,11 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                                             // Checked icon
                                             checkedIcon={
                                                 <Box display="flex" alignItems="center" >
-                                                    <Image
-                                                        src={checkedImage}
+                                                    <img
+                                                        src={checkedImage.src ?? checkedImage}
                                                         width={isToday? 40 : 30}
-                                                        height={0}
                                                         alt="checked"
+                                                        style={{ height: 'auto' }}
                                                     />
                                                 </Box>
                                             }

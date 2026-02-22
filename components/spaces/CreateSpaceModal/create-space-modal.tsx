@@ -5,7 +5,6 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import AddIcon from '@mui/icons-material/Add';
 import GroupsIcon from '@mui/icons-material/Groups';
-import Image from 'next/image';
 import planet from '@/public/images/spaces/planet.png';
 
 /**
@@ -46,12 +45,11 @@ const CreateSpaceDialogTitle = () => {
                 alignItems="center"
                 flexDirection="column"
             >
-                <Image
-                    src={planet}
+                <img
+                    src={planet.src ?? planet}
                     width={120}
-                    height={0}
                     alt="logo"
-                // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
+                    style={{ height: 'auto' }}
                 />
                 <Typography fontWeight={600} fontSize='1em' pb={2}>
                     Create new Space

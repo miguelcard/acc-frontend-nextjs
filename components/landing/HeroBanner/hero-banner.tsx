@@ -3,7 +3,7 @@ import React from 'react'
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import heroImage from '@/public/images/landing/hero-image.png';
-import Image from 'next/image';
+
 import HeroText from '../HeroText/hero-text';
 
 /**
@@ -29,13 +29,11 @@ export default function HeroBanner() {
                 <Grid size={{ md: 6 }}
                     sx={{ textAlign: 'center' }}
                 >
-                    <Image
-                        src={heroImage}
+                    <img
+                        src={heroImage.src ?? heroImage}
                         width={300}
-                        height={0}
                         alt="hero"
-                        style={{ position: "relative" }}
-                    // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
+                        style={{ position: "relative", height: 'auto' }}
                     />
                 </Grid>
             </Grid>

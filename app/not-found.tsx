@@ -1,6 +1,5 @@
 'server-only';
 import notFoundSpaces from '@/public/images/errors/not-found-spaces.svg';
-import Image from 'next/image';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -56,7 +55,7 @@ export default function NotFound() {
         >
           404
         </Typography>
-        <Image src={notFoundSpaces} width={180} alt="not-found" style={{ position: "relative", zIndex: 1 }} />
+        <img src={notFoundSpaces.src ?? notFoundSpaces} width={180} alt="not-found" style={{ position: "relative", zIndex: 1, height: 'auto' }} />
       </Box>
 
       <Button component={Link} href="/spaces" variant='contained' sx={{bgcolor: 'black', textTransform: 'none' }}  >Back to Homepage</Button>

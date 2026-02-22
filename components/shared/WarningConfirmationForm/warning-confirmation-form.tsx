@@ -3,7 +3,6 @@ import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/for
 import Box from '@mui/material/Box';
 import React, { useState } from 'react';
 import { Typography } from '@mui/material';
-import Image from 'next/image';
 import leaveSpaceWarningSvg from '@/public/images/spaces/leave-space-warning.svg';
 
 interface WarningConfirmationFormProps {
@@ -59,7 +58,7 @@ export function WarningConfirmationForm({
                     paddingBottom={2}
                 >
                     <Box>
-                        <Image src={leaveSpaceWarningSvg} width={150} alt="warning" />
+                        <img src={leaveSpaceWarningSvg.src ?? leaveSpaceWarningSvg} width={150} alt="warning" style={{ height: 'auto' }} />
                     </Box>
                     {errorMessage ? (
                         <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light">

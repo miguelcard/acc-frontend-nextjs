@@ -9,7 +9,7 @@ import Button, { ButtonPropsColorOverrides, ButtonPropsVariantOverrides } from '
 import { OverridableStringUnion } from '@mui/types';
 import NextLink from 'next/link';
 import Link from "@mui/material/Link";
-import Image from 'next/image';
+
 import styles from './landing-navbar.module.css';
 import { LandingNavbarSm } from './landing-navbar-sm';
 import SideDrawer from '../SideDrawer/side-drawer';
@@ -93,12 +93,11 @@ const LandingNavbar: React.FC = () => {
                             component={NextLink}
                             href="/"
                         >
-                            <Image
-                                src={logo}
+                            <img
+                                src={logo.src ?? logo}
                                 width={130}
-                                height={0}
                                 alt="logo"
-                            // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
+                                style={{ height: 'auto' }}
                             />
                         </Link>
                         <Box

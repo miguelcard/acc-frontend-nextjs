@@ -6,7 +6,6 @@ import { AvatarsGroup, SpaceDefaultDescription, MembersList } from './space-user
 import { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickable-avatars-group';
 import { getUserSpaces } from '@/lib/fetch-functions';
 import introImage from '@/public/images/spaces/spaces-intro.png';
-import Image from 'next/image';
 import NextLink from 'next/link';
 
 
@@ -74,11 +73,11 @@ const NoExistingSpacesText = () => {
                 </Link>
             </Typography>
             
-            <Image
-                src={introImage}
+            <img
+                src={introImage.src ?? introImage}
                 width={180}
-                height={0}
                 alt="into"
+                style={{ height: 'auto' }}
             />
 
             <Typography textAlign='center' fontWeight="600" fontSize='0.9em' sx={{ py: 3 }}>

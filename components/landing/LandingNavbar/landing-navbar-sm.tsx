@@ -1,7 +1,7 @@
 import Link from '@mui/material/Link';
 import * as React from 'react';
 import NextLink from 'next/link';
-import Image from 'next/image';
+
 import logo from '@/public/images/headers/avidhabits.png';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -28,12 +28,11 @@ export function LandingNavbarSm({ handleDrawerToggle, actionButtons }: LandingNa
                 component={NextLink}
                 href="/"
             >
-                <Image
-                    src={logo}
+                <img
+                    src={logo.src ?? logo}
                     width={115}
-                    height={0}
                     alt="logo"
-                // sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' define something like this to improve future performance on images
+                    style={{ height: 'auto' }}
                 />
             </Link>
 
