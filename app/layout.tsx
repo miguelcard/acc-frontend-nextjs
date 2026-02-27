@@ -1,4 +1,5 @@
 import ThemeRegistry from '@/components/theme/theme-registry';
+import { AuthProvider } from '@/lib/auth/auth-context';
 import './globals.css';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
@@ -22,20 +23,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en">
             <body>
                 <ThemeRegistry options={{ key: 'mui', prepend: true }}>
-                    <Toaster
-                        position="top-center"
-                        toastOptions={{
-                            style: {
-                                background: 'whiteSmoke',
-                                textAlign: 'center',
-                                zIndex: '99999999',
-                            },
-                            duration: 3000,
-                        }}
-                    />
-                    <NextIntlClientProvider>
-                        {children}
-                    </NextIntlClientProvider>
+                    <AuthProvider>
+                        <Toaster
+                            position="top-center"
+                            toastOptions={{
+                                style: {
+                                    background: 'whiteSmoke',
+                                    textAlign: 'center',
+                                    zIndex: '99999999',
+                                },
+                                duration: 3000,
+                            }}
+                        />
+                        <NextIntlClientProvider>
+                            {children}
+                        </NextIntlClientProvider>
+                    </AuthProvider>
                 </ThemeRegistry>
             </body>
         </html>
