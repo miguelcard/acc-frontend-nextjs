@@ -1,42 +1,52 @@
-import 'server-only';
+'use client';
+import { useEffect, useState } from 'react';
 import { AllUserHabitsView } from '@/components/all-habits/AllUserHabits/all-user-habits';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
+import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
 import { HabitT, PaginatedResponse, SpaceT } from '@/lib/types-and-constants';
 import { getAllUserRecurrentHabits, getUserSpaces } from '@/lib/fetch-functions';
 import { groupHabitsBySpace, SpaceHabitsGroup } from '@/lib/utils/group-habits-by-space';
 import Typography from '@mui/material/Typography';
 
-export default async function AllHabitsOverview() {
-  const habitsPaginated:  PaginatedResponse<HabitT> = await getAllUserRecurrentHabits();
+export default function AllHabitsOverview() {
+  const [groupedHabits, setGroupedHabits] = useState<SpaceHabitsGroup[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (habitsPaginated?.error) {
-    console.warn('Could not fetch all user recurrent habits: ', habitsPaginated.error);
-    return;
+  useEffect(() => {
+    Promise.all([getAllUserRecurrentHabits(), getUserSpaces()]).then(([habitsPaginated, spacesPaginated]) => {
+      if (habitsPaginated?.error) {
+        console.warn('Could not fetch all user recurrent habits: ', habitsPaginated.error);
+        setLoading(false);
+        return;
+      }
+      if (spacesPaginated?.error) {
+        console.warn('retrieving user spaces has an error :', spacesPaginated.error);
+        setLoading(false);
+        return;
+      }
+      const habits: HabitT[] = habitsPaginated.results;
+      const spaces: SpaceT[] = spacesPaginated.results;
+      setGroupedHabits(groupHabitsBySpace(habits, spaces));
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
   }
-  const habits: HabitT[] = habitsPaginated.results;
 
-  const spacesPaginated: PaginatedResponse<SpaceT> = await getUserSpaces();
-  
-  if (spacesPaginated?.error) {
-    // TODO how do I display this error messages in the gui without having to create a client component?
-    // use sub-(client)-component ?
-    // or just throw error to be handled by next js
-    console.warn('retrieving user spaces has an error :', spacesPaginated.error);
-    return;
+  if (!groupedHabits) {
+    return null;
   }
-  const spaces: SpaceT[] = spacesPaginated.results;
-
-  const groupedHabits: SpaceHabitsGroup[] = groupHabitsBySpace(habits, spaces);
 
   return (
     <Container component="section" maxWidth="lg">
       <CssBaseline />
       <Box
         display="flex"
-        // position="relative"
         justifyContent="center"
         alignItems="center"
         flexDirection="column"

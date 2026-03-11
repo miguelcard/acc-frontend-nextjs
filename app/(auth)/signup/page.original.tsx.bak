@@ -1,0 +1,77 @@
+/**
+ * Original Signup page UI — preserved for future account linking.
+ * Rename this back to page.tsx when implementing signup/account linking.
+ */
+'use client';
+import { FormValues, initialValues } from '@/components/auth/SignupForms/constants';
+import SignupFirstForm from '@/components/auth/SignupForms/signup-first-form';
+import SignupSecondForm from '@/components/auth/SignupForms/signup-second-form';
+// import { signUp } from '@/lib/actions'; // TODO: re-implement with Firebase account linking
+import signupValidationSchemas from '@/components/auth/SignupForms/form-validation-schemas';
+import { useFormik } from 'formik';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Typography from '@mui/material/Typography';
+
+export default function SignUp() {
+    const [step, setStep] = useState<number>(1);
+    const [formValues, setFormValues] = useState<FormValues>(initialValues);
+    const [isLastStep, setIsLastStep] = useState<boolean>(false);
+    const [signupError, setSignupError] = useState<string>();
+    const router = useRouter();
+
+    const formik = useFormik({
+        initialValues: initialValues,
+        validationSchema: signupValidationSchemas[step - 1],
+        onSubmit: (values: FormValues, { setSubmitting }: any) => {
+            handleFormsSubmit(values);
+            setSubmitting(false);
+        },
+    });
+
+    const handleFormsSubmit = (values: FormValues) => {
+        switch (step) {
+            case 1:
+                setFormValues(values);
+                setStep(2);
+                break;
+            case 2:
+                setFormValues({ ...formValues, ...values });
+                setIsLastStep(true);
+                break;
+        }
+    };
+
+    useEffect(() => {
+        async function registerUser() {
+            if (isLastStep) {
+                // TODO: implement account linking with Firebase
+                // const formData = new FormData();
+                // formData.append('name', formValues.name);
+                // formData.append('email', formValues.email);
+                // formData.append('username', formValues.username);
+                // formData.append('password', formValues.password);
+                // formData.append('password2', formValues.password);
+                // const res = await signUp(formData);
+                // if (res?.error) {
+                //     setSignupError(res.error);
+                //     return;
+                // }
+                router.push('/spaces');
+            }
+        }
+        registerUser();
+    }, [formValues, isLastStep]);
+
+    return (
+        <>
+            {step === 1 && <SignupFirstForm formik={formik} />}
+            {step === 2 && <SignupSecondForm formik={formik} />}
+            {signupError ? (
+                <Typography sx={{ p: 3 }} width="100%" display="inline-flex" justifyContent="center" color="error.light">
+                    {signupError}
+                </Typography>
+            ) : null}
+        </>
+    );
+}

@@ -1,10 +1,12 @@
-import 'server-only';
+'use client';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { SpaceT } from '@/lib/types-and-constants';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import { notFound } from 'next/navigation';
+import CircularProgress from '@mui/material/CircularProgress';
 import { getSpace } from '@/lib/fetch-functions';
 import { BackButtonAutoRouted } from '@/components/shared/back-button-auto-routed';
 import { MembersListWithRemove } from '@/components/shared/SpaceMembers/space-members';
@@ -12,14 +14,37 @@ import { InviteMembersWithFeedback } from '@/components/space/MoreOptionsMenu/in
 import { Avatar } from '@mui/material';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
 
-export default async function SpaceMembersPage(props: { params: Promise<{ id: number }> }) {
-    const params = await props.params;
-    const { id } = params;
-    const space: SpaceT = await getSpace(id);
+export default function SpaceMembersPage() {
+    const params = useParams();
+    const id = Number(params.id);
+    const [space, setSpace] = useState<SpaceT | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
-    if (space?.error) {
-        console.log('User requested a space where he does not belong / does not exist');
-        notFound();
+    useEffect(() => {
+        getSpace(id).then((res) => {
+            if (res?.error) {
+                console.log('User requested a space where he does not belong / does not exist');
+                setError(true);
+            } else {
+                setSpace(res);
+            }
+            setLoading(false);
+        });
+    }, [id]);
+
+    if (loading) {
+        return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
+    }
+
+    if (error || !space) {
+        return (
+            <Container component="section" maxWidth="md">
+                <Box display="flex" justifyContent="center" pt={6}>
+                    <Typography color="error">Space not found.</Typography>
+                </Box>
+            </Container>
+        );
     }
 
     return (

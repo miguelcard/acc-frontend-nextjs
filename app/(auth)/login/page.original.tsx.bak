@@ -1,0 +1,124 @@
+/**
+ * Original Login page UI — preserved for future account linking.
+ * Rename this back to page.tsx when implementing email/password login linking.
+ */
+'use client';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
+import NextLink from 'next/link';
+import { useState } from 'react';
+// import { login } from '@/lib/actions'; // TODO: re-implement with Firebase account linking
+import styles from '../auth.module.css';
+import { useRouter } from 'next/navigation';
+import { useFormStatus } from 'react-dom';
+
+export default function Login() {
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [loginError, setLoginError] = useState<string>();
+    const router = useRouter();
+
+    async function handleFormAction(formData: FormData) {
+        // TODO: implement account linking with Firebase
+        // const res = await login(formData);
+        // if (res?.error) {
+        //     setLoginError(res.error);
+        //     return;
+        // }
+        router.push(`/spaces`);
+    }
+
+    return (
+        <Container component="section" maxWidth="xs">
+            <CssBaseline />
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography component="h1" variant="h5" className={styles['auth__action-text']} fontWeight="600" sx={{ pb: 3 }}>
+                    Welcome back!
+                </Typography>
+                <Box component="form" action={handleFormAction} sx={{ mt: 1, boxSizing: 'border-box' }}>
+                    <InputLabel htmlFor="email" sx={{ fontWeight: 'bold' }}>
+                        Email
+                    </InputLabel>
+                    <TextField
+                        sx={{ mb: 2, mt: 0.5 }}
+                        type="email"
+                        required
+                        fullWidth
+                        id="email"
+                        name="email"
+                        placeholder="sparrow@site.com"
+                        autoComplete="email"
+                        autoFocus
+                    />
+                    <InputLabel htmlFor="password" sx={{ fontWeight: 'bold' }}>
+                        Password
+                    </InputLabel>
+                    <TextField
+                        sx={{ mb: 2, mt: 0.5 }}
+                        required
+                        fullWidth
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        id="password"
+                        autoComplete="current-password"
+                        placeholder="••••••••"
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton aria-label="toggle password" edge="end" onClick={() => setShowPassword(!showPassword)}>
+                                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    {loginError ? (
+                        <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light">
+                            {loginError}
+                        </Typography>
+                    ) : null}
+                    <SubmitButton />
+                    <Box sx={{ fontSize: '0.8em', textAlign: 'center' }}>
+                        <Link href="#" variant="body2" component={NextLink}>
+                            Forgot Password?
+                        </Link>
+                    </Box>
+                </Box>
+            </Box>
+        </Container>
+    );
+}
+
+function SubmitButton() {
+    const { pending } = useFormStatus();
+
+    return (
+        <Button
+            className={styles['auth__form-button']}
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ my: 3 }}
+            disabled={pending}
+        >
+            {pending ? 'Logging in...' : 'Log In'}
+        </Button>
+    );
+}

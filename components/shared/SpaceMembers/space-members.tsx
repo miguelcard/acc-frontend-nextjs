@@ -1,23 +1,26 @@
-import 'server-only';
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import { MemberT, PaginatedResponse } from '@/lib/types-and-constants';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import { getUsersFromSpace, getUser } from '@/lib/fetch-functions';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
 import { MembersListEditable } from './members-list-editable';
 
 /**
  * Group of avatars from users fetched from a specific space
- * This is a server component, it fetches the users pictures and we can pass it down as props/children to a
- * client component.
  */
-export async function AvatarsGroup({ spaceId }: {spaceId: number}) {
+export function AvatarsGroup({ spaceId }: {spaceId: number}) {
     const maxAvatarsShown: number = 4;
-    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxAvatarsShown);
+    const [response, setResponse] = useState<PaginatedResponse<MemberT> | null>(null);
 
-    if (response?.error) {
-        return <></>
+    useEffect(() => {
+        getUsersFromSpace(spaceId, maxAvatarsShown).then(setResponse);
+    }, [spaceId]);
+
+    if (!response || response?.error) {
+        return <></>;
     }
 
     return (
@@ -42,12 +45,18 @@ export async function AvatarsGroup({ spaceId }: {spaceId: number}) {
 
 /**
  * Detailed list of all members in a space showing avatar, username, and name.
- * This is a server component that fetches all members and displays them in a list format.
- * Reusable across space cards and single space pages.
  */
-export async function MembersList({ spaceId }: { spaceId: number }) {
+export function MembersList({ spaceId }: { spaceId: number }) {
     const maxMembersShown: number = 20;
-    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxMembersShown);
+    const [response, setResponse] = useState<PaginatedResponse<MemberT> | null>(null);
+
+    useEffect(() => {
+        getUsersFromSpace(spaceId, maxMembersShown).then(setResponse);
+    }, [spaceId]);
+
+    if (!response) {
+        return <Box py={2} display="flex" justifyContent="center"><CircularProgress size={24} /></Box>;
+    }
 
     if (response?.error || !response.results.length) {
         return (
@@ -90,13 +99,28 @@ export async function MembersList({ spaceId }: { spaceId: number }) {
 }
 
 /**
- * Server component that fetches members and renders MembersListEditable with remove functionality.
- * Use this in places where users should be able to remove members from the space (e.g., single space page).
+ * Client component that fetches members and renders MembersListEditable with remove functionality.
  */
-export async function MembersListWithRemove({ spaceId }: { spaceId: number }) {
+export function MembersListWithRemove({ spaceId }: { spaceId: number }) {
     const maxMembersShown: number = 20;
-    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, maxMembersShown);
-    const currentUser = await getUser();
+    const [response, setResponse] = useState<PaginatedResponse<MemberT> | null>(null);
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        Promise.all([
+            getUsersFromSpace(spaceId, maxMembersShown),
+            getUser(),
+        ]).then(([membersRes, userRes]) => {
+            setResponse(membersRes);
+            setCurrentUser(userRes?.error ? null : userRes);
+            setLoading(false);
+        });
+    }, [spaceId]);
+
+    if (loading) {
+        return <Box py={2} display="flex" justifyContent="center"><CircularProgress size={24} /></Box>;
+    }
 
     if (response?.error) {
         return (
@@ -108,13 +132,13 @@ export async function MembersListWithRemove({ spaceId }: { spaceId: number }) {
         );
     }
 
-    const currentUserMember = response.results.find((m: MemberT) => m.id === currentUser?.id);
+    const currentUserMember = response?.results.find((m: MemberT) => m.id === currentUser?.id);
     const isCurrentUserAdmin = currentUserMember?.spacerole?.role === 'admin';
 
     return (
         <MembersListEditable
-            members={response.results}
-            totalCount={response.count}
+            members={response?.results ?? []}
+            totalCount={response?.count ?? 0}
             spaceId={spaceId}
             currentUserId={currentUser?.id}
             isCurrentUserAdmin={isCurrentUserAdmin}

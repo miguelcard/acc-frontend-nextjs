@@ -1,50 +1,67 @@
-import 'server-only';
+'use client';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { SpaceT, UserT } from '@/lib/types-and-constants';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Avatar from '@mui/material/Avatar';
+import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
 import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
 import { Paper } from '@mui/material';
 import CreateHabitAndInviteMembersModals from '@/components/space/CreateHabitModal/create-habit-modal';
 import { ScoreCard } from '@/components/space/ScoreCard/score-card';
-import { notFound, redirect } from 'next/navigation';
 import { setMaxStringLength } from '@/lib/client-utils';
 import { grey } from '@mui/material/colors';
 import { getSpace, getUser } from '@/lib/fetch-functions';
 import { BackButtonAutoRouted } from '@/components/shared/back-button-auto-routed';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
 
-export default async function SingleSpace(props: { params: Promise<{ id: number }> }) {
-    const params = await props.params;
-    const { id } = params;
-    const space: SpaceT = await getSpace(id);
-    const { members, space_habits, name, description, icon_alias, error } = space;
+export default function SingleSpace() {
+    const params = useParams();
+    const id = Number(params.id);
+    const [space, setSpace] = useState<SpaceT | null>(null);
+    const [user, setUser] = useState<UserT | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        Promise.all([getSpace(id), getUser()]).then(([spaceRes, userRes]) => {
+            if (spaceRes?.error) {
+                console.log('User requested a space where he does not belong / does not exist');
+                setError(true);
+            } else {
+                setSpace(spaceRes);
+            }
+            if (userRes?.error) {
+                console.warn('Failed to fetch user data:', userRes.error);
+                setError(true);
+            } else {
+                setUser(userRes);
+            }
+            setLoading(false);
+        });
+    }, [id]);
+
+    if (loading) {
+        return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
+    }
+
+    if (error || !space || !user) {
+        return (
+            <Container component="section" maxWidth="lg">
+                <Box display="flex" justifyContent="center" pt={6}>
+                    <Typography color="error">Space not found or failed to load.</Typography>
+                </Box>
+            </Container>
+        );
+    }
+
+    const { members, space_habits, name, icon_alias } = space;
     const spaceHasExistingHabits: boolean = Boolean(space_habits && space_habits.length > 0);
-    const spaceHasExistingMembers: boolean = Boolean(members && members.length > 0)
-
-
-    // If the user does not belong to the space or the space does not exist, both scenarios just return an 404 not found error
-    if (error) {
-        console.log('User entered requested a space where he does not belong / does not exist');
-        // go to not found page
-        notFound();
-    }
-
-
-    const res = await getUser();
-
-
-    if (res.error) {
-        console.log("TODO write error message in the GUI, the error can appear here because the user could not be retrieved BUT he was authenticated");
-        console.log(" this is unlikely to happen becuse this can only happen if the backend is down or something like that");
-        // delete auth_token from the user which might be no longer valid, to retrigger authentication
-        redirect('/api/delete-cookie');
-    }
-
-    const user: UserT = res;
+    const spaceHasExistingMembers: boolean = Boolean(members && members.length > 0);
 
     return (
         <Container component="section" maxWidth="lg"

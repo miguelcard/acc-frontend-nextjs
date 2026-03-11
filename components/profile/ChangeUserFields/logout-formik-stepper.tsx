@@ -1,6 +1,6 @@
 'use client';
 import { FormikStep, FormikStepper } from "@/components/shared/FormikStepper/formik-stepper";
-import { logout } from "@/lib/actions";
+import { useAuth } from "@/lib/auth/auth-context";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
@@ -10,21 +10,19 @@ export function LogoutFormikStepper() {
     
     const [errorMessage, setErrorMessage] = useState<string>();
     const router = useRouter();
+    const { signOut } = useAuth();
 
     /**
-     * Submits the request to the server action which deletes the space role
+     * Signs out the current Firebase user and redirects to login
      */
     async function submitLogout() {
-
-        const res = await logout();
-
-        if (res?.error) {
+        try {
+            await signOut();
+            router.push(`/login`);
+        } catch (error) {
             setErrorMessage('Unable to log out, please try again later.');
-            console.log('error while logging out / error: ', res.error);
-            return;
+            console.log('error while logging out: ', error);
         }
-
-        router.push(`/login`);
     }
 
     return (

@@ -1,10 +1,7 @@
-// Functions intended purely for data fetching or read-only operations (e.g., retrieving data to render a page).
-// They’re not meant to be triggered by client events.
-// Typically called directly in server components or route handlers to get data for rendering.
-// They benefit from Next.js’s built-in caching and revalidation when used in a server component.
-// This is why these are different from server actions.
-import 'server-only';
-import { getAuthCookie, getErrorMessage } from "@/lib/utils/utils";
+// Client-side API functions for read-only data fetching.
+// These functions call the backend API directly using Firebase auth tokens.
+import { authenticatedFetch } from '@/lib/authenticated-fetch';
+import { getErrorMessage } from '@/lib/utils/utils';
 import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
 
 
@@ -18,17 +15,12 @@ import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
 export async function getSpace(id: number) {
     
     const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/${id}`;
-    const requestOptions: RequestInit = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Cookie: `${await getAuthCookie()}`,
-        },
-        next: { revalidate: 60, tags: ['spaces'] },
-    };
 
     try {
-        const res = await fetch(url, requestOptions);
+        const res = await authenticatedFetch(url, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
         const space = await res.json();
 
         if (!res.ok) {
@@ -38,7 +30,7 @@ export async function getSpace(id: number) {
         }
         return space;
     } catch (error) {
-        console.warn('getSpace server action Error: ', getErrorMessage(error));
+        console.warn('getSpace Error: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }
@@ -50,17 +42,12 @@ export async function getSpace(id: number) {
  */
 export async function getUserSpaces() {
     const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&page_size=20&ordering=-updated_at`; // TODO user wont be able too see more results than the page size at the moment, possible bug
-    const requestOptions: RequestInit = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Cookie: `${await getAuthCookie()}`,
-        },
-        // cache: 'no-store', // just in case, but it isn't necessary if we use cookies above
-    };
 
     try {
-        const res = await fetch(url, requestOptions);
+        const res = await authenticatedFetch(url, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
         const spaces = await res.json();
         if (!res.ok) {
             console.warn("Fetching user spaces didn't work");
@@ -86,27 +73,22 @@ export async function getUserSpaces() {
 export async function getUser() {
     const getUserUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/user/`;
 
-    const requestOptions: RequestInit = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Cookie: `${await getAuthCookie()}`,
-        },
-    };
-
     try {
-        const res = await fetch(getUserUrl, requestOptions);
+        const res = await authenticatedFetch(getUserUrl, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
 
         if (!res.ok) {
             const errorResp = await res.json();
-            console.warn('getUser server action Error: ' + getErrorMessage(errorResp));
+            console.warn('getUser Error: ' + getErrorMessage(errorResp));
             console.warn(JSON.stringify(errorResp));
             return { error: GENERIC_ERROR_MESSAGE };
         }
 
         return await res.json();
     } catch (error) {
-        console.warn('getUser server action Error: ', getErrorMessage(error));
+        console.warn('getUser Error: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }
@@ -119,19 +101,12 @@ export async function getUser() {
  */
 export async function getUsersFromSpace(spaceId: number, resultsNumber: number) {
     const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/${spaceId}/users/?page=1&page_size=${resultsNumber}&ordering=${getRandomUserOrderingQueryValue()}`;
-    const requestOptions: RequestInit = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Cookie: `${await getAuthCookie()}`,
-        },
-        next: {
-            tags: [`space-${spaceId}-members`], // Tag this fetch so it can be revalidated when members change
-        },
-    };
 
     try {
-        const res = await fetch(url, requestOptions);
+        const res = await authenticatedFetch(url, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
         const users = await res.json();
         if (!res.ok) {
             console.warn("Fetching users that belong to a space didn't work");
@@ -153,17 +128,12 @@ export async function getUsersFromSpace(spaceId: number, resultsNumber: number) 
  */
 export async function getAllUserRecurrentHabits() {
     const url = `${process.env.NEXT_PUBLIC_API}/v1/habits/recurrent/?page=1&page_size=100&ordering=-spaces__id`; // TODO user wont be able too see more results than the page size at the moment, possible bug
-    const requestOptions: RequestInit = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Cookie: `${await getAuthCookie()}`,
-        },
-        // cache: 'no-store', // just in case, but it isn't necessary if we use cookies above
-    };
 
     try {
-        const res = await fetch(url, requestOptions);
+        const res = await authenticatedFetch(url, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
         const habits = await res.json();
         if (!res.ok) {
             console.warn("Fetching user recurring habits didn't work");

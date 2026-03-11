@@ -1,11 +1,10 @@
-import 'server-only';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import CreateSpaceModal from '@/components/spaces/CreateSpaceModal/create-space-modal';
 import SpacesOverview from '@/components/spaces/SpacesOverview/spaces-overview';
 
-export default async function Home() {
+export default function Home() {
     return (
         <>
             <Container component="section" maxWidth="lg">

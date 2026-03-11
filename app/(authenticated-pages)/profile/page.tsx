@@ -1,10 +1,11 @@
-import 'server-only';
+'use client';
+import { useEffect, useState } from 'react';
 import { getUser } from '@/lib/fetch-functions';
-import { notFound, redirect } from 'next/navigation';
 import { UserT } from '@/lib/types-and-constants';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import ChangeUserAvatarModal from '@/components/profile/ChangeUserAvatarModal/change-user-avatar-modal';
 import ChangeUserFields from '@/components/profile/ChangeUserFields/change-user-fields';
 
@@ -12,18 +13,36 @@ import ChangeUserFields from '@/components/profile/ChangeUserFields/change-user-
 /**
  * Page where user sees his profile and can edit his data
  */
-export default async function Profile() {
+export default function Profile() {
+    const [user, setUser] = useState<UserT | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
-    const res = await getUser();
+    useEffect(() => {
+        getUser().then((res) => {
+            if (res.error) {
+                console.warn('Failed to fetch user data:', res.error);
+                setError(true);
+            } else {
+                setUser(res);
+            }
+            setLoading(false);
+        });
+    }, []);
 
-    if (res.error) {
-        console.log("TODO write error message in the GUI, the error can appear here because the user could not be retrieved BUT he was authenticated");
-        console.log(" this is unlikely to happen becuse this can only happen if the backend is down or something like that");
-        // delete auth_token from the user which might be no longer valid, to retrigger authentication
-        redirect('/api/delete-cookie');
+    if (loading) {
+        return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
-    const user: UserT = res;
+    if (error || !user) {
+        return (
+            <Container component="section" maxWidth="lg">
+                <Box display="flex" justifyContent="center" pt={6}>
+                    <Typography color="error">Failed to load profile data.</Typography>
+                </Box>
+            </Container>
+        );
+    }
 
     return (
         <>

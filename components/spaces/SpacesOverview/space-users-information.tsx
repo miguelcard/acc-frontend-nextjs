@@ -1,4 +1,5 @@
-import 'server-only';
+'use client';
+import { useEffect, useState } from 'react';
 import { MemberT, PaginatedResponse } from '@/lib/types-and-constants';
 import { getUsersFromSpace } from '@/lib/fetch-functions';
 
@@ -10,22 +11,23 @@ export { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickabl
  * Its the default description of the space if none exists, just shows a random username that is member of that
  * space and the total of users who belong there.
  */
-export async function SpaceDefaultDescription({ spaceId }: {spaceId: number}) {
-    const response: PaginatedResponse<MemberT> = await getUsersFromSpace(spaceId, 3);
-    const members: MemberT[] = response.results;
+export function SpaceDefaultDescription({ spaceId }: {spaceId: number}) {
+    const [description, setDescription] = useState<React.ReactNode>(null);
 
-    if (members?.length > 0) {
-        const randomIndex = Math.floor(Math.random() * members.length);
-        const user: MemberT = members[randomIndex];
+    useEffect(() => {
+        getUsersFromSpace(spaceId, 3).then((response: PaginatedResponse<MemberT>) => {
+            const members: MemberT[] = response.results;
+            if (members?.length > 0) {
+                const randomIndex = Math.floor(Math.random() * members.length);
+                const user: MemberT = members[randomIndex];
+                setDescription(
+                    <>
+                        <b>{user.username}</b> and {response.count - 1} others are members of this group.
+                    </>
+                );
+            }
+        });
+    }, [spaceId]);
 
-        // This is automatically wrapped with a Typography element on the CustomCard component
-        // even more meaningful would be to show total number of habits shared in this space ?
-        return (
-            <>
-                <b>{user.username}</b> and {response.count - 1} others are members of this group.
-            </>
-        );
-    } else {
-        return <></>;
-    }
+    return <>{description}</>;
 }

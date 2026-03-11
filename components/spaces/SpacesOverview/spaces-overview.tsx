@@ -1,8 +1,11 @@
-import 'server-only';
+'use client';
+import { useEffect, useState } from 'react';
 import { Box, Grid, Link, Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import { PaginatedResponse, SpaceDetailed } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
-import { AvatarsGroup, SpaceDefaultDescription, MembersList } from './space-users-information';
+import { SpaceDefaultDescription } from './space-users-information';
+import { AvatarsGroup, MembersList } from '@/components/shared/SpaceMembers/space-members';
 import { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickable-avatars-group';
 import { getUserSpaces } from '@/lib/fetch-functions';
 import introImage from '@/public/images/spaces/spaces-intro.png';
@@ -11,19 +14,29 @@ import NextLink from 'next/link';
 
 /**
  * Overview of all the spaces where the user belongs
- * Because SpacesOverview is a component using the async keyword, this gives a warning in the console for now:
- * "Failed prop type: Invalid prop `children` supplied to `ForwardRef(Box)`, expected a ReactNode."
- * hopefully is fixed in future MUI versions
  */
-export default async function SpacesOverview() {
-    const spaces: PaginatedResponse<SpaceDetailed> = await getUserSpaces();
+export default function SpacesOverview() {
+    const [spaces, setSpaces] = useState<PaginatedResponse<SpaceDetailed> | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getUserSpaces().then((res) => {
+            setSpaces(res);
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+        return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
+    }
 
     if (spaces?.error) {
-        // TODO how do I display this error messages in the gui without having to create a client component?
-        // use sub-(client)-component ?
-        // or just throw error to be handled by next js
         console.warn('retrieving user spaces has an error :', spaces.error);
         return;
+    }
+
+    if (!spaces) {
+        return null;
     }
 
     return (

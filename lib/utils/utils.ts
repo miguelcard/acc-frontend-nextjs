@@ -1,7 +1,5 @@
-import 'server-only';
 import { ReadonlyURLSearchParams } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { getTranslations } from 'next-intl/server';
+import { getIdToken } from '@/lib/auth/firebase-auth';
 
 /**
  * Utility function to fetch data
@@ -28,70 +26,18 @@ export async function fetcher<JSON = any>(input: RequestInfo, init?: RequestInit
 }
 
 /**
- * Takes the cookie from a response and sets the cookie in the backend and also sets it to the client (browser)
- * @param authToken
+ * Returns an Authorization header object with the Firebase ID token.
+ * Used by all API calls to authenticate with the backend.
+ * @returns header object with Authorization Bearer token
  */
-export const setAuthCookie = async (res: Response): Promise<void> => {
-    const cookie = require('cookie');
-    const authToken: string = cookie.parse(
-        res.headers.getSetCookie().find((c) => c.startsWith('auth_token')) || 'token not found'
-    ).auth_token;
-
-    if (authToken === undefined) {
-        console.warn('Token was not found in the response cookie!');
-        return;
+export const getAuthHeader = async (): Promise<Record<string, string>> => {
+    const token = await getIdToken();
+    if (!token) {
+        console.warn('No Firebase ID token available — user may not be signed in');
+        return {};
     }
-
-    //This also sets the 'Set-Cookie' automatically to the client, but if we need to send it from client components we have to enable CORS in the backend
-    const cookieStore = await cookies();
-    cookieStore.set({
-        name: 'auth_token',
-        value: authToken,
-        httpOnly: true,
-        path: '/',
-        domain: '.localhost', // put enviroment variable here
-        secure: process.env.NODE_ENV !== 'development',
-        maxAge: 60 * 60 * 24 * 5, // seconds
-        // sameSite: "strict",
-    });
+    return { Authorization: `Bearer ${token}` };
 };
-
-/**
- * Retrieves the authentication token from the cookie and serializes it in a string to be able to send it in a header
- */
-export const getAuthCookie = async (): Promise<string> => {
-    const cookieStore = await cookies();
-    const authCookie = cookieStore.get('auth_token');
-    if (authCookie === undefined) {
-        console.info('Authentication cookie is undefined');
-        return '';
-    }
-
-    const cookie = require('cookie');
-    const serializedAuthCookie = `${cookie.serialize(
-        authCookie?.name,
-        authCookie?.value
-        // {other cookie options}
-    )}`;
-
-    return serializedAuthCookie;
-};
-
-/**
- * Deletes the auth_token cookie so that the client no longer has access to resources (used for logout e.g.)
- */
-export const deleteAuthCookie = async ():Promise<void> => {
-    const cookieStore = await cookies();
-    cookieStore.set({
-        name: 'auth_token',
-        value: '',
-        httpOnly: true,
-        path: '/',
-        domain: '.localhost', // put enviroment variable here process.env.NODE_ENV === 'development' ? '.localhost' : '.yourdomain.com',
-        secure: process.env.NODE_ENV !== 'development',
-        maxAge: 0, // Immediate expiration
-      })
-}
 
 /**
  * Utility function to create a URL, delete this one if not needed / used
@@ -164,34 +110,20 @@ type ApiError = {
  * @param errorResponse 
  * @returns 
  */
-export const getApiErrorMessage = async (errorResponse: ApiError): Promise<string> => {
+export const getApiErrorMessage = (errorResponse: ApiError): string => {
     const code = errorResponse.error?.code;
     const metaData = errorResponse.error?.meta || {};
-    const t = await getTranslations('errors');
 
-    // map the error code to key in the i18n file
+    // map the error code to the corresponding message
     switch (code?.toUpperCase()) {
         case 'FREE_GROUP_CREATE_LIMIT_REACHED':
-            return t(code,
-                {
-                    limit: metaData.limit, current: metaData.current
-                }
-            );
+            return `You can create up to ${metaData.limit} groups in the first version of the app. You currently have ${metaData.current} created groups.`;
         case 'FREE_GROUP_JOIN_LIMIT_REACHED':
-            return t(code, 
-                {
-                    limit: metaData.limit, current: metaData.current, username: metaData.username
-                }
-            );
+            return `The user ${metaData.username} already belongs to a maximum of ${metaData.limit} groups.`;
         case 'FREE_HABIT_CREATE_LIMIT_REACHED':
-            return t('FREE_HABIT_CREATE_LIMIT_REACHED',
-                {
-                    limit: metaData.limit, current: metaData.current
-                }
-            );
+            return `You have already reached the maximum amount of ${metaData.limit} habits that each user can create in this space.`;
         default:
-            // fallback
-            return t('GENERIC_ERROR_MESSAGE');
+            return 'Something went wrong. Please refresh the page or try again.';
     }
 }
 

@@ -1,12 +1,30 @@
 'use client';
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User } from 'firebase/auth';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import {
     initAnonymousAuth,
     onAuthStateChanged,
     getIdToken as getFirebaseIdToken,
     signOutUser,
 } from '@/lib/auth/firebase-auth';
+
+// ---- Loading Screen ----
+
+/** Full-screen spinner shown while Firebase auth is initializing */
+function AuthLoadingScreen() {
+    return (
+        <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100vh"
+        >
+            <CircularProgress color="secondary" size={80} />
+        </Box>
+    );
+}
 
 // ---- Types ----
 
@@ -85,7 +103,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     return (
         <AuthContext.Provider value={value}>
-            {children}
+            {loading ? <AuthLoadingScreen /> : children}
         </AuthContext.Provider>
     );
 }
