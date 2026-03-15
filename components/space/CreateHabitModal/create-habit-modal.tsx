@@ -12,6 +12,7 @@ type Props =
 { 
     spaceId: number;
     isFirstSpaceHabit: boolean;
+    onSpaceUpdated?: () => void;
 };
 
 /**
@@ -20,7 +21,7 @@ type Props =
  */
 export default function CreateHabitAndInviteMembersModals(props: Props) {
     
-    const {spaceId, isFirstSpaceHabit} = props;
+    const {spaceId, isFirstSpaceHabit, onSpaceUpdated} = props;
 
     const buttonStyles = {
         backdropFilter: 'blur(7px)',
@@ -49,14 +50,14 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
         }),
     };
 
-    const BottomActionButton = ({ text, icon }: { text: string; icon: React.ReactNode }) => (
-        <Button variant="contained" sx={buttonStyles} endIcon={icon}>
+    const BottomActionButton = ({ text, icon, ...rest }: { text: string; icon: React.ReactNode; [key: string]: any }) => (
+        <Button variant="contained" sx={buttonStyles} endIcon={icon} {...rest}>
             {text}
         </Button>
     );
 
-    const BottomActionButtonSmall = ({ icon }: { icon: React.ReactNode }) => (
-        <IconButton color="secondary" aria-label="add to shopping cart" size='small' >
+    const BottomActionButtonSmall = ({ icon, ...rest }: { icon: React.ReactNode; [key: string]: any }) => (
+        <IconButton color="secondary" aria-label="add habit" size='small' {...rest}>
             <AddCircleRoundedIcon sx={{fontSize: '2.3em'}}/>
         </IconButton>
     );
@@ -78,7 +79,7 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
                 <DialogModal
                     button={<BottomActionButton text={'Invite Members'} icon={<AddCircleRoundedIcon />} />}
                     childrenTitle={'Invite Members'}
-                    childrenBody={<InviteMembers spaceId={spaceId} />}
+                    childrenBody={<InviteMembers spaceId={spaceId} onSuccess={onSpaceUpdated} />}
                 />
             )}
             <DialogModal
@@ -90,7 +91,7 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
                     )
                 }
                 childrenTitle={<CreateHabitDialogTitle />}
-                childrenBody={<CreateHabitForm spaceId={spaceId} />}
+                childrenBody={<CreateHabitForm spaceId={spaceId} onSuccess={onSpaceUpdated} />}
             />
         </Box>
     );

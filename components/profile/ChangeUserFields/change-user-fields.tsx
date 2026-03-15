@@ -8,6 +8,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import BadgeIcon from '@mui/icons-material/Badge';
 import LogoutIcon from '@mui/icons-material/Logout';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import IconButton from '@mui/material/IconButton';
+import toast from 'react-hot-toast';
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
@@ -42,7 +45,21 @@ export default function ChangeUserFields({user, onUserUpdate} : Props) {
         {
             button: <UserFieldButton icon={<BadgeIcon />} text={'Username'} isEnabled={false} valueToShow={user.username}/>,
             modalTitle: <Typography fontSize={'0.9em'} fontWeight={600} >Your username is</Typography>,
-            modalBody: <Typography fontSize={'1.2em'} fontWeight={500} textAlign={'center'} >{user.username}</Typography>
+            modalBody: (
+                <Box display='flex' alignItems='center' justifyContent='center' gap={0.5}>
+                    <Typography fontSize={'1.2em'} fontWeight={500} textAlign={'center'}>{user.username}</Typography>
+                    <IconButton
+                        size='small'
+                        onClick={() => {
+                            navigator.clipboard.writeText(user.username);
+                            toast('Username copied to clipboard', { icon: '\ud83d\udccb' });
+                        }}
+                        sx={{ color: 'text.secondary' }}
+                    >
+                        <ContentCopyIcon sx={{ fontSize: '0.9rem' }} />
+                    </IconButton>
+                </Box>
+            )
         },
         // Hidden for now: logout destroys anonymous accounts permanently.
         // Re-enable when account linking (Phase 2) is implemented.

@@ -14,6 +14,7 @@ interface InviteMembersProps {
     spaceId: number;
     handleCloseDialog?: () => void;
     handleToastOpen?: () => void;
+    onSuccess?: () => void;
     children?: React.ReactNode;
 }
 
@@ -27,7 +28,7 @@ interface UsernameResult {
  * @param space
  * @returns
  */
-export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, children }: InviteMembersProps) {
+export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, onSuccess, children }: InviteMembersProps) {
     
     const [autocompleteOptions, setAutocompleteOptions] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>();
@@ -88,6 +89,8 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, chi
         handleToastOpen?.();
         // callback called if not undefined
         handleCloseDialog?.();
+        // Refresh the parent view with updated data
+        onSuccess?.();
     }
 
     return (

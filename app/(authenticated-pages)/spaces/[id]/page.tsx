@@ -27,7 +27,7 @@ export default function SingleSpace() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    useEffect(() => {
+    const fetchData = () => {
         Promise.all([getSpace(id), getUser()]).then(([spaceRes, userRes]) => {
             if (spaceRes?.error) {
                 console.log('User requested a space where he does not belong / does not exist');
@@ -43,7 +43,20 @@ export default function SingleSpace() {
             }
             setLoading(false);
         });
+    };
+
+    useEffect(() => {
+        fetchData();
     }, [id]);
+
+    /** Re-fetch space data after a habit is created or a member is invited */
+    const refreshSpace = () => {
+        getSpace(id).then((spaceRes) => {
+            if (!spaceRes?.error) {
+                setSpace(spaceRes);
+            }
+        });
+    };
 
     if (loading) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
@@ -185,7 +198,7 @@ export default function SingleSpace() {
 
                 {/* Habits and their score cards */}
                 {spaceHasExistingMembers && <ScoreCard currentUser={user} spaceHabits={space_habits ?? []} members={members ?? []} spaceId={id} />}
-                <CreateHabitAndInviteMembersModals spaceId={id} isFirstSpaceHabit={!spaceHasExistingHabits} />
+                <CreateHabitAndInviteMembersModals spaceId={id} isFirstSpaceHabit={!spaceHasExistingHabits} onSpaceUpdated={refreshSpace} />
             </Box>
         </Container>
     );

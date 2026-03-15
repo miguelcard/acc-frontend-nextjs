@@ -40,9 +40,10 @@ type CreateHabitFormProps = {
     setStep?: React.Dispatch<React.SetStateAction<number>>;
     spaceId: number;
     handleCloseDialog?: () => void;
+    onSuccess?: () => void;
 };
 
-export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDialog }: CreateHabitFormProps) {
+export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDialog, onSuccess }: CreateHabitFormProps) {
     
     const [istimeFrameWeekly, setIstimeFrameWeekly] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<string>();
@@ -64,6 +65,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                     const error = await submitNewHabit(values, spaceId, action, setErrorMessage);
                     if (!error?.trim()) { // only close the modal if there is no error message
                         handleCloseDialog && handleCloseDialog();
+                        onSuccess?.();
                     }
                 }}
                 step={step === undefined ? 0 : step}
