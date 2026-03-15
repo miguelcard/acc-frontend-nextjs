@@ -1,7 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { SpaceT, UserT } from '@/lib/types-and-constants';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -15,48 +13,19 @@ import CreateHabitAndInviteMembersModals from '@/components/space/CreateHabitMod
 import { ScoreCard } from '@/components/space/ScoreCard/score-card';
 import { setMaxStringLength } from '@/lib/client-utils';
 import { grey } from '@mui/material/colors';
-import { getSpace, getUser } from '@/lib/fetch-functions';
 import { BackButtonAutoRouted } from '@/components/shared/back-button-auto-routed';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
+import { useSpace } from '@/lib/hooks/queries';
+import { useUser } from '@/lib/hooks/queries';
 
 export default function SingleSpace() {
     const params = useParams();
     const id = Number(params.id);
-    const [space, setSpace] = useState<SpaceT | null>(null);
-    const [user, setUser] = useState<UserT | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const { data: space, isLoading: spaceLoading, isError: spaceError } = useSpace(id);
+    const { data: user, isLoading: userLoading, isError: userError } = useUser();
 
-    const fetchData = () => {
-        Promise.all([getSpace(id), getUser()]).then(([spaceRes, userRes]) => {
-            if (spaceRes?.error) {
-                console.log('User requested a space where he does not belong / does not exist');
-                setError(true);
-            } else {
-                setSpace(spaceRes);
-            }
-            if (userRes?.error) {
-                console.warn('Failed to fetch user data:', userRes.error);
-                setError(true);
-            } else {
-                setUser(userRes);
-            }
-            setLoading(false);
-        });
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, [id]);
-
-    /** Re-fetch space data after a habit is created or a member is invited */
-    const refreshSpace = () => {
-        getSpace(id).then((spaceRes) => {
-            if (!spaceRes?.error) {
-                setSpace(spaceRes);
-            }
-        });
-    };
+    const loading = spaceLoading || userLoading;
+    const error = spaceError || userError || space?.error || user?.error;
 
     if (loading) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
@@ -198,7 +167,7 @@ export default function SingleSpace() {
 
                 {/* Habits and their score cards */}
                 {spaceHasExistingMembers && <ScoreCard currentUser={user} spaceHabits={space_habits ?? []} members={members ?? []} spaceId={id} />}
-                <CreateHabitAndInviteMembersModals spaceId={id} isFirstSpaceHabit={!spaceHasExistingHabits} onSpaceUpdated={refreshSpace} />
+                <CreateHabitAndInviteMembersModals spaceId={id} isFirstSpaceHabit={!spaceHasExistingHabits} />
             </Box>
         </Container>
     );

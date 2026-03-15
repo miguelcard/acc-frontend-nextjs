@@ -5,7 +5,8 @@ import { Autocomplete } from 'formik-mui';
 import { Field, FormikContextType, FormikValues, useFormikContext } from 'formik';
 import React, { useState } from 'react';
 import { object, string } from 'yup';
-import { createSpaceRole, getUsernameEmailSuggestions } from '@/lib/actions';
+import { getUsernameEmailSuggestions } from '@/lib/fetch-mutations';
+import { useCreateSpaceRole } from '@/lib/hooks/mutations';
 import { PaginatedResponse } from '@/lib/types-and-constants';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -14,7 +15,6 @@ interface InviteMembersProps {
     spaceId: number;
     handleCloseDialog?: () => void;
     handleToastOpen?: () => void;
-    onSuccess?: () => void;
     children?: React.ReactNode;
 }
 
@@ -28,10 +28,11 @@ interface UsernameResult {
  * @param space
  * @returns
  */
-export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, onSuccess, children }: InviteMembersProps) {
+export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, children }: InviteMembersProps) {
     
     const [autocompleteOptions, setAutocompleteOptions] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>();
+    const createSpaceRoleMutation = useCreateSpaceRole(spaceId);
 
     /**
      * Fetches the usernames and emails that match with what the user is typing in the field
@@ -73,10 +74,9 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, onS
     async function submitAddUserToSpace(values: FormikValues, spaceId: number) {
         // add extra values that are required in the request
         values.space = spaceId;
-        // harcoded for now, another option would be to add the user with the role "admin", users with admin role can manage (update) other spaceroles, and would be also able to delete them.
         values.role = 'member';
 
-        const createdSpaceRole = await createSpaceRole(values, spaceId);
+        const createdSpaceRole = await createSpaceRoleMutation.mutateAsync({ formData: values });
 
         if (createdSpaceRole?.error) {
             setErrorMessage(createdSpaceRole.error);
@@ -84,13 +84,8 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, onS
             return;
         }
 
-        // Show a toast message if the user was added sucesfully
-        // callback called it if its not undefined
         handleToastOpen?.();
-        // callback called if not undefined
         handleCloseDialog?.();
-        // Refresh the parent view with updated data
-        onSuccess?.();
     }
 
     return (

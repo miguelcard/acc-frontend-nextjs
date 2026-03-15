@@ -20,10 +20,9 @@ import { LogoutFormikStepper } from './logout-formik-stepper';
 
 interface Props {
     user: UserT;
-    onUserUpdate?: (user: UserT) => void;
 }
 
-export default function ChangeUserFields({user, onUserUpdate} : Props) {
+export default function ChangeUserFields({user} : Props) {
 
     interface UserFieldModal {
         button: React.ReactElement;
@@ -35,7 +34,7 @@ export default function ChangeUserFields({user, onUserUpdate} : Props) {
         {
             button: <UserFieldButton icon={<PersonIcon />} text={'Name'} />,
             modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >What's your name?</Typography>,
-            modalBody: <ChangeNameFormikStepper user={user} onUserUpdate={onUserUpdate} />
+            modalBody: <ChangeNameFormikStepper user={user} />
         },
         {
             button: <UserFieldButton icon={<EmailIcon />} text={'Email'} isEnabled={false} valueToShow={user.email}/>,

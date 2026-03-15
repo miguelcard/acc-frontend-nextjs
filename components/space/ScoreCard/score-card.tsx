@@ -5,7 +5,7 @@ import { Box, ButtonBase, Divider, Typography } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import DatesRangeSelector from './dates-range-selector';
 import { SmallScreenHabitScoreCard } from './score-card-sizes/small-screen-habit-score-card';
-import { getAllHabitsAndCheckmarksFromSpace } from '@/lib/actions';
+import { getAllHabitsAndCheckmarksFromSpace } from '@/lib/fetch-mutations';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { ubuntu } from '@/styles/fonts/fonts';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
@@ -134,6 +134,7 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
                                         checkedDates={checkedDates}
                                         dates={dates}
                                         setCheckedDates={setCheckedDates}
+                                        spaceId={spaceId}
                                     />
                                 </>
                             ) : (

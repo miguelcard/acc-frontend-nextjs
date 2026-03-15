@@ -1,13 +1,12 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { Box, Grid, Link, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { PaginatedResponse, SpaceDetailed } from '@/lib/types-and-constants';
+import { SpaceDetailed } from '@/lib/types-and-constants';
 import { CustomCard } from './single-space-card';
 import { SpaceDefaultDescription } from './space-users-information';
 import { AvatarsGroup, MembersList } from '@/components/shared/SpaceMembers/space-members';
 import { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickable-avatars-group';
-import { getUserSpaces } from '@/lib/fetch-functions';
+import { useUserSpaces } from '@/lib/hooks/queries';
 import introImage from '@/public/images/spaces/spaces-intro.png';
 import NextLink from 'next/link';
 
@@ -16,17 +15,9 @@ import NextLink from 'next/link';
  * Overview of all the spaces where the user belongs
  */
 export default function SpacesOverview() {
-    const [spaces, setSpaces] = useState<PaginatedResponse<SpaceDetailed> | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { data: spaces, isLoading } = useUserSpaces();
 
-    useEffect(() => {
-        getUserSpaces().then((res) => {
-            setSpaces(res);
-            setLoading(false);
-        });
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
@@ -45,7 +36,7 @@ export default function SpacesOverview() {
                 <NoExistingSpacesText />
             ) : (
                 <Grid container rowSpacing={4} columnSpacing={{ xs: 2, sm: 2, md: 3, lg: 3 }} py={4} >
-                    {spaces.results.map((space) => (
+                    {spaces.results.map((space: SpaceDetailed) => (
                         <Grid  size={spaces.results.length == 1 ? 12 : { xs: 12, md: 6, lg: 6 }} key={space.id} >
                             <CustomCard
                                 space={space}

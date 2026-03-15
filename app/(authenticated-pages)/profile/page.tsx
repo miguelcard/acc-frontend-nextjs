@@ -1,7 +1,4 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { getUser } from '@/lib/fetch-functions';
-import { UserT } from '@/lib/types-and-constants';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -11,33 +8,20 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import toast from 'react-hot-toast';
 import ChangeUserAvatarModal from '@/components/profile/ChangeUserAvatarModal/change-user-avatar-modal';
 import ChangeUserFields from '@/components/profile/ChangeUserFields/change-user-fields';
+import { useUser } from '@/lib/hooks/queries';
 
 
 /**
  * Page where user sees his profile and can edit his data
  */
 export default function Profile() {
-    const [user, setUser] = useState<UserT | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const { data: user, isLoading, isError } = useUser();
 
-    useEffect(() => {
-        getUser().then((res) => {
-            if (res.error) {
-                console.warn('Failed to fetch user data:', res.error);
-                setError(true);
-            } else {
-                setUser(res);
-            }
-            setLoading(false);
-        });
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
-    if (error || !user) {
+    if (isError || !user || user?.error) {
         return (
             <Container component="section" maxWidth="lg">
                 <Box display="flex" justifyContent="center" pt={6}>
@@ -56,7 +40,7 @@ export default function Profile() {
                     </Typography>
 
                     <Box display='flex' flexDirection='row' alignItems='center' gap={3} maxWidth='100%' px={2}>
-                        <ChangeUserAvatarModal user={user} onUserUpdate={setUser} />
+                        <ChangeUserAvatarModal user={user} />
                         <Box display='flex' alignItems='center' gap={0.5} minWidth={0}>
                             <Typography
                                 fontSize='1.6em'
@@ -96,7 +80,7 @@ export default function Profile() {
                         {user.email}
                     </Typography>
 
-                    <ChangeUserFields user={user} onUserUpdate={setUser} />
+                    <ChangeUserFields user={user} />
                     
                 </Box>
             </Container>

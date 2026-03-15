@@ -3,9 +3,9 @@ import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/for
 import { Field, FormikValues } from 'formik';
 import React, { useState } from 'react';
 import { SpaceT } from '@/lib/types-and-constants';
-import { patchSpace } from '@/lib/actions';
 import { EmojiSelector } from '../EmojiSelector/emoji-selector';
 import Typography from '@mui/material/Typography';
+import { usePatchSpace } from '@/lib/hooks/mutations';
 
 interface ChangeAvatarProps {
     space: SpaceT;
@@ -20,12 +20,13 @@ interface ChangeAvatarProps {
 export function ChangeAvatar({ space, handleCloseDialog }: ChangeAvatarProps) {
 
     const [errorMessage, setErrorMessage] = useState<string>();
+    const patchSpaceMutation = usePatchSpace(space.id);
 
     /**
      * Submits the request to the server action which patches the space
      */
     async function submitEditSpace(values: FormikValues, spaceId: number) {
-        const updatedSpace: SpaceT = await patchSpace(values, spaceId);
+        const updatedSpace: SpaceT = await patchSpaceMutation.mutateAsync({ formData: values, id: spaceId });
         if (updatedSpace?.error) {
             setErrorMessage("Unable to update avatar. Please try again later."); // this would be to put an error in the UI, should I?
             console.log('error message: ', updatedSpace.error);

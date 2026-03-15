@@ -6,28 +6,12 @@ import React, { useState } from 'react';
 import { object, string } from 'yup';
 import { TextField as TextFieldFormikMui } from 'formik-mui';
 import TextField from '@mui/material/TextField';
-import { createSpace } from '@/lib/actions';
+import { useCreateSpace } from '@/lib/hooks/mutations';
 import { useRouter } from 'next/navigation';
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import Typography from '@mui/material/Typography';
 import { EmojiSelector } from '@/components/space/EmojiSelector/emoji-selector';
 import Link from '@mui/material/Link';
 import NextLink from 'next/link';
-
-async function submitCreateSpace(
-    values: FormikValues,
-    router: AppRouterInstance | string[],
-    setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>
-) {
-    const space = await createSpace(values);
-    if (space?.error) {
-        setErrorMessage(space.error);
-        console.log('error message: ', space.error);
-        return;
-    }
-
-    router.push(`/spaces/${space.id}`);
-}
 
 interface CreateSpaceFormProps {
     step?: number | undefined;
@@ -37,6 +21,18 @@ interface CreateSpaceFormProps {
 export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps) {
     const router = useRouter();
     const [errorMessage, setErrorMessage] = useState<string>();
+    const createSpaceMutation = useCreateSpace();
+
+    async function submitCreateSpace(values: FormikValues) {
+        const space = await createSpaceMutation.mutateAsync(values);
+        if (space?.error) {
+            setErrorMessage(space.error);
+            console.log('error message: ', space.error);
+            return;
+        }
+
+        router.push(`/spaces/${space.id}`);
+    }
 
     return (
         <Box
@@ -50,7 +46,7 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                     icon_alias: null,
                     description: '',
                 }}
-                onSubmit={async (values) => submitCreateSpace(values, router, setErrorMessage)}
+                onSubmit={async (values) => submitCreateSpace(values)}
                 step={step === undefined ? 0 : step}
                 setStep={setStep === undefined ? () => console.warn('setStep is undefined!') : setStep}
             >

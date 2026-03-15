@@ -5,9 +5,9 @@ import TextField from '@mui/material/TextField';
 import { Field, FormikValues } from 'formik';
 import React, { useState } from 'react'
 import { object, string } from 'yup';
-import { patchSpace } from '@/lib/actions';
 import { SpaceT } from '@/lib/types-and-constants';
 import Typography from '@mui/material/Typography';
+import { usePatchSpace } from '@/lib/hooks/mutations';
 
 
 
@@ -23,28 +23,24 @@ interface EditSpaceDescriptionProps {
  */
 export function EditSpaceDescription({ space, handleCloseDialog }: EditSpaceDescriptionProps) {
 
-    const [spaceDescripton, setSpaceDescripton] = useState<string | undefined>(space.description);
     const [errorMessage, setErrorMessage] = useState<string>();
+    const patchSpaceMutation = usePatchSpace(space.id);
 
-    /**
-     * Submits the request to the server action which patches the space
-     */
     async function submitEditSpace(values: FormikValues, spaceId: number) {
-        const updatedSpace: SpaceT = await patchSpace(values, spaceId);
+        const updatedSpace: SpaceT = await patchSpaceMutation.mutateAsync({ formData: values, id: spaceId });
         if (updatedSpace?.error) {
-            setErrorMessage("Unable to update the space description. Please try again later."); // this would be to put an error in the UI, should I?
+            setErrorMessage("Unable to update the space description. Please try again later.");
             console.log('error message: ', updatedSpace.error);
             return;
         }
-        setSpaceDescripton(updatedSpace.description);
-        if(handleCloseDialog !== undefined){handleCloseDialog()};
+        handleCloseDialog?.();
     }
 
     return (
         <>
             <FormikStepper
                 initialValues={{
-                    description: spaceDescripton,
+                    description: space.description,
                 }}
                 onSubmit={async (values) => submitEditSpace(values, space.id)}
                 step={0}

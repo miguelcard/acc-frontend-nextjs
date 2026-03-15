@@ -1,11 +1,11 @@
 'use client';
-import React, { useState, useTransition, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MemberT } from '@/lib/types-and-constants';
 import { Box, Chip, Dialog, DialogContent, DialogTitle, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Menu, MenuItem, Typography, IconButton } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import CloseIcon from '@mui/icons-material/Close';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
-import { removeUserFromSpace, updateSpaceRole } from '@/lib/actions';
+import { useRemoveUserFromSpace, useUpdateSpaceRole } from '@/lib/hooks/mutations';
 import { RemoveCircle } from '@mui/icons-material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddModeratorIcon from '@mui/icons-material/AddModerator';
@@ -23,22 +23,19 @@ interface MembersListEditableProps {
 
 /**
  * Client component that displays a list of members with the ability to remove them from the space.
- * Shows a remove icon next to each member that triggers the removal action when clicked.
+ * React Query invalidation in the mutation hooks ensures this component receives
+ * fresh data from its parent after any mutation.
  */
-export function MembersListEditable({ members: initialMembers, totalCount, spaceId, currentUserId, isCurrentUserAdmin }: MembersListEditableProps) {
-    const [members, setMembers] = useState<MemberT[]>(initialMembers);
+export function MembersListEditable({ members, totalCount, spaceId, currentUserId, isCurrentUserAdmin }: MembersListEditableProps) {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [isPending, startTransition] = useTransition();
     const [openToast, setOpenToast] = useState<boolean>(false);
     const [toastMessage, setToastMessage] = useState<string>('');
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [menuMemberId, setMenuMemberId] = useState<number | null>(null);
     const [confirmRemoveMember, setConfirmRemoveMember] = useState<MemberT | null>(null);
 
-    // Update local state when initialMembers prop changes (after server revalidation)
-    useEffect(() => {
-        setMembers(initialMembers);
-    }, [initialMembers]);
+    const removeUserMutation = useRemoveUserFromSpace(spaceId);
+    const updateRoleMutation = useUpdateSpaceRole(spaceId);
 
     // Auto-close toast after 3 seconds
     useEffect(() => {
@@ -63,25 +60,15 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
 
         const newRole = member.spacerole.role === 'admin' ? 'member' : 'admin';
 
-        startTransition(async () => {
-            const result = await updateSpaceRole(member.spacerole!.id, newRole, spaceId);
+        const result = await updateRoleMutation.mutateAsync({ spaceroleId: member.spacerole.id, role: newRole });
 
-            if (result?.error) {
-                setErrorMessage(result.error);
-                return;
-            }
+        if (result?.error) {
+            setErrorMessage(result.error);
+            return;
+        }
 
-            // Update the role in local state
-            setMembers((prev) =>
-                prev.map((m) =>
-                    m.id === member.id
-                        ? { ...m, spacerole: { ...m.spacerole!, role: newRole } }
-                        : m
-                )
-            );
-            setToastMessage(newRole === 'admin' ? 'User promoted to admin.' : 'Admin permissions removed.');
-            setOpenToast(true);
-        });
+        setToastMessage(newRole === 'admin' ? 'User promoted to admin.' : 'Admin permissions removed.');
+        setOpenToast(true);
     };
 
     if (!members.length) {
@@ -125,7 +112,7 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
                                             setMenuAnchor(e.currentTarget);
                                             setMenuMemberId(member.id);
                                         }}
-                                        disabled={isPending}
+                                        disabled={removeUserMutation.isPending || updateRoleMutation.isPending}
                                         sx={{ color: grey[500] }}
                                     >
                                         <MoreVertIcon fontSize='small' />
@@ -236,11 +223,10 @@ export function MembersListEditable({ members: initialMembers, totalCount, space
                         errorFallbackMessage="Unable to remove member, please try again later."
                         onConfirm={async () => {
                             if (!confirmRemoveMember) return;
-                            const result = await removeUserFromSpace(spaceId, confirmRemoveMember.id);
+                            const result = await removeUserMutation.mutateAsync({ userId: confirmRemoveMember.id });
                             if (result?.error) {
                                 return { error: result.error };
                             }
-                            setMembers((prev) => prev.filter((m) => m.id !== confirmRemoveMember.id));
                             setToastMessage('Member removed from space successfully.');
                             setOpenToast(true);
                         }}

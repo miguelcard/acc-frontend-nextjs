@@ -1,7 +1,6 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { MemberT, PaginatedResponse } from '@/lib/types-and-constants';
-import { getUsersFromSpace } from '@/lib/fetch-functions';
+import { useSpaceMembers } from '@/lib/hooks/queries';
 
 // Re-export shared components for backwards compatibility
 export { AvatarsGroup, MembersList, MembersListWithRemove } from '@/components/shared/SpaceMembers/space-members';
@@ -12,22 +11,19 @@ export { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickabl
  * space and the total of users who belong there.
  */
 export function SpaceDefaultDescription({ spaceId }: {spaceId: number}) {
-    const [description, setDescription] = useState<React.ReactNode>(null);
+    const { data: response } = useSpaceMembers(spaceId, 3);
 
-    useEffect(() => {
-        getUsersFromSpace(spaceId, 3).then((response: PaginatedResponse<MemberT>) => {
-            const members: MemberT[] = response.results;
-            if (members?.length > 0) {
-                const randomIndex = Math.floor(Math.random() * members.length);
-                const user: MemberT = members[randomIndex];
-                setDescription(
-                    <>
-                        <b>{user.username}</b> and {response.count - 1} others are members of this group.
-                    </>
-                );
-            }
-        });
-    }, [spaceId]);
+    if (!response || response.error || !response.results?.length) {
+        return null;
+    }
 
-    return <>{description}</>;
+    const members: MemberT[] = response.results;
+    const randomIndex = Math.floor(Math.random() * members.length);
+    const user: MemberT = members[randomIndex];
+
+    return (
+        <>
+            <b>{user.username}</b> and {response.count - 1} others are members of this group.
+        </>
+    );
 }

@@ -1,9 +1,9 @@
 'use client';
 import React from 'react';
-import { deleteSpaceRole } from '@/lib/actions';
 import { SpaceT } from '@/lib/types-and-constants';
 import { useRouter } from 'next/navigation';
 import { WarningConfirmationForm } from '@/components/shared/WarningConfirmationForm/warning-confirmation-form';
+import { useDeleteSpaceRole } from '@/lib/hooks/mutations';
 
 interface EditSpaceTitleProps {
     space: SpaceT;
@@ -21,9 +21,10 @@ interface EditSpaceTitleProps {
  */
 export function LeaveSpace({ space, handleCloseDialog }: EditSpaceTitleProps) {
     const router = useRouter();
+    const deleteSpaceRoleMutation = useDeleteSpaceRole();
 
     async function handleConfirm() {
-        const response = await deleteSpaceRole(space.id);
+        const response = await deleteSpaceRoleMutation.mutateAsync(space.id);
 
         if (response?.error) {
             return { error: response.error };

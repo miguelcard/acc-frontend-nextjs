@@ -1,8 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth/auth-context';
-import { getUser } from '@/lib/fetch-functions';
-import { patchUser, checkUsernameOrEmailExist } from '@/lib/actions';
+import { getUser } from '@/lib/fetch-queries';
+import { checkUsernameOrEmailExist } from '@/lib/fetch-mutations';
+import { usePatchUser } from '@/lib/hooks/mutations';
 import { UserT } from '@/lib/types-and-constants';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -69,6 +70,7 @@ export function UsernameSetupGate({ children }: UsernameSetupGateProps) {
     const [needsSetup, setNeedsSetup] = useState<boolean | null>(null); // null = checking
     const [submitting, setSubmitting] = useState(false);
     const [apiError, setApiError] = useState<string | null>(null);
+    const patchUserMutation = usePatchUser();
 
     useEffect(() => {
         if (!user) return;
@@ -106,7 +108,7 @@ export function UsernameSetupGate({ children }: UsernameSetupGateProps) {
             setSubmitting(true);
             setApiError(null);
 
-            const result = await patchUser({ username: values.username });
+            const result = await patchUserMutation.mutateAsync({ username: values.username });
 
             if (result?.error) {
                 setApiError(result.error);

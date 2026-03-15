@@ -1,22 +1,26 @@
 import { CheckMarkT, CheckedDatesT, HabitT } from '@/lib/types-and-constants';
 import { format } from 'date-fns';
-import { addCheckmark, deleteCheckmark } from '@/lib/actions';
 import toast from 'react-hot-toast';
 
 
 /**
- * Add or delete a checkmark for a specific date of a specific habit. This function calls the server actions.
+ * Add or delete a checkmark for a specific date of a specific habit.
+ * Accepts mutation functions (from React Query hooks) instead of importing actions directly.
  * @param date 
  * @param habit 
  * @param checkmark 
  * @param setCheckedDates 
+ * @param addCheckmarkFn - mutateAsync from useAddCheckmark hook
+ * @param deleteCheckmarkFn - mutateAsync from useDeleteCheckmark hook
  * @returns 
  */
 export const toggleCheckmark = async (
     date: Date,
     habit: HabitT,
     checkmark: CheckMarkT,
-    setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>
+    setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>,
+    addCheckmarkFn: (checkmark: { habit: number; status: string; date: string; client_date: string }) => Promise<any>,
+    deleteCheckmarkFn: (checkmark: CheckMarkT) => Promise<any>,
 ) => {
     const habitId :number = habit.id;
     const dateString :string = date.toDateString();
@@ -29,7 +33,7 @@ export const toggleCheckmark = async (
     try {
         if (Boolean(checkmark)) {
             // Remove checkmark api call
-            const res: any = await deleteCheckmark(checkmark);
+            const res: any = await deleteCheckmarkFn(checkmark);
 
             // Error handling for api call and toast message for failure
             if (res.error) {
@@ -51,7 +55,7 @@ export const toggleCheckmark = async (
             const newCheckmark = { habit: habitId, status: 'DONE', date: formatedDateString, client_date: currentUTCDate };
 
             // Api call to add checkmark to database
-            const res = await addCheckmark(newCheckmark);
+            const res = await addCheckmarkFn(newCheckmark);
 
             // Error handling for api call and toast message for failure
             if (res.error) {

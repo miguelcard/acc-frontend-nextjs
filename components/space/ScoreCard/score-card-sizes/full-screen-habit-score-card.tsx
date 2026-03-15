@@ -19,6 +19,7 @@ import { toggleCheckmark } from './checkmark-toggle';
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
 import styles from './habit-score-card.module.css';
 import { HabitOptionsMenu } from './HabitOptionsMenu/habit-options-menu';
+import { useAddCheckmark, useDeleteCheckmark } from '@/lib/hooks/mutations';
 
 type FullScreenHabitScoreCardPropsT = {
     dates: Date[];
@@ -26,10 +27,15 @@ type FullScreenHabitScoreCardPropsT = {
     checkedDates: CheckedDatesT;
     user: UserT;
     setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>;
+    spaceId: number;
 };
 
 
-export const FullScreenHabitScoreCard = ({ dates, ownerHabits, checkedDates, user, setCheckedDates }: FullScreenHabitScoreCardPropsT) => (
+export const FullScreenHabitScoreCard = ({ dates, ownerHabits, checkedDates, user, setCheckedDates, spaceId }: FullScreenHabitScoreCardPropsT) => {
+    const addCheckmarkMutation = useAddCheckmark(spaceId);
+    const deleteCheckmarkMutation = useDeleteCheckmark(spaceId);
+
+    return (
     <TableContainer component={Paper} sx={{ display: { xs: 'none', sm: 'block' } }}>
         <Table
             sx={{
@@ -89,7 +95,7 @@ export const FullScreenHabitScoreCard = ({ dates, ownerHabits, checkedDates, use
                                 {dates.map((date, i) => {
                                     const checkmark = checkedDates[date.toDateString()] && checkedDates[date.toDateString()][habit.id];
 
-                                    const toggle = () => toggleCheckmark(date, habit, checkmark, setCheckedDates);
+                                    const toggle = () => toggleCheckmark(date, habit, checkmark, setCheckedDates, addCheckmarkMutation.mutateAsync, deleteCheckmarkMutation.mutateAsync);
 
                                     return (
                                         <StyledTableCell key={i} align="right">
@@ -123,7 +129,8 @@ export const FullScreenHabitScoreCard = ({ dates, ownerHabits, checkedDates, use
             </TableBody>
         </Table>
     </TableContainer>
-);
+    );
+};
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {

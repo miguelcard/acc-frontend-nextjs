@@ -8,6 +8,7 @@ import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { ubuntu } from '@/styles/fonts/fonts';
 import checkedImage from '@/public/images/spaces/checkbox-tick.svg';
 import { grey } from '@mui/material/colors';
+import { useAddCheckmark, useDeleteCheckmark } from '@/lib/hooks/mutations';
 
 type SmallScreenHabitScoreCardsPropsT = {
     ownerHabits: HabitT[];
@@ -15,6 +16,7 @@ type SmallScreenHabitScoreCardsPropsT = {
     checkedDates: CheckedDatesT;
     dates: Date[];
     setCheckedDates: React.Dispatch<React.SetStateAction<CheckedDatesT>>;
+    spaceId: number;
 };
 
 // small function to return "week" for "W" and "month" for "M"
@@ -22,9 +24,11 @@ const timeLetterToWord = (letter : string) => letter.toLowerCase() === "m" ? "mo
 
 export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsPropsT) => {
 
-    const { ownerHabits, user, checkedDates, dates, setCheckedDates } = props;
+    const { ownerHabits, user, checkedDates, dates, setCheckedDates, spaceId } = props;
     // if user is undefined or if habit owner is equal to user. user undefined means that all the habits are from the logged in user.
     const isCurrentUser = (habit : HabitT): boolean => (!user || habit.owner === user.id);
+    const addCheckmarkMutation = useAddCheckmark(spaceId);
+    const deleteCheckmarkMutation = useDeleteCheckmark(spaceId);
 
     return (
         <Box
@@ -85,7 +89,7 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                         >
                             {dates.map((date, i) => {
                                 const checkmark = checkedDates[date.toDateString()] && checkedDates[date.toDateString()][habit.id];
-                                const toggle = () => toggleCheckmark(date, habit, checkmark, setCheckedDates);
+                                const toggle = () => toggleCheckmark(date, habit, checkmark, setCheckedDates, addCheckmarkMutation.mutateAsync, deleteCheckmarkMutation.mutateAsync);
                                 const isToday: boolean = date.toDateString() === new Date().toDateString();
                                 const isDisabled: boolean = !isWithinLast7Days(date) || !isCurrentUser(habit);
 

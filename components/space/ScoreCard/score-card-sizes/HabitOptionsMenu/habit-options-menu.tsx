@@ -8,7 +8,7 @@ import { HabitT } from '@/lib/types-and-constants';
 import { EditHabit } from './edit-habit';
 import { EditHabitTitle } from './edit-habit-title';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { deleteHabit } from '@/lib/actions';
+import { useDeleteHabit } from '@/lib/hooks/mutations';
 import toast from 'react-hot-toast';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
@@ -16,6 +16,7 @@ export const HabitOptionsMenu = ({ habit }: { habit: HabitT }) => {
 
     const [anchorElOptions, setAnchorOptions] = useState<null | HTMLElement>(null);
     const handleOpenOptionsMenu = (event: React.MouseEvent<HTMLElement>) => setAnchorOptions(event.currentTarget);
+    const deleteHabitMutation = useDeleteHabit(habit.spaces?.[0] ?? 0);
     
     const handleCloseOptionsMenu = () => {
         setAnchorOptions(null);
@@ -24,7 +25,7 @@ export const HabitOptionsMenu = ({ habit }: { habit: HabitT }) => {
     const handleDelete = async () => {
         handleCloseOptionsMenu();
 
-        const res = await deleteHabit(habit);
+        const res = await deleteHabitMutation.mutateAsync(habit);
 
         if (res.error) toast.error('Failed please try again.', { duration: 1000 });
         else

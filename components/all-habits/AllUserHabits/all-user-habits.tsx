@@ -142,6 +142,7 @@ export function AllUserHabitsView({
                                     checkedDates={checkedDates}
                                     dates={dates}
                                     setCheckedDates={setCheckedDates}
+                                    spaceId={space.id}
                                 />
                             ) : (
                                 <Box sx={{ padding: '10px', textAlign: 'center' }}>

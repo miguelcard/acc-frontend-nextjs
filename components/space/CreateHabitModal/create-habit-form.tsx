@@ -6,44 +6,20 @@ import { number, object, string } from 'yup';
 import { TextField as TextFieldFormikMui } from 'formik-mui';
 import TextField from '@mui/material/TextField';
 import { CreateHabitT, timeFrames } from '@/lib/types-and-constants';
-import { createHabit } from '@/lib/actions';
 import toast from 'react-hot-toast';
 import { MenuItem, Typography } from '@mui/material';
 import { useState } from 'react';
-
-async function submitNewHabit(
-    value: any,
-    id: number,
-    action: FormikHelpers<FormikValues>,
-    setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>
-): Promise<string | undefined> {
-
-    action.setSubmitting(true);
-    const habit: CreateHabitT = value;
-    habit.spaces = [id];
-    const res = await createHabit(habit); 
-
-    if (res?.error) {
-        setErrorMessage(res.error);
-        // toast.error(res.error); -> not needed, toast that closes
-        console.log('error message: ', res);
-        return res.error;
-    }
-
-    action.setSubmitting(false);   
-    toast.success(`Habit created successfully`);
-    return undefined; // no error
-}
+import { useCreateHabit } from '@/lib/hooks/mutations';
 
 type CreateHabitFormProps = {
     step?: number;
     setStep?: React.Dispatch<React.SetStateAction<number>>;
     spaceId: number;
     handleCloseDialog?: () => void;
-    onSuccess?: () => void;
 };
 
-export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDialog, onSuccess }: CreateHabitFormProps) {
+export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDialog }: CreateHabitFormProps) {
+    const createHabitMutation = useCreateHabit(spaceId);
     
     const [istimeFrameWeekly, setIstimeFrameWeekly] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<string>();
@@ -62,10 +38,16 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                     time_frame: 'W',
                 }}
                 onSubmit={async (values, action) => {
-                    const error = await submitNewHabit(values, spaceId, action, setErrorMessage);
-                    if (!error?.trim()) { // only close the modal if there is no error message
-                        handleCloseDialog && handleCloseDialog();
-                        onSuccess?.();
+                    action.setSubmitting(true);
+                    const habit = { ...values, spaces: [spaceId] } as CreateHabitT;
+                    const res = await createHabitMutation.mutateAsync(habit);
+                    if (res?.error) {
+                        setErrorMessage(res.error);
+                        console.log('error message: ', res);
+                    } else {
+                        action.setSubmitting(false);
+                        toast.success('Habit created successfully');
+                        handleCloseDialog?.();
                     }
                 }}
                 step={step === undefined ? 0 : step}

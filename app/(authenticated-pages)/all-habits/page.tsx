@@ -1,38 +1,28 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { AllUserHabitsView } from '@/components/all-habits/AllUserHabits/all-user-habits';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
-import { HabitT, PaginatedResponse, SpaceT } from '@/lib/types-and-constants';
-import { getAllUserRecurrentHabits, getUserSpaces } from '@/lib/fetch-functions';
-import { groupHabitsBySpace, SpaceHabitsGroup } from '@/lib/utils/group-habits-by-space';
+import { HabitT, SpaceT } from '@/lib/types-and-constants';
+import { groupHabitsBySpace } from '@/lib/utils/group-habits-by-space';
 import Typography from '@mui/material/Typography';
+import { useAllRecurrentHabits, useUserSpaces } from '@/lib/hooks/queries';
 
 export default function AllHabitsOverview() {
-  const [groupedHabits, setGroupedHabits] = useState<SpaceHabitsGroup[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: habitsPaginated, isLoading: habitsLoading } = useAllRecurrentHabits();
+  const { data: spacesPaginated, isLoading: spacesLoading } = useUserSpaces();
 
-  useEffect(() => {
-    Promise.all([getAllUserRecurrentHabits(), getUserSpaces()]).then(([habitsPaginated, spacesPaginated]) => {
-      if (habitsPaginated?.error) {
-        console.warn('Could not fetch all user recurrent habits: ', habitsPaginated.error);
-        setLoading(false);
-        return;
-      }
-      if (spacesPaginated?.error) {
-        console.warn('retrieving user spaces has an error :', spacesPaginated.error);
-        setLoading(false);
-        return;
-      }
-      const habits: HabitT[] = habitsPaginated.results;
-      const spaces: SpaceT[] = spacesPaginated.results;
-      setGroupedHabits(groupHabitsBySpace(habits, spaces));
-      setLoading(false);
-    });
-  }, []);
+  const loading = habitsLoading || spacesLoading;
+
+  const groupedHabits = useMemo(() => {
+    if (!habitsPaginated || habitsPaginated.error || !spacesPaginated || spacesPaginated.error) return null;
+    const habits: HabitT[] = habitsPaginated.results;
+    const spaces: SpaceT[] = spacesPaginated.results;
+    return groupHabitsBySpace(habits, spaces);
+  }, [habitsPaginated, spacesPaginated]);
 
   if (loading) {
     return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;

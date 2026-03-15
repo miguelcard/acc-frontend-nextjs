@@ -3,9 +3,9 @@ import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/for
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Field, FormikValues } from 'formik';
-import React, { useState } from 'react';
+import React from 'react';
 import { number, object, string } from 'yup';
-import { patchHabit } from '@/lib/actions';
+import { usePatchHabit } from '@/lib/hooks/mutations';
 import { HabitT, timeFrames } from '@/lib/types-and-constants';
 import { TextField as TextFieldFormikMui } from 'formik-mui';
 import { MenuItem } from '@mui/material';
@@ -22,39 +22,31 @@ interface EditHabitProps {
  */
 export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
 
-    const [habitDescripton, setHabitDescription] = useState<string | undefined>(habit.description);
-    const [habitTimes, setHabitTimes] = useState<number>(habit.times);
-    const [habitTimeFrame, setHabitTimeFrame] = useState<string>(habit.time_frame);
+    const patchHabitMutation = usePatchHabit(habit.spaces?.[0] ?? 0);
 
-    /**
-     * Submits the request to the server action which patches the habit
-     */
     async function submitEditHabit(values: FormikValues, habitId: number) {
         const patchedHabit = {
             description: values.description,
             times: values.times,
             time_frame: values.time_frame,
         };
-        const updatedHabit: HabitT = await patchHabit(patchedHabit, habitId);
+        const updatedHabit: HabitT = await patchHabitMutation.mutateAsync({ newHabitData: patchedHabit, id: habitId });
 
         if (updatedHabit?.error) {
             console.log('error message: ', updatedHabit.error);
             return;
         }
 
-        // setHabitDescripton(updatedHabit.description);
-        if (handleCloseDialog !== undefined) {
-            handleCloseDialog();
-        }
+        handleCloseDialog?.();
     }
 
     return (
         <>
             <FormikStepper
                 initialValues={{
-                    description: habitDescripton,
-                    times: habitTimes,
-                    time_frame: habitTimeFrame,
+                    description: habit.description,
+                    times: habit.times,
+                    time_frame: habit.time_frame,
                 }}
                 onSubmit={async (values) => submitEditHabit(values, habit.id)}
                 step={0}
@@ -87,10 +79,7 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                                     spellCheck="false"
                                     onFocus={() => form.setFieldTouched(field.name, true)}
                                     value={field.value}
-                                    onChange={(e: any) => {
-                                        setHabitDescription(e.target.value);
-                                        field.onChange;
-                                    }}
+                                    onChange={field.onChange}
                                     onBlur={field.onBlur}
                                     error={meta.touched && Boolean(meta.error)}
                                     helperText={meta.touched && meta.error}
@@ -118,7 +107,6 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                                     <MenuItem
                                         key={index}
                                         value={option.value}
-                                        onClick={() => setHabitTimeFrame(option.value)}
                                     >
                                         {option.label}
                                     </MenuItem>
@@ -129,15 +117,15 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                         <Box
                             component={'div'}
                             sx={{ width: { xs: '100%', sm: '48%' } }}
-                            onChange={(e: any) => setHabitTimes(e.target.value) }>
+                            >
                             <Field
                                 fullWidth
                                 name="times"
-                                label={`Times per ${habitTimeFrame === 'W' ? 'week' : 'month'}`}
+                                label={`Times per ${habit.time_frame === 'W' ? 'week' : 'month'}`}
                                 type="number"
                                 variant="standard"
                                 min={1}
-                                max={habitTimeFrame === 'W' ? 7 : 31}
+                                max={habit.time_frame === 'W' ? 7 : 31}
                                 component={TextFieldFormikMui}
                             />
                         </Box>

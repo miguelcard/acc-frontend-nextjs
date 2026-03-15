@@ -1,23 +1,19 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { MemberT, PaginatedResponse } from '@/lib/types-and-constants';
+import React from 'react';
+import { MemberT } from '@/lib/types-and-constants';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { getUsersFromSpace, getUser } from '@/lib/fetch-functions';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
 import { MembersListEditable } from './members-list-editable';
+import { useSpaceMembers, useUser } from '@/lib/hooks/queries';
 
 /**
  * Group of avatars from users fetched from a specific space
  */
 export function AvatarsGroup({ spaceId }: {spaceId: number}) {
     const maxAvatarsShown: number = 4;
-    const [response, setResponse] = useState<PaginatedResponse<MemberT> | null>(null);
-
-    useEffect(() => {
-        getUsersFromSpace(spaceId, maxAvatarsShown).then(setResponse);
-    }, [spaceId]);
+    const { data: response } = useSpaceMembers(spaceId, maxAvatarsShown);
 
     if (!response || response?.error) {
         return <></>;
@@ -48,17 +44,13 @@ export function AvatarsGroup({ spaceId }: {spaceId: number}) {
  */
 export function MembersList({ spaceId }: { spaceId: number }) {
     const maxMembersShown: number = 20;
-    const [response, setResponse] = useState<PaginatedResponse<MemberT> | null>(null);
+    const { data: response, isLoading } = useSpaceMembers(spaceId, maxMembersShown);
 
-    useEffect(() => {
-        getUsersFromSpace(spaceId, maxMembersShown).then(setResponse);
-    }, [spaceId]);
-
-    if (!response) {
+    if (isLoading) {
         return <Box py={2} display="flex" justifyContent="center"><CircularProgress size={24} /></Box>;
     }
 
-    if (response?.error || !response.results.length) {
+    if (response?.error || !response?.results?.length) {
         return (
             <Box py={2}>
                 <Typography variant="body2" color="text.secondary">
@@ -103,20 +95,10 @@ export function MembersList({ spaceId }: { spaceId: number }) {
  */
 export function MembersListWithRemove({ spaceId }: { spaceId: number }) {
     const maxMembersShown: number = 20;
-    const [response, setResponse] = useState<PaginatedResponse<MemberT> | null>(null);
-    const [currentUser, setCurrentUser] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const { data: response, isLoading: membersLoading } = useSpaceMembers(spaceId, maxMembersShown);
+    const { data: currentUser, isLoading: userLoading } = useUser();
 
-    useEffect(() => {
-        Promise.all([
-            getUsersFromSpace(spaceId, maxMembersShown),
-            getUser(),
-        ]).then(([membersRes, userRes]) => {
-            setResponse(membersRes);
-            setCurrentUser(userRes?.error ? null : userRes);
-            setLoading(false);
-        });
-    }, [spaceId]);
+    const loading = membersLoading || userLoading;
 
     if (loading) {
         return <Box py={2} display="flex" justifyContent="center"><CircularProgress size={24} /></Box>;

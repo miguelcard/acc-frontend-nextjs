@@ -2,55 +2,45 @@
 import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/formik-stepper';
 import Box from '@mui/material/Box';
 import { Field, FormikValues } from 'formik';
-import React, { useState } from 'react';
+import React from 'react';
 import { object, string } from 'yup';
 import { UserT } from '@/lib/types-and-constants';
 import { TextField as TextFieldFormikMui } from 'formik-mui';
-import { patchUser } from '@/lib/actions';
+import { usePatchUser } from '@/lib/hooks/mutations';
 
 interface Props {
     user: UserT;
     handleCloseDialog?: () => void;
-    onUserUpdate?: (user: UserT) => void;
 }
 
 /**
  * Component using the FormikStepper to edit the name of the user
  * @param user
  */
-export function ChangeNameFormikStepper({ user, handleCloseDialog, onUserUpdate }: Props) {
+export function ChangeNameFormikStepper({ user, handleCloseDialog }: Props) {
     
-    const [usersName, setUsersName] = useState<string>(user.name ?? '');
+    const patchUserMutation = usePatchUser();
 
-    /**
-     * Submits the request to the server action which patches the user
-     */
     async function submitEditUser(values: FormikValues) {
         
         const patchedUser = {
             name: values.name,
         };
 
-        const updatedUser: UserT = await patchUser(patchedUser);
+        const updatedUser: UserT = await patchUserMutation.mutateAsync(patchedUser);
 
         if (updatedUser?.error) {
-            // setErrorMessage(habit.error); // this would be to put an error in the UI, should I?
             console.log('error message: ', updatedUser.error);
             return;
         }
-        setUsersName(updatedUser.name);
-        onUserUpdate?.(updatedUser);
-
-        if (handleCloseDialog !== undefined) {
-            handleCloseDialog();
-        }
+        handleCloseDialog?.();
     }
 
     return (
         <>
             <FormikStepper
                 initialValues={{
-                    name: usersName,
+                    name: user.name ?? '',
                 }}
                 onSubmit={async (values) => submitEditUser(values)}
                 step={0}

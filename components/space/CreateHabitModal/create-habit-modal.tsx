@@ -12,7 +12,6 @@ type Props =
 { 
     spaceId: number;
     isFirstSpaceHabit: boolean;
-    onSpaceUpdated?: () => void;
 };
 
 /**
@@ -21,7 +20,7 @@ type Props =
  */
 export default function CreateHabitAndInviteMembersModals(props: Props) {
     
-    const {spaceId, isFirstSpaceHabit, onSpaceUpdated} = props;
+    const {spaceId, isFirstSpaceHabit} = props;
 
     const buttonStyles = {
         backdropFilter: 'blur(7px)',
@@ -79,7 +78,7 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
                 <DialogModal
                     button={<BottomActionButton text={'Invite Members'} icon={<AddCircleRoundedIcon />} />}
                     childrenTitle={'Invite Members'}
-                    childrenBody={<InviteMembers spaceId={spaceId} onSuccess={onSpaceUpdated} />}
+                    childrenBody={<InviteMembers spaceId={spaceId} />}
                 />
             )}
             <DialogModal
@@ -91,7 +90,7 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
                     )
                 }
                 childrenTitle={<CreateHabitDialogTitle />}
-                childrenBody={<CreateHabitForm spaceId={spaceId} onSuccess={onSpaceUpdated} />}
+                childrenBody={<CreateHabitForm spaceId={spaceId} />}
             />
         </Box>
     );

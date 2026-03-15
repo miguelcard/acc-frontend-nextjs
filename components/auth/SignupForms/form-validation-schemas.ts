@@ -1,4 +1,4 @@
-import { checkUsernameOrEmailExist } from '@/lib/actions';
+import { checkUsernameOrEmailExist } from '@/lib/fetch-mutations';
 import * as Yup from 'yup';
 
 const signupValidationSchemas = [
