@@ -39,6 +39,10 @@ const usernameValidationSchema = Yup.object().shape({
             /^[a-zA-Z0-9_-]+$/,
             'Username can only contain letters, numbers, dashes, and underscores'
         )
+        .test('no-reserved-prefix', 'Username cannot start with "fb_"', function (value) {
+            if (!value) return true;
+            return !value.toLowerCase().startsWith('fb_');
+        })
         .test('unique', 'Username is already taken', async function (value) {
             if (!value || value.length < 3) return true; // skip check for incomplete input
             const exists = await checkUsernameOrEmailExist(value, null);
