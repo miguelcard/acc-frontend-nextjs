@@ -6,6 +6,9 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import toast from 'react-hot-toast';
 import ChangeUserAvatarModal from '@/components/profile/ChangeUserAvatarModal/change-user-avatar-modal';
 import ChangeUserFields from '@/components/profile/ChangeUserFields/change-user-fields';
 
@@ -54,9 +57,21 @@ export default function Profile() {
 
                     <Box display='flex' flexDirection='row' alignItems='center' gap={3} >
                         <ChangeUserAvatarModal user={user} onUserUpdate={setUser} />
-                        <Typography fontSize='1.6em' fontWeight={600} >
-                            {user.username}
-                        </Typography>
+                        <Box display='flex' alignItems='center' gap={0.5}>
+                            <Typography fontSize='1.6em' fontWeight={600} >
+                                {user.username}
+                            </Typography>
+                            <IconButton
+                                size='small'
+                                onClick={() => {
+                                    navigator.clipboard.writeText(user.username);
+                                    toast('Username copied to clipboard', { icon: '📋' });
+                                }}
+                                sx={{ color: 'text.secondary' }}
+                            >
+                                <ContentCopyIcon sx={{ fontSize: '0.9rem' }} />
+                            </IconButton>
+                        </Box>
                     </Box>
                     <Typography
                         fontSize='1em'
