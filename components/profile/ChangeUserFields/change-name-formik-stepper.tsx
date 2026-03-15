@@ -11,15 +11,16 @@ import { patchUser } from '@/lib/actions';
 interface Props {
     user: UserT;
     handleCloseDialog?: () => void;
+    onUserUpdate?: (user: UserT) => void;
 }
 
 /**
  * Component using the FormikStepper to edit the name of the user
  * @param user
  */
-export function ChangeNameFormikStepper({ user, handleCloseDialog }: Props) {
+export function ChangeNameFormikStepper({ user, handleCloseDialog, onUserUpdate }: Props) {
     
-    const [usersName, setUsersName] = useState<string | undefined>(user.name);
+    const [usersName, setUsersName] = useState<string>(user.name ?? '');
 
     /**
      * Submits the request to the server action which patches the user
@@ -38,6 +39,7 @@ export function ChangeNameFormikStepper({ user, handleCloseDialog }: Props) {
             return;
         }
         setUsersName(updatedUser.name);
+        onUserUpdate?.(updatedUser);
 
         if (handleCloseDialog !== undefined) {
             handleCloseDialog();

@@ -8,9 +8,10 @@ import { patchUser } from "@/lib/actions";
 interface Props {
     user: UserT;
     handleCloseDialog?: () => void;
+    onUserUpdate?: (user: UserT) => void;
 }
 
-export default function ChangeUserAvatarFormikStepper({ user, handleCloseDialog }: Props) {
+export default function ChangeUserAvatarFormikStepper({ user, handleCloseDialog, onUserUpdate }: Props) {
 
     /**
      * Submits values to the server action which patches the user
@@ -23,6 +24,8 @@ export default function ChangeUserAvatarFormikStepper({ user, handleCloseDialog 
             console.log('error message: ', updatedUser.error);
             return;
         }
+
+        onUserUpdate?.(updatedUser);
 
         if (handleCloseDialog !== undefined) {
             handleCloseDialog();

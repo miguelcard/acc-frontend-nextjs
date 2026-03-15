@@ -1,5 +1,6 @@
 import { BottomNavigationLayout } from "@/components/shared/BottomNavigationLayout/bottom-navigation-layout";
 import { BlurredBlobBackground } from "@/components/shared/BlurredBlobBackground/blurred-blob-background";
+import { UsernameSetupGate } from "@/components/auth/UsernameSetupGate/username-setup-gate";
 import Box from "@mui/material/Box";
 
 export default function AuthenticatedLayout({children,}: {children: React.ReactNode;}) {
@@ -14,9 +15,11 @@ export default function AuthenticatedLayout({children,}: {children: React.ReactN
                 }}
             >
                 <BlurredBlobBackground />
-                <BottomNavigationLayout>
-                    {children}
-                </BottomNavigationLayout>
+                <UsernameSetupGate>
+                    <BottomNavigationLayout>
+                        {children}
+                    </BottomNavigationLayout>
+                </UsernameSetupGate>
             </Box>
         </>
     );

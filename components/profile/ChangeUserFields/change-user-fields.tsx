@@ -17,9 +17,10 @@ import { LogoutFormikStepper } from './logout-formik-stepper';
 
 interface Props {
     user: UserT;
+    onUserUpdate?: (user: UserT) => void;
 }
 
-export default function ChangeUserFields({user} : Props) {
+export default function ChangeUserFields({user, onUserUpdate} : Props) {
 
     interface UserFieldModal {
         button: React.ReactElement;
@@ -31,23 +32,25 @@ export default function ChangeUserFields({user} : Props) {
         {
             button: <UserFieldButton icon={<PersonIcon />} text={'Name'} />,
             modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >What's your name?</Typography>,
-            modalBody: <ChangeNameFormikStepper user={user} />
+            modalBody: <ChangeNameFormikStepper user={user} onUserUpdate={onUserUpdate} />
         },
         {
             button: <UserFieldButton icon={<EmailIcon />} text={'Email'} isEnabled={false} valueToShow={user.email}/>,
             modalTitle: <Typography fontSize={'0.9em'} fontWeight={600} >Your email is</Typography>,
-            modalBody: <Typography fontSize={'1.1em'} fontWeight={500} textAlign={'center'} >{user.email}</Typography>
+            modalBody: <Typography fontSize={'0.9em'} fontWeight={500} textAlign={'center'} sx={{ wordBreak: 'break-all' }}>{user.email}</Typography>
         },
         {
             button: <UserFieldButton icon={<BadgeIcon />} text={'Username'} isEnabled={false} valueToShow={user.username}/>,
             modalTitle: <Typography fontSize={'0.9em'} fontWeight={600} >Your username is</Typography>,
             modalBody: <Typography fontSize={'1.2em'} fontWeight={500} textAlign={'center'} >{user.username}</Typography>
         },
-        {
-            button: <UserFieldButton icon={<LogoutIcon />} text={'Log out'} />,
-            modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >Log out?</Typography>,
-            modalBody: <LogoutFormikStepper />
-        }
+        // Hidden for now: logout destroys anonymous accounts permanently.
+        // Re-enable when account linking (Phase 2) is implemented.
+        // {
+        //     button: <UserFieldButton icon={<LogoutIcon />} text={'Log out'} />,
+        //     modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >Log out?</Typography>,
+        //     modalBody: <LogoutFormikStepper />
+        // }
     ];
 
     return (

@@ -53,16 +53,27 @@ export default function Profile() {
                     </Typography>
 
                     <Box display='flex' flexDirection='row' alignItems='center' gap={3} >
-                        <ChangeUserAvatarModal user={user} />
+                        <ChangeUserAvatarModal user={user} onUserUpdate={setUser} />
                         <Typography fontSize='1.6em' fontWeight={600} >
                             {user.username}
                         </Typography>
                     </Box>
-                    <Typography fontSize='1em' fontWeight={500} pt={3}>
+                    <Typography
+                        fontSize='1em'
+                        fontWeight={500}
+                        pt={3}
+                        sx={{
+                            maxWidth: '100%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            px: 2,
+                        }}
+                    >
                         {user.email}
                     </Typography>
 
-                    <ChangeUserFields user={user} />
+                    <ChangeUserFields user={user} onUserUpdate={setUser} />
                     
                 </Box>
             </Container>

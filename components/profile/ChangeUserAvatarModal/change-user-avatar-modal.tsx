@@ -12,12 +12,13 @@ import ChangeUserAvatarFormikStepper from "./change-user-avatar-formik-stepper";
 
 interface ChangeUserAvatarModalProps {
     user: UserT;
+    onUserUpdate?: (user: UserT) => void;
 }
 
 /**
  * The modal which contains the formik form to change the user's avatar
  */
-export default function ChangeUserAvatarModal({user} : ChangeUserAvatarModalProps) {
+export default function ChangeUserAvatarModal({user, onUserUpdate} : ChangeUserAvatarModalProps) {
 
     return (
         <>
@@ -28,7 +29,7 @@ export default function ChangeUserAvatarModal({user} : ChangeUserAvatarModalProp
                         Change your Avatar
                     </Typography>}
                 childrenBody={
-                    <ChangeUserAvatarFormikStepper user={user} />
+                    <ChangeUserAvatarFormikStepper user={user} onUserUpdate={onUserUpdate} />
                 }
             />
         </>

@@ -24,9 +24,23 @@ export default function UserFieldButton({icon, text, isEnabled = true, valueToSh
                 <ListItemIcon sx={{minWidth:'40px'}}>
                     {icon}
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={text} sx={{ flexShrink: 0 }} />
                 {isEnabled && <KeyboardArrowRightIcon />}
-                {valueToShow && <Typography fontSize={"0.7em"}>{valueToShow}</Typography>}
+                {valueToShow && (
+                    <Typography
+                        fontSize={"0.7em"}
+                        sx={{
+                            ml: 1,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            minWidth: 0,
+                            textAlign: 'right',
+                        }}
+                    >
+                        {valueToShow}
+                    </Typography>
+                )}
             </ListItemButton>
         </ListItem>
     )
