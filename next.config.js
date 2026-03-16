@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
+  // Static export only for production builds (Capacitor).
+  // Dev server needs dynamic routing to work normally.
+  output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
+  images: {
+    unoptimized: true,
   },
 }
 
-// set up the plugin which links your i18n/request.ts file to next-intl.
-const createNextIntlPlugin = require('next-intl/plugin');
-const withNextIntl = createNextIntlPlugin();
- 
-module.exports = withNextIntl(nextConfig);
+module.exports = nextConfig;

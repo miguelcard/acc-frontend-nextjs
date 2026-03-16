@@ -2,7 +2,7 @@
 import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/formik-stepper';
 import Box from '@mui/material/Box';
 import { Autocomplete } from 'formik-mui';
-import { Field, FormikContextType, FormikValues, useFormikContext } from 'formik';
+import { Field, FormikContextType, FormikValues } from 'formik';
 import React, { useState } from 'react';
 import { object, string } from 'yup';
 import { getUsernameEmailSuggestions } from '@/lib/fetch-mutations';
@@ -10,6 +10,8 @@ import { useCreateSpaceRole } from '@/lib/hooks/mutations';
 import { PaginatedResponse } from '@/lib/types-and-constants';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete';
+import { FormikAutocompleteInput } from './formik-autocomplete-input';
 
 interface InviteMembersProps {
     spaceId: number;
@@ -130,26 +132,9 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, chi
                                     </li>
                                 );
                             }}
-                            renderInput={(params: any) => {
-                                const keyProp = `${params.InputLabelProps.htmlFor}-${params.id}`;
-                                const { InputLabelProps, id, ...inputProps } = params;
-
-                                // We use the formikCtx in order to get the error messages from the Yup validation schema
-                                // and to set the free typed value to be controlled by the formik state = gets formik validation too & is set correctly
-                                const { errors, setFieldValue }: FormikContextType<FormikValues> = useFormikContext();
-
-                                return (
-                                    <TextField
-                                        name="input"
-                                        key={keyProp}
-                                        {...inputProps}
-                                        label="Username or Email"
-                                        error={Boolean(errors.username_email)}
-                                        helperText={errors.username_email || ''}
-                                        onBlur={() => setFieldValue('username_email', inputProps.inputProps.value)}
-                                    />
-                                );
-                            }}
+                            renderInput={(params: any) => (
+                                <FormikAutocompleteInput params={params} />
+                            )}
                         />
                     </Box>
                 </FormikStep>

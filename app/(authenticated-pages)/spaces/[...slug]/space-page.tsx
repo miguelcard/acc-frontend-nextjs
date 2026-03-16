@@ -18,9 +18,10 @@ import { SpaceIconLogic } from '@/components/shared/space-icon';
 import { useSpace } from '@/lib/hooks/queries';
 import { useUser } from '@/lib/hooks/queries';
 
-export default function SingleSpace() {
-    const params = useParams();
-    const id = Number(params.id);
+export default function SingleSpaceClient() {
+    const routeParams = useParams();
+    const segments = routeParams.slug as string[];
+    const id = Number(segments?.[0]);
     const { data: space, isLoading: spaceLoading, isError: spaceError } = useSpace(id);
     const { data: user, isLoading: userLoading, isError: userError } = useUser();
 

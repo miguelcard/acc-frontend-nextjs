@@ -161,7 +161,7 @@ export function AllUserHabitsView({
 
             {userHabitsGroupedBySpace.length === 0 && (
                 <ContentCard sx={{ textAlign: 'center', padding: 3 }}>
-                    <Typography>You haven't created any habits yet</Typography>
+                    <Typography>You haven&apos;t created any habits yet</Typography>
                 </ContentCard>
             )}
         </Box>

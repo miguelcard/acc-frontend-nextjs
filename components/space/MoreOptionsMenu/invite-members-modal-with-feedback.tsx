@@ -41,8 +41,9 @@ export function InviteMembersModalWithFeedback({ spaceId, children }: InviteMemb
             <InviteMembers
                 spaceId={spaceId}
                 handleToastOpen={handleToastOpen}
-                children={children}
-            />
+            >
+                {children}
+            </InviteMembers>
             <CustomSnackbar
                 isOpen={openToast}
                 handleCloseToast={handleToastClose}

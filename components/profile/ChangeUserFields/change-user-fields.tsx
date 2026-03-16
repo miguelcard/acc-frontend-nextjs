@@ -33,7 +33,7 @@ export default function ChangeUserFields({user} : Props) {
     const userFieldModals : UserFieldModal[] = [
         {
             button: <UserFieldButton icon={<PersonIcon />} text={'Name'} />,
-            modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >What's your name?</Typography>,
+            modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >What&apos;s your name?</Typography>,
             modalBody: <ChangeNameFormikStepper user={user} />
         },
         {

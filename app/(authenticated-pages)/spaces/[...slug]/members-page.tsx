@@ -12,9 +12,10 @@ import { Avatar } from '@mui/material';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
 import { useSpace } from '@/lib/hooks/queries';
 
-export default function SpaceMembersPage() {
-    const params = useParams();
-    const id = Number(params.id);
+export default function SpaceMembersClient() {
+    const routeParams = useParams();
+    const segments = routeParams.slug as string[];
+    const id = Number(segments?.[0]);
     const { data: space, isLoading, isError } = useSpace(id);
 
     if (isLoading) {

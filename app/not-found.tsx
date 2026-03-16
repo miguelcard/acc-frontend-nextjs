@@ -1,4 +1,3 @@
-'server-only';
 import notFoundSpaces from '@/public/images/errors/not-found-spaces.svg';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
