@@ -21,6 +21,20 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
+            <head>
+                {/* Register service worker for SPA routing fallback in Capacitor.
+                    Intercepts requests for dynamic routes (e.g., /spaces/75) and
+                    serves the catch-all page when the static file doesn't exist. */}
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            if ('serviceWorker' in navigator) {
+                                navigator.serviceWorker.register('/capacitor-sw.js').catch(function() {});
+                            }
+                        `,
+                    }}
+                />
+            </head>
             <body>
                 <ThemeRegistry options={{ key: 'mui', prepend: true }}>
                     <AuthProvider>

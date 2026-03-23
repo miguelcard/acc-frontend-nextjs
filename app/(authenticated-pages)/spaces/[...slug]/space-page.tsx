@@ -1,5 +1,5 @@
 'use client';
-import { useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -17,15 +17,36 @@ import { BackButtonAutoRouted } from '@/components/shared/back-button-auto-route
 import { SpaceIconLogic } from '@/components/shared/space-icon';
 import { useSpace } from '@/lib/hooks/queries';
 import { useUser } from '@/lib/hooks/queries';
+import { useAuth } from '@/lib/auth/auth-context';
+
+/**
+ * Extract the numeric space ID from the URL pathname.
+ * Uses usePathname() which is reactive and always reflects the real browser
+ * URL — unlike useParams() which may return the pre-rendered placeholder
+ * slug ('_') in Capacitor static export.
+ */
+function useSpaceIdFromUrl(): number {
+    const pathname = usePathname();
+    // pathname = /spaces/{id}  or  /spaces/{id}/members
+    const parts = pathname.split('/').filter(Boolean);
+    if (parts[0] === 'spaces' && parts.length >= 2) {
+        const id = Number(parts[1]);
+        if (!isNaN(id) && id > 0) return id;
+    }
+    return NaN;
+}
 
 export default function SingleSpaceClient() {
-    const routeParams = useParams();
-    const segments = routeParams.slug as string[];
-    const id = Number(segments?.[0]);
+    const id = useSpaceIdFromUrl();
+    const { loading: authLoading } = useAuth();
     const { data: space, isLoading: spaceLoading, isError: spaceError } = useSpace(id);
     const { data: user, isLoading: userLoading, isError: userError } = useUser();
 
-    const loading = spaceLoading || userLoading;
+    // Include authLoading: on full page reloads (common in Capacitor),
+    // Firebase auth re-initializes asynchronously. Until that completes,
+    // queries are disabled and isLoading=false with data=undefined.
+    // Without this check, the component would prematurely show "not found".
+    const loading = authLoading || spaceLoading || userLoading;
     const error = spaceError || userError || space?.error || user?.error;
 
     if (loading) {

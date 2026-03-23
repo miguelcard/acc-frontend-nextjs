@@ -9,7 +9,7 @@ import SpaceMembersClient from './members-page';
  * All real space pages are fully client-rendered via useParams().
  */
 export function generateStaticParams() {
-    return [{ slug: ['_'] }];
+    return [{ slug: ['_'] }, { slug: ['_', 'members'] }];
 }
 
 export default async function SpaceCatchAllPage({

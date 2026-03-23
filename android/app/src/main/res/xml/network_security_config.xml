@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Allows cleartext (plain HTTP) traffic to the Android emulator's host alias.
+    10.0.2.2 is the special IP that the Android emulator uses to reach the host machine's localhost.
+    This is needed for local development only — production should always use HTTPS.
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.0.2.2</domain>
+    </domain-config>
+</network-security-config>

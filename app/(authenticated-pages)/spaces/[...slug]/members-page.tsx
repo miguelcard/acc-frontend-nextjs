@@ -1,5 +1,5 @@
 'use client';
-import { useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -11,14 +11,30 @@ import { InviteMembersWithFeedback } from '@/components/space/MoreOptionsMenu/in
 import { Avatar } from '@mui/material';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
 import { useSpace } from '@/lib/hooks/queries';
+import { useAuth } from '@/lib/auth/auth-context';
+
+/**
+ * Extract the numeric space ID from the URL pathname.
+ * Uses usePathname() which is reactive and always reflects the real browser
+ * URL — unlike useParams() which may return the pre-rendered placeholder
+ * slug ('_') in Capacitor static export.
+ */
+function useSpaceIdFromUrl(): number {
+    const pathname = usePathname();
+    const parts = pathname.split('/').filter(Boolean);
+    if (parts[0] === 'spaces' && parts.length >= 2) {
+        const id = Number(parts[1]);
+        if (!isNaN(id) && id > 0) return id;
+    }
+    return NaN;
+}
 
 export default function SpaceMembersClient() {
-    const routeParams = useParams();
-    const segments = routeParams.slug as string[];
-    const id = Number(segments?.[0]);
+    const id = useSpaceIdFromUrl();
+    const { loading: authLoading } = useAuth();
     const { data: space, isLoading, isError } = useSpace(id);
 
-    if (isLoading) {
+    if (authLoading || isLoading) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 

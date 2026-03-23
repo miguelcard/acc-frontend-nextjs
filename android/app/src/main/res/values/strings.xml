@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Accountability</string>
+    <string name="title_activity_main">Accountability</string>
+    <string name="package_name">com.avidhabits.app</string>
+    <string name="custom_url_scheme">com.avidhabits.app</string>
+</resources>
