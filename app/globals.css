@@ -115,3 +115,11 @@ a {
     color-scheme: dark;
   }
 } */
+
+/* ── Capacitor: soft-keyboard open ─────────────────────────── */
+/* Applied by CapacitorPluginsInit when the on-screen keyboard opens.
+   Prevents the bottom nav from covering the focused input. */
+body.keyboard-open {
+  /* shrink the bottom nav area while typing */
+  --bottom-nav-height: 0px;
+}

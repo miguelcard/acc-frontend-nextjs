@@ -1,6 +1,7 @@
 import ThemeRegistry from '@/components/theme/theme-registry';
 import { AuthProvider } from '@/lib/auth/auth-context';
 import QueryProvider from '@/components/shared/QueryProvider/query-provider';
+import CapacitorPluginsInit from '@/components/shared/CapacitorPluginsInit/capacitor-plugins-init';
 import './globals.css';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
             </head>
             <body>
+                <CapacitorPluginsInit />
                 <ThemeRegistry options={{ key: 'mui', prepend: true }}>
                     <AuthProvider>
                         <QueryProvider>
