@@ -15,7 +15,7 @@ export function AvatarsGroup({ spaceId }: {spaceId: number}) {
     const maxAvatarsShown: number = 4;
     const { data: response } = useSpaceMembers(spaceId, maxAvatarsShown);
 
-    if (!response || response?.error) {
+    if (!response) {
         return <></>;
     }
 
@@ -50,7 +50,7 @@ export function MembersList({ spaceId }: { spaceId: number }) {
         return <Box py={2} display="flex" justifyContent="center"><CircularProgress size={24} /></Box>;
     }
 
-    if (response?.error || !response?.results?.length) {
+    if (!response?.results?.length) {
         return (
             <Box py={2}>
                 <Typography variant="body2" color="text.secondary">
@@ -104,15 +104,7 @@ export function MembersListWithRemove({ spaceId }: { spaceId: number }) {
         return <Box py={2} display="flex" justifyContent="center"><CircularProgress size={24} /></Box>;
     }
 
-    if (response?.error) {
-        return (
-            <Box py={2}>
-                <Typography variant="body2" color="text.secondary">
-                    Unable to load members.
-                </Typography>
-            </Box>
-        );
-    }
+
 
     const currentUserMember = response?.results.find((m: MemberT) => m.id === currentUser?.id);
     const isCurrentUserAdmin = currentUserMember?.spacerole?.role === 'admin';

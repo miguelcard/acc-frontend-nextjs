@@ -10,26 +10,34 @@ import { HabitT, SpaceT } from '@/lib/types-and-constants';
 import { groupHabitsBySpace } from '@/lib/utils/group-habits-by-space';
 import Typography from '@mui/material/Typography';
 import { useAllRecurrentHabits, useUserSpaces } from '@/lib/hooks/queries';
+import QueryError from '@/components/shared/QueryError/query-error';
 
 export default function AllHabitsOverview() {
-  const { data: habitsPaginated, isLoading: habitsLoading } = useAllRecurrentHabits();
-  const { data: spacesPaginated, isLoading: spacesLoading } = useUserSpaces();
+  const { data: habitsPaginated, isLoading: habitsLoading, isError: habitsError, refetch: refetchHabits } = useAllRecurrentHabits();
+  const { data: spacesPaginated, isLoading: spacesLoading, isError: spacesError, refetch: refetchSpaces } = useUserSpaces();
 
   const loading = habitsLoading || spacesLoading;
+  const hasError = habitsError || spacesError;
 
   const groupedHabits = useMemo(() => {
-    if (!habitsPaginated || habitsPaginated.error || !spacesPaginated || spacesPaginated.error) return null;
+    if (!habitsPaginated || !spacesPaginated) return null;
     const habits: HabitT[] = habitsPaginated.results;
     const spaces: SpaceT[] = spacesPaginated.results;
     return groupHabitsBySpace(habits, spaces);
   }, [habitsPaginated, spacesPaginated]);
+
+  // Check errors BEFORE loading — when two parallel queries run,
+  // one may error while the other still retries, keeping loading=true forever.
+  if (hasError) {
+    return <QueryError onRetry={() => { refetchHabits(); refetchSpaces(); }} />;
+  }
 
   if (loading) {
     return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
   }
 
   if (!groupedHabits) {
-    return null;
+    return <QueryError onRetry={() => { refetchHabits(); refetchSpaces(); }} />;
   }
 
   return (

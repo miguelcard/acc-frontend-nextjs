@@ -9,24 +9,23 @@ import toast from 'react-hot-toast';
 import ChangeUserAvatarModal from '@/components/profile/ChangeUserAvatarModal/change-user-avatar-modal';
 import ChangeUserFields from '@/components/profile/ChangeUserFields/change-user-fields';
 import { useUser } from '@/lib/hooks/queries';
+import QueryError from '@/components/shared/QueryError/query-error';
 
 
 /**
  * Page where user sees his profile and can edit his data
  */
 export default function Profile() {
-    const { data: user, isLoading, isError } = useUser();
+    const { data: user, isLoading, isError, refetch } = useUser();
 
     if (isLoading) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
-    if (isError || !user || user?.error) {
+    if (isError || !user) {
         return (
             <Container component="section" maxWidth="lg">
-                <Box display="flex" justifyContent="center" pt={6}>
-                    <Typography color="error">Failed to load profile data.</Typography>
-                </Box>
+                <QueryError onRetry={() => refetch()} />
             </Container>
         );
     }

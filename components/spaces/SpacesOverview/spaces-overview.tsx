@@ -9,25 +9,21 @@ import { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickabl
 import { useUserSpaces } from '@/lib/hooks/queries';
 import introImage from '@/public/images/spaces/spaces-intro.png';
 import NextLink from 'next/link';
+import QueryError from '@/components/shared/QueryError/query-error';
 
 
 /**
  * Overview of all the spaces where the user belongs
  */
 export default function SpacesOverview() {
-    const { data: spaces, isLoading } = useUserSpaces();
+    const { data: spaces, isLoading, isError, refetch } = useUserSpaces();
 
     if (isLoading) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
-    if (spaces?.error) {
-        console.warn('retrieving user spaces has an error :', spaces.error);
-        return;
-    }
-
-    if (!spaces) {
-        return null;
+    if (isError || !spaces) {
+        return <QueryError onRetry={() => refetch()} />;
     }
 
     return (

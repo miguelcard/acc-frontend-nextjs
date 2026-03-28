@@ -18,6 +18,7 @@ import { SpaceIconLogic } from '@/components/shared/space-icon';
 import { useSpace } from '@/lib/hooks/queries';
 import { useUser } from '@/lib/hooks/queries';
 import { useAuth } from '@/lib/auth/auth-context';
+import QueryError from '@/components/shared/QueryError/query-error';
 
 /**
  * Extract the numeric space ID from the URL pathname.
@@ -47,18 +48,24 @@ export default function SingleSpaceClient() {
     // queries are disabled and isLoading=false with data=undefined.
     // Without this check, the component would prematurely show "not found".
     const loading = authLoading || spaceLoading || userLoading;
-    const error = spaceError || userError || space?.error || user?.error;
+    const hasError = spaceError || userError;
+
+    if (hasError) {
+        return (
+            <Container component="section" maxWidth="lg">
+                <QueryError onRetry={() => window.location.reload()} />
+            </Container>
+        );
+    }
 
     if (loading) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
-    if (error || !space || !user) {
+    if (!space || !user) {
         return (
             <Container component="section" maxWidth="lg">
-                <Box display="flex" justifyContent="center" pt={6}>
-                    <Typography color="error">Space not found or failed to load.</Typography>
-                </Box>
+                <QueryError message="Space not found." onRetry={() => window.location.reload()} />
             </Container>
         );
     }

@@ -1,8 +1,9 @@
 // Client-side API functions for read-only data fetching.
 // These functions call the backend API directly using Firebase auth tokens.
+// NOTE: These functions THROW on failure so React Query can manage
+//       error state, retries, and isError properly.
 import { authenticatedFetch } from '@/lib/authenticated-fetch';
 import { getErrorMessage } from '@/lib/utils/utils';
-import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
 
 
 // ----- Spaces -----
@@ -16,23 +17,16 @@ export async function getSpace(id: number) {
     
     const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/${id}`;
 
-    try {
-        const res = await authenticatedFetch(url, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        const space = await res.json();
+    const res = await authenticatedFetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const space = await res.json();
 
-        if (!res.ok) {
-            console.warn("Fetching individual space didn't work");
-            console.warn(getErrorMessage(space));
-            return { error: GENERIC_ERROR_MESSAGE };
-        }
-        return space;
-    } catch (error) {
-        console.warn('getSpace Error: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
+    if (!res.ok) {
+        throw new Error(getErrorMessage(space) || 'Failed to fetch space');
     }
+    return space;
 }
 
 
@@ -43,22 +37,15 @@ export async function getSpace(id: number) {
 export async function getUserSpaces() {
     const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/?page=1&page_size=20&ordering=-updated_at`; // TODO user wont be able too see more results than the page size at the moment, possible bug
 
-    try {
-        const res = await authenticatedFetch(url, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        const spaces = await res.json();
-        if (!res.ok) {
-            console.warn("Fetching user spaces didn't work");
-            console.warn(getErrorMessage(spaces));
-            return { error: GENERIC_ERROR_MESSAGE };
-        }
-        return spaces;
-    } catch (error) {
-        console.warn('An error ocurred: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
+    const res = await authenticatedFetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const spaces = await res.json();
+    if (!res.ok) {
+        throw new Error(getErrorMessage(spaces) || 'Failed to fetch spaces');
     }
+    return spaces;
 }
 
 
@@ -73,24 +60,17 @@ export async function getUserSpaces() {
 export async function getUser() {
     const getUserUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/user/`;
 
-    try {
-        const res = await authenticatedFetch(getUserUrl, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        });
+    const res = await authenticatedFetch(getUserUrl, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
 
-        if (!res.ok) {
-            const errorResp = await res.json();
-            console.warn('getUser Error: ' + getErrorMessage(errorResp));
-            console.warn(JSON.stringify(errorResp));
-            return { error: GENERIC_ERROR_MESSAGE };
-        }
-
-        return await res.json();
-    } catch (error) {
-        console.warn('getUser Error: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
+    if (!res.ok) {
+        const errorResp = await res.json();
+        throw new Error(getErrorMessage(errorResp) || 'Failed to fetch user');
     }
+
+    return await res.json();
 }
 
 
@@ -102,22 +82,15 @@ export async function getUser() {
 export async function getUsersFromSpace(spaceId: number, resultsNumber: number) {
     const url = `${process.env.NEXT_PUBLIC_API}/v1/spaces/${spaceId}/users/?page=1&page_size=${resultsNumber}&ordering=${getRandomUserOrderingQueryValue()}`;
 
-    try {
-        const res = await authenticatedFetch(url, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        const users = await res.json();
-        if (!res.ok) {
-            console.warn("Fetching users that belong to a space didn't work");
-            console.warn(getErrorMessage(users));
-            return { error: GENERIC_ERROR_MESSAGE };
-        }
-        return users;
-    } catch (error) {
-        console.warn('An error ocurred: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
+    const res = await authenticatedFetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const users = await res.json();
+    if (!res.ok) {
+        throw new Error(getErrorMessage(users) || 'Failed to fetch space members');
     }
+    return users;
 }
 
 
@@ -129,22 +102,15 @@ export async function getUsersFromSpace(spaceId: number, resultsNumber: number) 
 export async function getAllUserRecurrentHabits() {
     const url = `${process.env.NEXT_PUBLIC_API}/v1/habits/recurrent/?page=1&page_size=100&ordering=-spaces__id`; // TODO user wont be able too see more results than the page size at the moment, possible bug
 
-    try {
-        const res = await authenticatedFetch(url, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        const habits = await res.json();
-        if (!res.ok) {
-            console.warn("Fetching user recurring habits didn't work");
-            console.warn(getErrorMessage(habits));
-            return { error: GENERIC_ERROR_MESSAGE };
-        }
-        return habits;
-    } catch (error) {
-        console.warn('An error ocurred: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
+    const res = await authenticatedFetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const habits = await res.json();
+    if (!res.ok) {
+        throw new Error(getErrorMessage(habits) || 'Failed to fetch habits');
     }
+    return habits;
 }
 
 

@@ -13,7 +13,7 @@ export { ClickableAvatarsGroup } from '@/components/shared/SpaceMembers/clickabl
 export function SpaceDefaultDescription({ spaceId }: {spaceId: number}) {
     const { data: response } = useSpaceMembers(spaceId, 3);
 
-    if (!response || response.error || !response.results?.length) {
+    if (!response || !response.results?.length) {
         return null;
     }
 

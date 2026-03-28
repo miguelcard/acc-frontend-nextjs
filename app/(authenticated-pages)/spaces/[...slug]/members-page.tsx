@@ -12,6 +12,7 @@ import { Avatar } from '@mui/material';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
 import { useSpace } from '@/lib/hooks/queries';
 import { useAuth } from '@/lib/auth/auth-context';
+import QueryError from '@/components/shared/QueryError/query-error';
 
 /**
  * Extract the numeric space ID from the URL pathname.
@@ -38,12 +39,10 @@ export default function SpaceMembersClient() {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
-    if (isError || !space || space?.error) {
+    if (isError || !space) {
         return (
             <Container component="section" maxWidth="md">
-                <Box display="flex" justifyContent="center" pt={6}>
-                    <Typography color="error">Space not found.</Typography>
-                </Box>
+                <QueryError message="Space not found." onRetry={() => window.location.reload()} />
             </Container>
         );
     }

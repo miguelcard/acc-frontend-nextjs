@@ -81,23 +81,16 @@ export async function patchSpace(formData: FormikValues, id: number) {
 export async function getAllHabitsAndCheckmarksFromSpace(spaceId: number, dateString: string) {
     const url = `${API}/v1/spaces/${spaceId}/checkmarks/?${dateString}`;
 
-    try {
-        const res = await authenticatedFetch(url, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        const space = await res.json();
+    const res = await authenticatedFetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const space = await res.json();
 
-        if (!res.ok) {
-            console.warn("getAllHabitsAndCheckmarksFromSpace didn't work");
-            console.warn(getErrorMessage(space));
-            return { error: GENERIC_ERROR_MESSAGE };
-        }
-        return space;
-    } catch (error) {
-        console.warn('getAllHabitsAndCheckmarksFromSpace error ocurred: ', getErrorMessage(error));
-        return { error: GENERIC_ERROR_MESSAGE };
+    if (!res.ok) {
+        throw new Error(getErrorMessage(space) || 'Failed to fetch checkmarks');
     }
+    return space;
 }
 
 // ----- SpaceRoles Actions -----
