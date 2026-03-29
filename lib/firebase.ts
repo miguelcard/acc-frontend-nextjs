@@ -17,4 +17,13 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 
+// Initialize App Check (reCAPTCHA Enterprise for web, debug provider for dev)
+// Must happen after app initialization but before any API calls.
+// Runs client-side only (typeof window check is inside the function).
+if (typeof window !== 'undefined') {
+  import('@/lib/firebase-app-check').then(({ initializeAppCheck }) => {
+    initializeAppCheck();
+  });
+}
+
 export { app, auth };

@@ -122,6 +122,8 @@ export const getApiErrorMessage = (errorResponse: ApiError): string => {
             return `The user ${metaData.username} already belongs to a maximum of ${metaData.limit} groups.`;
         case 'FREE_HABIT_CREATE_LIMIT_REACHED':
             return `You have already reached the maximum amount of ${metaData.limit} habits that each user can create in this space.`;
+        case 'RATE_LIMIT_EXCEEDED':
+            return 'Too many requests. Please wait a moment and try again.';
         default:
             return 'Something went wrong. Please refresh the page or try again.';
     }

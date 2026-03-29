@@ -30,6 +30,11 @@ export async function createSpace(formData: FormikValues) {
             const errorResp = await res.json();
             console.warn('createSpace Error: ' + getErrorMessage(errorResp));
             console.warn(JSON.stringify(errorResp));
+            // Use structured error mapper if the response has an error code,
+            // otherwise fall back to legacy extraction
+            if (errorResp?.error?.code) {
+                return { error: getApiErrorMessage(errorResp) };
+            }
             const customErrorMessageIfExists: string | undefined = extractCustomErrorMessageIfExists(errorResp);
             return { error: customErrorMessageIfExists ?? GENERIC_ERROR_MESSAGE };
         }
