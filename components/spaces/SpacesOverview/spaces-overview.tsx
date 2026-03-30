@@ -18,11 +18,15 @@ import QueryError from '@/components/shared/QueryError/query-error';
 export default function SpacesOverview() {
     const { data: spaces, isLoading, isError, refetch } = useUserSpaces();
 
-    if (isLoading) {
+    if (isLoading && !spaces) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
-    if (isError || !spaces) {
+    if (isError && !spaces) {
+        return <QueryError onRetry={() => refetch()} />;
+    }
+
+    if (!spaces) {
         return <QueryError onRetry={() => refetch()} />;
     }
 

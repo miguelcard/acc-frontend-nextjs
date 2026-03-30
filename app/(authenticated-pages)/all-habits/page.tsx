@@ -26,13 +26,14 @@ export default function AllHabitsOverview() {
     return groupHabitsBySpace(habits, spaces);
   }, [habitsPaginated, spacesPaginated]);
 
-  // Check errors BEFORE loading — when two parallel queries run,
-  // one may error while the other still retries, keeping loading=true forever.
-  if (hasError) {
+  // Only show error screen when we have NO cached data to display.
+  // When offline with cached data, hasError may be true but we still want
+  // to render the stale data rather than an error screen.
+  if (hasError && !groupedHabits) {
     return <QueryError onRetry={() => { refetchHabits(); refetchSpaces(); }} />;
   }
 
-  if (loading) {
+  if (loading && !groupedHabits) {
     return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
   }
 

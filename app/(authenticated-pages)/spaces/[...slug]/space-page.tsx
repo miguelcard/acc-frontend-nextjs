@@ -49,8 +49,10 @@ export default function SingleSpaceClient() {
     // Without this check, the component would prematurely show "not found".
     const loading = authLoading || spaceLoading || userLoading;
     const hasError = spaceError || userError;
+    const hasData = !!space && !!user;
 
-    if (hasError) {
+    // Only show error screen when we have NO cached data to display
+    if (hasError && !hasData) {
         return (
             <Container component="section" maxWidth="lg">
                 <QueryError onRetry={() => window.location.reload()} />
@@ -58,7 +60,7 @@ export default function SingleSpaceClient() {
         );
     }
 
-    if (loading) {
+    if (loading && !hasData) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 

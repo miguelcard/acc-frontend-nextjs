@@ -35,11 +35,11 @@ export default function SpaceMembersClient() {
     const { loading: authLoading } = useAuth();
     const { data: space, isLoading, isError } = useSpace(id);
 
-    if (authLoading || isLoading) {
+    if ((authLoading || isLoading) && !space) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
-    if (isError || !space) {
+    if ((isError && !space) || !space) {
         return (
             <Container component="section" maxWidth="md">
                 <QueryError message="Space not found." onRetry={() => window.location.reload()} />

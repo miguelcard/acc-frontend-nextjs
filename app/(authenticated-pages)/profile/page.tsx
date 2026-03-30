@@ -18,11 +18,11 @@ import QueryError from '@/components/shared/QueryError/query-error';
 export default function Profile() {
     const { data: user, isLoading, isError, refetch } = useUser();
 
-    if (isLoading) {
+    if (isLoading && !user) {
         return <Box py={6} display="flex" justifyContent="center"><CircularProgress color="secondary" size={60} /></Box>;
     }
 
-    if (isError || !user) {
+    if ((isError && !user) || !user) {
         return (
             <Container component="section" maxWidth="lg">
                 <QueryError onRetry={() => refetch()} />
