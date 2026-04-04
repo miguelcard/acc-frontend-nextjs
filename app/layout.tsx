@@ -2,6 +2,7 @@ import ThemeRegistry from '@/components/theme/theme-registry';
 import { AuthProvider } from '@/lib/auth/auth-context';
 import QueryProvider from '@/components/shared/QueryProvider/query-provider';
 import CapacitorPluginsInit from '@/components/shared/CapacitorPluginsInit/capacitor-plugins-init';
+import OfflineBanner from '@/components/shared/OfflineBanner/offline-banner';
 import './globals.css';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <body>
                 <CapacitorPluginsInit />
                 <ThemeRegistry options={{ key: 'mui', prepend: true }}>
+                    <OfflineBanner />
                     <AuthProvider>
                         <QueryProvider>
                             <Toaster
