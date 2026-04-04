@@ -4,9 +4,9 @@ import HeroBanner from '@/components/landing/HeroBanner/hero-banner';
 
 /**
  * Landing page — public marketing/info page.
- * Users can browse this freely; Firebase anonymous auth happens in the background.
+ * Accessible at /landing. The root / redirects to /spaces on app open.
  */
-export default function Home() {
+export default function LandingPage() {
     return (
         <div>
             <main>

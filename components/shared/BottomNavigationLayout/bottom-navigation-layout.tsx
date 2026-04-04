@@ -17,7 +17,7 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
     const pathname: string  = usePathname();
 
     const getPathValue = () => {
-        if (pathname.startsWith('/spaces')) return 0;
+        if (pathname === '/' || pathname.startsWith('/spaces')) return 0;
         if (pathname.startsWith('/all-habits')) return 1;
         if (pathname.startsWith('/profile')) return 2;
         return 0;
@@ -65,7 +65,7 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
                         label={<NavigationText text='Spaces'/>}
                         icon={<FontAwesomeIcon icon={faRocket} />}
                         component={NextLink}
-                        href={'/spaces'}
+                        href={'/'}
                         key={'spaces'}
                     
                     />
