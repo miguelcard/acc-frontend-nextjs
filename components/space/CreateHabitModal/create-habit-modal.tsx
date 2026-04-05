@@ -66,7 +66,8 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
             sx={{
                 position: 'fixed',
                 right: 'clamp(6px, 3vw, 110px)',
-                bottom: 'clamp(65px, 6vw, 70px)',
+                // Position above the bottom nav (56px) + safe area inset (halved) + gap
+                bottom: 'calc(56px + var(--safe-area-inset-bottom) / 2 + 16px)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-end',

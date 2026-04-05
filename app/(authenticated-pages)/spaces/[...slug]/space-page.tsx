@@ -104,6 +104,10 @@ export default function SingleSpaceClient() {
                         marginRight: '-50vw',
                         position: 'relative',
                         px: 1,
+                        // Extend background into the safe area (status bar / notch)
+                        // so the glassmorphism fills up to the top edge of the screen
+                        mt: 'calc(var(--safe-area-inset-top) * -1)',
+                        pt: 'var(--safe-area-inset-top)',
                         backdropFilter: 'blur(12px)',
                         WebkitBackdropFilter: 'blur(12px)',
                         bgcolor: 'rgba(255, 255, 255, 0.45)',
