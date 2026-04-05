@@ -106,3 +106,16 @@ export function registerKeyboardListeners(): () => void {
     hideHandler.then((h) => h.remove());
   };
 }
+
+/* ------------------------------------------------------------------ */
+/*  Native Platform Marker                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Add a CSS class to <body> when running inside a native Capacitor shell.
+ * This allows CSS to target native-only styles (e.g., safe area insets).
+ */
+export function markNativePlatform(): void {
+  if (!isNative) return;
+  document.body.classList.add('capacitor-native');
+}

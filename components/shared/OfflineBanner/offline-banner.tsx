@@ -25,7 +25,10 @@ export default function OfflineBanner() {
                 justifyContent: 'center',
                 gap: 1,
                 width: '100%',
-                py: 0.6,
+                // Add safe area padding for devices with notches/status bars
+                pt: 'var(--safe-area-inset-top)',
+                pb: 0.6,
+                px: 0.6,
                 bgcolor: '#424242',       // dark grey — neutral, not alarming
                 color: '#fff',
                 zIndex: 99999999,         // above everything including toasts

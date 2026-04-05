@@ -22,7 +22,16 @@ export default function AuthNavbar(props: AuthNavBarProps) {
     return (
         <nav>
             {/* use sticky navigation on (Desktop view mainly) when home page gets bigger <AppBar position="sticky" */}
-            <AppBar position="static" elevation={0} sx={{ p: 1 }} color='inherit' >
+            <AppBar 
+                position="static" 
+                elevation={0} 
+                sx={{ 
+                    p: 1,
+                    // Add safe area padding for devices with notches/status bars
+                    pt: 'calc(var(--safe-area-inset-top) + 8px)',
+                }} 
+                color='inherit' 
+            >
                 <Container maxWidth="xl" >
                     <Toolbar>
                         <Link

@@ -24,6 +24,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en">
             <head>
+                {/* Enable safe area insets for devices with notches/camera islands.
+                    viewport-fit=cover allows the webview to extend into the safe areas,
+                    which is required for env(safe-area-inset-*) CSS to work. */}
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
                 {/* Register service worker for SPA routing fallback in Capacitor.
                     Intercepts requests for dynamic routes (e.g., /spaces/75) and
                     serves the catch-all page when the static file doesn't exist. */}

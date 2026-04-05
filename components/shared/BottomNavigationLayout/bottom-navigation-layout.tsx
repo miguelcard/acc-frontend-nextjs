@@ -25,7 +25,12 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
 
     return (
         /* a ref is used to scroll back to the top whenever the value changes (useRef hook + useEffect hook= DO AT THE END IF NEEDED*/
-        <Box sx={{ pb: 6 }} >
+        <Box sx={{ 
+            // Account for the fixed bottom nav height (56px) + device home bar inset (halved)
+            pb: 'calc(56px + var(--safe-area-inset-bottom) / 2)',
+            // Add safe area padding for devices with notches/status bars
+            pt: 'var(--safe-area-inset-top)',
+        }} >
             <CssBaseline />
 
             {/* TODO: can I add this children from the layout.tsx and not having to pass them as children here? */}
@@ -35,7 +40,11 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
                     position: 'fixed', 
                     bottom: 0, 
                     left: 0, 
-                    right: 0 , 
+                    right: 0,
+                    // Add safe area padding for devices with home bars (e.g., iPhone X+).
+                    // Using half the inset: the gesture area is transparent so a small
+                    // overlap is fine, and it avoids the nav feeling excessively tall.
+                    pb: 'calc(var(--safe-area-inset-bottom) / 2)',
                     zIndex: 1200,
                     backdropFilter: 'blur(12px)',
                     WebkitBackdropFilter: 'blur(12px)',

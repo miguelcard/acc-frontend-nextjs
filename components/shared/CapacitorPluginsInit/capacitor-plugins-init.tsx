@@ -6,6 +6,7 @@ import {
   configureStatusBar,
   registerBackButton,
   registerKeyboardListeners,
+  markNativePlatform,
 } from '@/lib/capacitor-plugins';
 
 /**
@@ -17,6 +18,9 @@ import {
  */
 export default function CapacitorPluginsInit() {
   useEffect(() => {
+    // Add CSS class marker for native platform (enables safe area styles)
+    markNativePlatform();
+
     // Status bar styling
     configureStatusBar();
 
