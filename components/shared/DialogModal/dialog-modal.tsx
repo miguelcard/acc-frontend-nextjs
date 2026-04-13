@@ -16,9 +16,18 @@ interface DialogModalProps {
     childrenTitle?: React.ReactNode;
     childrenBody?: React.ReactNode;
     onOpenChange?: (isOpen: boolean) => void;
+    /**
+     * Controls how much the dialog shifts upward when the soft keyboard opens.
+     * A 0–1 multiplier applied to the keyboard height.
+     * - 0     = no movement
+     * - 0.167 = subtle lift (default)
+     * - 0.6   = significant lift (use when the submit button would be hidden)
+     * - 1     = full keyboard height shift
+     */
+    keyboardLift?: number;
 }
 
-export default function DialogModal({ button, childrenTitle, childrenBody, onOpenChange }: DialogModalProps) {
+export default function DialogModal({ button, childrenTitle, childrenBody, onOpenChange, keyboardLift = 0.167 }: DialogModalProps) {
     const [open, setOpen] = React.useState<boolean>(false);
     // we need this state here only for the Back arrow button in the Modal in case of multi step forms
     const [step, setStep] = React.useState<number>(0);
@@ -43,7 +52,23 @@ export default function DialogModal({ button, childrenTitle, childrenBody, onOpe
         <>
             {/* add onClick property to the button we passed as props */}
             {React.cloneElement(button, { onClick: handleClickOpen })}
-            <Dialog onClose={handleClose} open={open} fullWidth maxWidth="sm">
+            <Dialog
+                onClose={handleClose}
+                open={open}
+                fullWidth
+                maxWidth="sm"
+                scroll="paper"
+                sx={{
+                    /* Per-dialog keyboard lift: overrides the CSS default via a custom property */
+                    '& .MuiDialog-container': {
+                        '--dialog-keyboard-lift': keyboardLift,
+                        transition: 'padding-bottom 0.2s ease',
+                    },
+                    '& .MuiDialog-paper': {
+                        transition: 'max-height 0.2s ease',
+                    },
+                }}
+            >
                 {step > 0 ? (
                     <IconButton
                         aria-label="back"

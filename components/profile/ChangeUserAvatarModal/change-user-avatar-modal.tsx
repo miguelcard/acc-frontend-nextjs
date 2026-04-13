@@ -30,6 +30,7 @@ export default function ChangeUserAvatarModal({user} : ChangeUserAvatarModalProp
                 childrenBody={
                     <ChangeUserAvatarFormikStepper user={user} />
                 }
+                keyboardLift={0.85}
             />
         </>
     )

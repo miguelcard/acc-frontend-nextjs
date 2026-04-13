@@ -33,9 +33,10 @@ const config: CapacitorConfig = {
       splashImmersive: false,
     },
     Keyboard: {
-      // Resize the WebView when the keyboard opens so fields aren't hidden
-      resize: KeyboardResize.Body,
-      // Scroll the focused input into view
+      // Do NOT let Capacitor auto-resize anything — we reposition dialogs
+      // ourselves via CSS (--keyboard-height + .keyboard-open class).
+      // Combined with adjustNothing in AndroidManifest this gives us full control.
+      resize: KeyboardResize.None,
       style: KeyboardStyle.Light,
     },
     StatusBar: {

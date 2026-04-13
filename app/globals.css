@@ -124,6 +124,42 @@ body.keyboard-open {
   --bottom-nav-height: 0px;
 }
 
+/*
+ * When the soft keyboard is open on native, pull MUI Dialogs upward so
+ * the input fields and submit buttons are not hidden behind the keyboard.
+ *
+ * MUI Dialog uses .MuiDialog-container (the positioning flex wrapper)
+ * and .MuiDialog-paper (the actual card).  We cap the container to the
+ * visible viewport above the keyboard and let the paper scroll.
+ *
+ * With KeyboardResize.Body the <body> shrinks but position:fixed elements
+ * (like MUI Dialog) still reference the full viewport — so we must
+ * constrain them manually using the keyboard height from JS.
+ */
+body.keyboard-open .MuiDialog-container {
+  /* padding-bottom pushes the centered dialog upward by a fraction of
+     the keyboard height.  --dialog-keyboard-lift is set per-dialog
+     via the keyboardLift prop on <DialogModal> (default in :root). */
+  padding-bottom: calc(var(--keyboard-height) * var(--dialog-keyboard-lift)) !important;
+  box-sizing: border-box;
+}
+
+body.keyboard-open .MuiDialog-paper {
+  /* Constrain the dialog so it doesn't overflow behind the keyboard */
+  max-height: calc(100vh - var(--keyboard-height) * var(--dialog-keyboard-lift) - 32px) !important;
+}
+
+/* Ensure the dialog content scrolls so the submit button is reachable */
+body.keyboard-open .MuiDialogContent-root {
+  overflow-y: auto;
+}
+
+/* For non-modal pages (auth, signup) with inputs — add bottom padding
+   so the submit button is visible above the keyboard */
+body.keyboard-open .auth-form-container {
+  padding-bottom: var(--keyboard-height);
+}
+
 /* ── Capacitor: safe area insets ───────────────────────────────
    Applied only when running as a native app (.capacitor-native class).
    Handles device notches, camera islands, and rounded corners.
@@ -135,6 +171,13 @@ body.keyboard-open {
   --safe-area-inset-right: 0px;
   --safe-area-inset-bottom: 0px;
   --safe-area-inset-left: 0px;
+  --keyboard-height: 0px;
+  /*
+   * 0–1 multiplier: how far dialogs shift up when the keyboard opens.
+   * This default is used unless a specific <DialogModal keyboardLift={…}>
+   * overrides it inline via sx on .MuiDialog-container.
+   */
+  --dialog-keyboard-lift: 0.167;
 }
 
 /* Native platform: use actual device safe area insets */

@@ -4,7 +4,6 @@ import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App } from '@capacitor/app';
-import { Keyboard } from '@capacitor/keyboard';
 
 /**
  * Returns true when running inside a native Capacitor shell (Android / iOS).
@@ -85,25 +84,70 @@ export function registerBackButton(): () => void {
 /* ------------------------------------------------------------------ */
 
 /**
- * Add a CSS class to <body> while the soft keyboard is visible so you
- * can adjust padding / layout via CSS if needed.
+ * Tracks keyboard visibility and height using `window.visualViewport`.
  *
- * Returns a cleanup function to remove the listeners.
+ * With `KeyboardResize.None` (capacitor.config.ts) and `adjustNothing`
+ * (AndroidManifest), the WebView is never auto-resized by either Capacitor
+ * or Android. When the keyboard opens:
+ *   - `window.innerHeight` stays constant (full WebView height)
+ *   - `window.visualViewport.height` shrinks to the available space above the keyboard
+ *   - keyboard height = `window.innerHeight − visualViewport.height`
+ *
+ * This is the most reliable detection method on Android WebView.
+ * On iOS, visualViewport also reflects the keyboard correctly.
+ *
+ * Sets:
+ *   - `body.keyboard-open` class while the keyboard is visible
+ *   - `--keyboard-height` CSS custom property on `<html>` with the pixel height
+ *
+ * Returns a cleanup function to remove the listener.
  */
 export function registerKeyboardListeners(): () => void {
   if (!isNative) return () => {};
+  if (typeof window === 'undefined' || !window.visualViewport) return () => {};
 
-  const showHandler = Keyboard.addListener('keyboardWillShow', () => {
-    document.body.classList.add('keyboard-open');
-  });
+  const vv = window.visualViewport;
 
-  const hideHandler = Keyboard.addListener('keyboardWillHide', () => {
-    document.body.classList.remove('keyboard-open');
-  });
+  // Minimum px change to treat as keyboard open (avoids false positives
+  // from browser chrome / URL bar animation on scroll).
+  const KEYBOARD_THRESHOLD_PX = 100;
+
+  const onViewportResize = () => {
+    const keyboardHeight = window.innerHeight - vv.height;
+
+    if (keyboardHeight > KEYBOARD_THRESHOLD_PX) {
+      document.body.classList.add('keyboard-open');
+      document.documentElement.style.setProperty('--keyboard-height', `${keyboardHeight}px`);
+
+      // Scroll the focused input into view, but ONLY within its
+      // scrollable dialog content — never scroll the body/html which
+      // would shift the entire fixed-position dialog.
+      setTimeout(() => {
+        const active = document.activeElement as HTMLElement | null;
+        if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+          // Find the closest MUI DialogContent scroll container
+          const scrollParent = active.closest('.MuiDialogContent-root');
+          if (scrollParent) {
+            // Scroll within the dialog content only
+            const parentRect = scrollParent.getBoundingClientRect();
+            const activeRect = active.getBoundingClientRect();
+            const offset = activeRect.top - parentRect.top - parentRect.height / 2 + activeRect.height / 2;
+            scrollParent.scrollBy({ top: offset, behavior: 'smooth' });
+          }
+          // For non-dialog inputs (e.g. standalone pages): do nothing —
+          // the CSS --keyboard-height padding handles it.
+        }
+      }, 150);
+    } else {
+      document.body.classList.remove('keyboard-open');
+      document.documentElement.style.setProperty('--keyboard-height', '0px');
+    }
+  };
+
+  vv.addEventListener('resize', onViewportResize);
 
   return () => {
-    showHandler.then((h) => h.remove());
-    hideHandler.then((h) => h.remove());
+    vv.removeEventListener('resize', onViewportResize);
   };
 }
 

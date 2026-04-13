@@ -92,6 +92,7 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
                 }
                 childrenTitle={<CreateHabitDialogTitle />}
                 childrenBody={<CreateHabitForm spaceId={spaceId} />}
+                keyboardLift={0.85}
             />
         </Box>
     );

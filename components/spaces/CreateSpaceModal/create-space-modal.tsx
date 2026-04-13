@@ -16,6 +16,7 @@ export default function CreateSpaceModal() {
             <DialogModal button={<NewSpaceButton />}
                 childrenTitle={<CreateSpaceDialogTitle />}
                 childrenBody={<CreateSpaceForm />}
+                keyboardLift={0.7}
             />
         </>
     )
