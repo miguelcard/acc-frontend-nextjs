@@ -101,7 +101,7 @@ export function AllUserHabitsView({
                                 <Box alignSelf='center'>
                                     <DialogModal
                                         button={
-                                            <Typography fontWeight={700} fontSize={`clamp(0.9rem, 2.5vw, 1.2rem)`} color='secondary'
+                                            <Typography fontWeight={800} fontSize={`clamp(0.9rem, 2.5vw, 1.2rem)`} color='secondary'
                                                 sx={{ cursor: 'pointer' }}
                                             >
                                                 {setMaxStringLength(space.name)}
