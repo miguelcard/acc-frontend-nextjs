@@ -1,19 +1,18 @@
-import Container from '@mui/material/Container';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import CreateSpaceModal from '@/components/spaces/CreateSpaceModal/create-space-modal';
-import SpacesOverview from '@/components/spaces/SpacesOverview/spaces-overview';
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function SpacesHome() {
-    return (
-        <>
-            <Container component="section" maxWidth="lg">
-                <CssBaseline />
-                <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
-                    <SpacesOverview />
-                    <CreateSpaceModal />
-                </Box>
-            </Container>
-        </>
-    );
+/**
+ * The app's entry point is always `/` (Capacitor default).
+ * We immediately replace it with `/spaces` so there is a single
+ * canonical URL for the spaces overview.
+ */
+export default function RootRedirect() {
+    const router = useRouter();
+
+    useEffect(() => {
+        router.replace('/spaces');
+    }, [router]);
+
+    return null;
 }
