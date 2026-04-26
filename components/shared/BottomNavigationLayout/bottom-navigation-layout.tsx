@@ -7,14 +7,23 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Paper from '@mui/material/Paper';
+import { Capacitor } from '@capacitor/core';
+import { useQueryClient } from '@tanstack/react-query';
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import PullToRefresh from 'react-simple-pull-to-refresh';
 
+const isNative = Capacitor.isNativePlatform();
 
 export const BottomNavigationLayout = ({ children }: { children: React.ReactNode }) => {
 
     const pathname: string  = usePathname();
+    const queryClient = useQueryClient();
+
+    const handleRefresh = async (): Promise<void> => {
+        await queryClient.invalidateQueries();
+    };
 
     const getPathValue = () => {
         if (pathname === '/' || pathname.startsWith('/spaces')) return 0;
@@ -34,7 +43,16 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
             <CssBaseline />
 
             {/* TODO: can I add this children from the layout.tsx and not having to pass them as children here? */}
-            {children}
+            {isNative ? (
+                <PullToRefresh
+                    onRefresh={handleRefresh}
+                    // pullingContent={<p style={{ textAlign: 'center', margin: 0 }}>Pull to refresh</p>}
+                >
+                    <>{children}</>
+                </PullToRefresh>
+            ) : (
+                children
+            )}
             <Paper
                 sx={{ 
                     position: 'fixed', 
