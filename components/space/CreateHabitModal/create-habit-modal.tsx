@@ -7,6 +7,7 @@ import CreateHabitForm from './create-habit-form';
 import { Button, IconButton } from '@mui/material';
 import { InviteMembers } from '../MoreOptionsMenu/invite-members';
 import AddRoundedIcon  from '@mui/icons-material/AddRounded';
+import { JSXElementConstructor, ReactElement } from 'react';
 
 type Props = 
 { 
@@ -82,7 +83,7 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
                     childrenBody={<InviteMembers spaceId={spaceId} />}
                 />
             )}
-            <DialogModal
+            <CreateHabitDialogModal
                 button={
                     isFirstSpaceHabit ? (
                         <BottomActionButton text={'Add your first habit'} icon={<AddCircleRoundedIcon />} />
@@ -90,9 +91,7 @@ export default function CreateHabitAndInviteMembersModals(props: Props) {
                         <BottomActionButtonSmall icon={<AddRoundedIcon />} />
                     )
                 }
-                childrenTitle={<CreateHabitDialogTitle />}
-                childrenBody={<CreateHabitForm spaceId={spaceId} />}
-                keyboardLift={0.85}
+                spaceId={spaceId}
             />
         </Box>
     );
@@ -109,3 +108,27 @@ export const CreateHabitDialogTitle = () => (
         </Typography>
     </Box>
 );
+
+/**
+ * Shared wrapper for the "Create Habit" dialog — single source of truth for
+ * title, form body and keyboard-lift so every call-site behaves identically.
+ */
+export function CreateHabitDialogModal({
+    button,
+    spaceId,
+    onOpenChange,
+}: {
+    button: ReactElement<any, string | JSXElementConstructor<any>>;
+    spaceId: number;
+    onOpenChange?: (isOpen: boolean) => void;
+}) {
+    return (
+        <DialogModal
+            button={button}
+            childrenTitle={<CreateHabitDialogTitle />}
+            childrenBody={<CreateHabitForm spaceId={spaceId} />}
+            keyboardLift={0.85}
+            onOpenChange={onOpenChange}
+        />
+    );
+}

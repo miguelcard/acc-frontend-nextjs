@@ -13,9 +13,8 @@ import { SizeProp } from '@fortawesome/fontawesome-svg-core';
 import { setMaxStringLength } from '@/lib/client-utils';
 import { grey } from '@mui/material/colors';
 import { useRouter } from 'next/navigation';
-import CreateHabitForm from '@/components/space/CreateHabitModal/create-habit-form';
+import { CreateHabitDialogModal } from '@/components/space/CreateHabitModal/create-habit-modal';
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
-import { CreateHabitDialogTitle } from '@/components/space/CreateHabitModal/create-habit-modal';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AddIcon from '@mui/icons-material/Add';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
@@ -260,10 +259,9 @@ const SpaceModalOptions = ({ spaceId, handleCloseDialog}: { spaceId: number, han
 }
 
 const WrapInCreateHabitModal = ({ children, spaceId, onModalStateChange }: { children: ReactElement, spaceId: number, onModalStateChange?: (isOpen: boolean) => void }) => (
-    <DialogModal
+    <CreateHabitDialogModal
         button={children}
-        childrenTitle={<CreateHabitDialogTitle />}
-        childrenBody={<CreateHabitForm spaceId={spaceId} />}
+        spaceId={spaceId}
         onOpenChange={onModalStateChange}
     />
 );

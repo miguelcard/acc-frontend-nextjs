@@ -56,7 +56,7 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                     })}
                 >
                     <Box paddingBottom={2}>
-                        <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant="standard" />
+                        <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant="standard" autoFocus />
                     </Box>
 
                     <Typography fontSize={"0.8em"} >
@@ -86,6 +86,7 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                                     placeholder="Describe your space"
                                     autoComplete="null"
                                     spellCheck="false"
+                                    autoFocus
                                     onFocus={() => form.setFieldTouched(field.name, true)}
                                     value={field.value}
                                     onChange={field.onChange}

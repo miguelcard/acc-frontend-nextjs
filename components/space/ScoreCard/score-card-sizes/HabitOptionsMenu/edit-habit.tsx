@@ -77,6 +77,7 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                                     placeholder="A description for your Habit"
                                     autoComplete="null"
                                     spellCheck="false"
+                                    autoFocus
                                     onFocus={() => form.setFieldTouched(field.name, true)}
                                     value={field.value}
                                     onChange={field.onChange}

@@ -50,7 +50,7 @@ export function EditSpaceTitle({ space, handleCloseDialog }: EditSpaceTitleProps
                     })}
                 >
                     <Box paddingBottom={2}>
-                        <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant="standard" />
+                        <Field fullWidth name="name" component={TextFieldFormikMui} label="Space Name" variant="standard" autoFocus />
                     </Box>
                     {errorMessage &&
                         <Typography width="100%" display="inline-flex" justifyContent="center" color="error.light">

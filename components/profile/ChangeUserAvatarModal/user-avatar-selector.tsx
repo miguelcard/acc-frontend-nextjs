@@ -39,7 +39,7 @@ export default function UserAvatarSelector({ user }: UserAvatarSelectorProps) {
                 </Typography>
                 <Box display='flex' flexDirection='row' alignItems='center' gap={3} >
                     <UserAvatar user={user} circleDiameter={70} initialsFontSize="3rem" initialsFontWeight={600} seed={defferedSeed} />
-                    <TextField id="outlined-search" label="Seed" type="search" variant="standard" autoComplete="off" value={seed} onChange={(e) => setSeed(e.target.value)} inputProps={{ maxLength: 13 }} />
+                    <TextField id="outlined-search" label="Seed" type="search" variant="standard" autoComplete="off" value={seed} onChange={(e) => setSeed(e.target.value)} inputProps={{ maxLength: 13 }} autoFocus />
                 </Box>
                 {/* Grid showing possible avatars, the click changes the value of the seed */}
                 <Grid container spacing={{ xs: 2, md: 4 }} columns={{ xs: 8, sm: 10, md: 16 }} sx={{pt: 3}}>

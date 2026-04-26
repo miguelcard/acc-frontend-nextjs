@@ -54,7 +54,7 @@ export function EditHabitTitle({ habit, handleCloseDialog }: EditHabitTitleProps
                     })}
                 >
                     <Box paddingBottom={2}>
-                        <Field fullWidth name="title" label="Title" variant="standard" component={TextFieldFormikMui} />
+                        <Field fullWidth name="title" label="Title" variant="standard" component={TextFieldFormikMui} autoFocus />
                     </Box>
                 </FormikStep>
             </FormikStepper>

@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Button, { ButtonPropsColorOverrides } from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Form, Formik, FormikConfig, FormikTouched, FormikValues, setNestedObjectValues } from 'formik';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import IconButton from '@mui/material/IconButton';
 import { OverridableStringUnion } from '@mui/types';
@@ -30,6 +30,22 @@ export function FormikStepper({ children, step, setStep, submitButtonText, butto
     const currentChild = childrenArray[step];
     const [completed, setCompleted] = useState(false);
     const lastStepButtonText: string = submitButtonText === undefined ? "Save" : submitButtonText;
+    const stepContentRef = useRef<HTMLDivElement>(null);
+
+    // Programmatically focus the first input/textarea when step changes.
+    // More reliable than autoFocus alone — especially inside MUI Dialogs
+    // on mobile/Capacitor where the soft keyboard may not open otherwise.
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const container = stepContentRef.current;
+            if (!container) return;
+            const focusable = container.querySelector<HTMLElement>(
+                'input:not([type="hidden"]):not([aria-hidden="true"]), textarea'
+            );
+            focusable?.focus();
+        }, 120);
+        return () => clearTimeout(timer);
+    }, [step]);
 
     function isLastStep() {
         return step === childrenArray.length - 1;
@@ -55,7 +71,9 @@ export function FormikStepper({ children, step, setStep, submitButtonText, butto
         >
             {({ isSubmitting, validateForm, setTouched }) => (
                 <Form autoComplete="off">
-                    {currentChild}
+                    <div ref={stepContentRef}>
+                        {currentChild}
+                    </div>
                     <Button
                         fullWidth
                         type="submit"

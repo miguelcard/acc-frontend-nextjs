@@ -22,6 +22,7 @@ export function FormikAutocompleteInput({ params }: { params: any }) {
             error={Boolean(errors.username_email)}
             helperText={errors.username_email || ''}
             onBlur={() => setFieldValue('username_email', inputProps.inputProps.value)}
+            autoFocus
         />
     );
 }

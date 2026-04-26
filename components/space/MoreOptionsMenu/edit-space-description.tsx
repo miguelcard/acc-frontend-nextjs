@@ -66,6 +66,7 @@ export function EditSpaceDescription({ space, handleCloseDialog }: EditSpaceDesc
                                     // placeholder="Enter the space description"
                                     autoComplete='null'
                                     spellCheck='false'
+                                    autoFocus
                                     onFocus={() => form.setFieldTouched(field.name, true)}
                                     value={field.value}
                                     onChange={field.onChange}

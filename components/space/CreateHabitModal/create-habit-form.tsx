@@ -60,7 +60,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                     })}
                 >
                     <Box paddingBottom={2}>
-                        <Field fullWidth name="title" label="Title" variant="standard" component={TextFieldFormikMui} autoComplete="off" />
+                        <Field fullWidth name="title" label="Title" variant="standard" component={TextFieldFormikMui} autoComplete="off" autoFocus />
                     </Box>
                 </FormikStep>
                 {/* ==== Time frame */}
@@ -79,6 +79,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                             helperText={`Set the desired number of times per ${istimeFrameWeekly ? 'week' : 'month'}`}
                             variant="standard"
                             component={TextFieldFormikMui}
+                            autoFocus
                         >
                             {timeFrames.map((option, index) => (
                                 <MenuItem key={index} value={option.value} onClick={() => setIstimeFrameWeekly(option.value === 'W')}>
@@ -108,6 +109,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                             min={1}
                             max={istimeFrameWeekly ? 7 : 31}
                             component={TextFieldFormikMui}
+                            autoFocus
                         />
                     </Box>
                 </FormikStep>
@@ -130,6 +132,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                                     placeholder="A description for your Habit"
                                     autoComplete="null"
                                     spellCheck="false"
+                                    autoFocus
                                     onFocus={() => form.setFieldTouched(field.name, true)}
                                     value={field.value}
                                     onChange={field.onChange}
