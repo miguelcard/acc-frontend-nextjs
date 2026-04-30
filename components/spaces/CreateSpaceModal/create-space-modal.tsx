@@ -27,7 +27,7 @@ const NewSpaceButton = () => {
     return (
         <Button variant="outlined" color="secondary"
             startIcon={<><AddIcon /><GroupsIcon /></>}
-            sx={{ py: 1, mb: 4 }}
+            sx={{ py: 1, mb: 4, borderWidth: '2px', '&:hover': { borderWidth: '2px' } }}
         >
             <Typography fontWeight={600} fontSize={"1.1em"}
             >
@@ -37,7 +37,7 @@ const NewSpaceButton = () => {
     );
 }
 
-const CreateSpaceDialogTitle = () => {
+export const CreateSpaceDialogTitle = () => {
     return (
         <>
             <Box

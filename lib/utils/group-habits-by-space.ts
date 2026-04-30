@@ -10,12 +10,14 @@ export type SpaceHabitsGroup = {
  * Note: (theoretically) Habits can belong to multiple spaces, so a habit might appear in multiple groups.
  * 
  * @param habits - Array of habits to group that already belong to the user.
- * @param spaces - Array of spaces where the user belongs, it can be that the user does not habe a habit in this space, in that case we dont show it.
+ * @param spaces - Array of spaces where the user belongs.
+ * @param includeEmptySpaces - When true, also includes spaces with no habits (with an empty habits array). Defaults to false.
  * @returns Array of spaces and habits sorted by space name
  */
 export function groupHabitsBySpace(
     habits: HabitT[],
-    spaces: SpaceT[]
+    spaces: SpaceT[],
+    includeEmptySpaces = false
 ): SpaceHabitsGroup[] {
 
     const spaceHabitsMap = new Map<number, HabitT[]>();
@@ -33,18 +35,31 @@ export function groupHabitsBySpace(
     const spaceMap = new Map(spaces.map(space => [space.id, space]));
 
     // Convert map to array of SpaceHabitsGroup
-    // Only includes spaces that have at least one habit
-    const groupedHabits: SpaceHabitsGroup[] = Array.from(spaceHabitsMap.entries()).map(
+    // For habits referencing a deleted space, use a fallback placeholder so habits remain visible
+    const groupedHabits: SpaceHabitsGroup[] = Array.from(spaceHabitsMap.entries())
+        .map(
         ([spaceId, spaceHabits]) => ({
-            space: spaceMap.get(spaceId)!,
+            space: spaceMap.get(spaceId) ?? { id: spaceId, name: '(Deleted Space)', icon_alias: 'trash' },
             habits: spaceHabits.sort((a, b) => 
                 new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
             ),
         })
     );
 
-    // sort by spacename for consistent ordering
-    return groupedHabits.sort((a, b) => 
-        a.space.name.localeCompare(b.space.name)
-    );
+    // When includeEmptySpaces is true, append spaces that have no habits yet
+    if (includeEmptySpaces) {
+        spaces.forEach(space => {
+            if (!spaceHabitsMap.has(space.id)) {
+                groupedHabits.push({ space, habits: [] });
+            }
+        });
+    }
+
+    // Sort: spaces with habits first (by name), then spaces without habits (by name)
+    return groupedHabits.sort((a, b) => {
+        const aHasHabits = a.habits.length > 0;
+        const bHasHabits = b.habits.length > 0;
+        if (aHasHabits !== bHasHabits) return aHasHabits ? -1 : 1;
+        return a.space.name.localeCompare(b.space.name);
+    });
 }

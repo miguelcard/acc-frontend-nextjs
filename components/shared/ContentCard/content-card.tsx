@@ -20,7 +20,7 @@ export default function ContentCard({ hidden = false, sx = {}, children }: Conte
             maxHeight={{ sm: '70vh' }}
             overflow={'auto'}
             borderRadius={'1rem'}
-            boxShadow={'0 8px 32px 0 rgba(31, 38, 135, 0.15)'}
+            boxShadow={'0 4px 16px 0 rgba(31, 38, 135, 0.07)'}
             border={'1.5px solid rgba(255, 255, 255, 0.9)'}
             bgcolor={'rgba(255, 255, 255, 0.45)'}
             position={"relative"}

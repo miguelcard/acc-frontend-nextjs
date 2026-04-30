@@ -23,8 +23,10 @@ export default function AllHabitsOverview() {
     if (!habitsPaginated || !spacesPaginated) return null;
     const habits: HabitT[] = habitsPaginated.results;
     const spaces: SpaceT[] = spacesPaginated.results;
-    return groupHabitsBySpace(habits, spaces);
+    return groupHabitsBySpace(habits, spaces, true);
   }, [habitsPaginated, spacesPaginated]);
+
+  const hasSpaces = (spacesPaginated?.results?.length ?? 0) > 0;
 
   // Only show error screen when we have NO cached data to display.
   // When offline with cached data, hasError may be true but we still want
@@ -54,7 +56,7 @@ export default function AllHabitsOverview() {
         <Typography fontSize='1.3em' fontWeight={800} pb={1} pt={2} >
           All my Habits by Space
         </Typography>
-        <AllUserHabitsView userHabitsGroupedBySpace={groupedHabits} ></AllUserHabitsView>
+        <AllUserHabitsView userHabitsGroupedBySpace={groupedHabits} hasSpaces={hasSpaces} ></AllUserHabitsView>
       </Box>
     </Container>
   )

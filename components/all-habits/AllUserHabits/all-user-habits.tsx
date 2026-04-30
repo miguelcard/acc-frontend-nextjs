@@ -1,7 +1,7 @@
 'use client';
 
 import { HabitT } from '@/lib/types-and-constants';
-import { Avatar, Box, ButtonBase, Divider, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
+import { Avatar, Box, Button, ButtonBase, Chip, Divider, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import React, { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
 import DatesRangeSelector from '@/components/space/ScoreCard/dates-range-selector';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -18,15 +18,19 @@ import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AddIcon from '@mui/icons-material/Add';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
+import CreateSpaceForm from '@/components/spaces/CreateSpaceModal/create-space-form';
+import { CreateSpaceDialogTitle } from '@/components/spaces/CreateSpaceModal/create-space-modal';
 
 
 type UserAllHabitsViewPropsT = {
     userHabitsGroupedBySpace: SpaceHabitsGroup[];
+    hasSpaces: boolean;
     onDateRangeChange?: (dateRangeCode: string) => Promise<HabitT[]>;
 };
 
 export function AllUserHabitsView({
     userHabitsGroupedBySpace,
+    hasSpaces,
     onDateRangeChange
 }: UserAllHabitsViewPropsT) {
 
@@ -60,6 +64,9 @@ export function AllUserHabitsView({
         }
     };
 
+    const spacesWithHabits = userHabitsGroupedBySpace.filter(g => g.habits.length > 0);
+    const spacesWithoutHabits = userHabitsGroupedBySpace.filter(g => g.habits.length === 0);
+
     return (
         <Box sx={{ width: '100%' }}>
             <DatesRangeSelector
@@ -68,7 +75,7 @@ export function AllUserHabitsView({
                 updateCheckedDates={handleDateRangeUpdate}
             />
 
-            {userHabitsGroupedBySpace.map((spaceGroup) => {
+            {spacesWithHabits.map((spaceGroup) => {
                 const { space, habits } = spaceGroup;
 
                 return (
@@ -135,21 +142,15 @@ export function AllUserHabitsView({
                             hidden={collapsedSpaces.includes(space.id)}
                             sx={{ mb: 3 }}
                         >
-                            {habits.length > 0 ? (
-                                <SmallScreenHabitScoreCard
-                                    ownerHabits={habits}
-                                    checkedDates={checkedDates}
-                                    dates={dates}
-                                    setCheckedDates={setCheckedDates}
-                                    spaceId={space.id}
-                                />
-                            ) : (
-                                <Box sx={{ padding: '10px', textAlign: 'center' }}>
-                                    No habits in this space
-                                </Box>
-                            )}
+                            <SmallScreenHabitScoreCard
+                                ownerHabits={habits}
+                                checkedDates={checkedDates}
+                                dates={dates}
+                                setCheckedDates={setCheckedDates}
+                                spaceId={space.id}
+                            />
                         </ContentCard>
-                        
+
                         {/* Divider below the habits card */}
                         {collapsedSpaces.includes(space.id) && (
                             <Divider sx={{ my: 1, mx: 2 }} />
@@ -158,9 +159,61 @@ export function AllUserHabitsView({
                 );
             })}
 
+            {/* ============== Chip strip for spaces with no own habits =========== */}
+            {spacesWithoutHabits.length > 0 && (
+                <Box sx={{ mt: spacesWithHabits.length > 0 ? 1 : 0, mb: 2, px: 1, py: 1 }}>
+                    <Typography variant='body2' color='text.secondary' fontWeight={700} letterSpacing={0.2} sx={{ mb: 1.5, fontSize: '0.95rem' }}>
+                        Add your own habits in more spaces:
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                        {spacesWithoutHabits.map(({ space }) => (
+                            <WrapInCreateHabitModal key={space.id} spaceId={space.id}>
+                                <Chip
+                                    icon={
+                                        <span style={{ display: 'flex', alignItems: 'center', marginLeft: '10px', fontSize: '1.1rem' }}>
+                                            <SpaceIconLogic iconAlias={space.icon_alias} />
+                                        </span>
+                                    }
+                                    label={setMaxStringLength(space.name, 20)}
+                                    clickable
+                                    color='secondary'
+                                    variant='outlined'
+                                    sx={{
+                                        borderRadius: '20px',
+                                        fontSize: '0.92rem',
+                                        height: '40px',
+                                        borderWidth: '2px',
+                                    }}
+                                />
+                            </WrapInCreateHabitModal>
+                        ))}
+                    </Box>
+                </Box>
+            )}
+
             {userHabitsGroupedBySpace.length === 0 && (
-                <ContentCard sx={{ textAlign: 'center', padding: 3 }}>
-                    <Typography>You haven&apos;t created any habits yet</Typography>
+                <ContentCard sx={{ textAlign: 'center', padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    {!hasSpaces ? (
+                        <>
+                            <Typography fontWeight={600}>You don&apos;t have any spaces yet</Typography>
+                            <Typography variant='body2' color='text.secondary'>Create a space first, then start adding habits to it.</Typography>
+                            <DialogModal
+                                button={
+                                    <Button variant='contained' color='secondary' size='small' sx={{ borderRadius: '20px', textTransform: 'none' }}>
+                                        Create a Space
+                                    </Button>
+                                }
+                                childrenTitle={<CreateSpaceDialogTitle />}
+                                childrenBody={<CreateSpaceForm />}
+                                keyboardLift={0.7}
+                            />
+                        </>
+                    ) : (
+                        // NOTE: This branch is unreachable — includeEmptySpaces:true guarantees
+                        // all spaces appear, so length > 0 whenever hasSpaces is true.
+                        // Kept as a safety net only.
+                        <Typography color='text.secondary'>You haven&apos;t created any habits yet</Typography>
+                    )}
                 </ContentCard>
             )}
         </Box>
