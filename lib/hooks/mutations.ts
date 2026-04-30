@@ -114,6 +114,7 @@ export function useDeleteSpaceRole() {
         mutationFn: (spaceId: number) => deleteSpaceRole(spaceId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: queryKeys.spaces });
+            qc.invalidateQueries({ queryKey: queryKeys.recurrentHabits });
         },
     });
 }
