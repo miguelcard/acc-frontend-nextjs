@@ -24,4 +24,7 @@ export const queryKeys = {
 
     // ---- Habits ----
     recurrentHabits: ['habits', 'recurrent'] as const,
+
+    // ---- XP Stats ----
+    xpStats: ['user', 'xp-stats'] as const,
 };

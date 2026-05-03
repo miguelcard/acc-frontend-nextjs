@@ -1,6 +1,7 @@
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
 import { CheckedDatesT, HabitT, UserT } from '@/lib/types-and-constants';
 import { Box, Checkbox, Typography } from '@mui/material';
+import { computeHabitProgress, habitProgressGreen } from '@/lib/utils/compute-habit-progress';
 import styles from './habit-score-card.module.css';
 import { HabitOptionsMenu } from './HabitOptionsMenu/habit-options-menu';
 import { toggleCheckmark } from './checkmark-toggle';
@@ -43,10 +44,41 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                     <Box
                         key={index}
                         sx={{
+                            position: 'relative',
                             padding: `clamp(6px, 3vw, 10px)`,
+                            paddingLeft: `calc(clamp(6px, 3vw, 10px) + 6px)`,
                             width: '100%',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
                         }}
                     >
+                        {/* ============================= Left-edge fill bar ========= */}
+                        {(() => {
+                            const ratio = computeHabitProgress(habit, checkedDates);
+                            const fillColor = habitProgressGreen(ratio);
+                            return (
+                                <Box sx={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 0,
+                                    width: '4px',
+                                    height: '100%',
+                                    bgcolor: 'rgba(150,150,150,0.15)',
+                                    borderRadius: '8px 0 0 8px',
+                                }}>
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        left: 0,
+                                        bottom: 0,
+                                        width: '100%',
+                                        height: `${Math.min(ratio * 100, 100)}%`,
+                                        bgcolor: fillColor,
+                                        borderRadius: ratio >= 1 ? '8px 0 0 8px' : '0 0 0 8px',
+                                        transition: 'height 0.4s ease, background-color 0.4s ease',
+                                    }} />
+                                </Box>
+                            );
+                        })()}
                         {/* ============================= Habit's Title With Modal to show details ======================== */}
 
                         <Box component={'div'} className={styles['habit_title_container']}>
@@ -64,6 +96,16 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                                         >
                                             {`(${habit.times}x/${timeLetterToWord(habit.time_frame)})`}
                                         </Typography>
+                                        {/* ======= Streak badge (from backend) ======= */}
+                                        {habit.streak && habit.streak.count > 0 && (
+                                            <Typography
+                                                fontSize='0.7em'
+                                                sx={{ marginLeft: '6px', whiteSpace: 'nowrap' }}
+                                                title={`${habit.streak.count} ${habit.streak.unit === 'M' ? 'month' : 'week'} streak`}
+                                            >
+                                                {`🔥 ${habit.streak.count}${habit.streak.unit === 'M' ? 'm' : 'w'}`}
+                                            </Typography>
+                                        )}
                                     </Box>
                                 }
                                 childrenTitle={habit.title}
@@ -76,13 +118,12 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                             {isCurrentUser(habit) && <HabitOptionsMenu habit={habit} />}
                         </Box>
 
-                        {/* ============================= Habit's Checkboxes ========= */}
+                        {/* Checkboxes */}
                         <Box
                             sx={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 paddingInline: `clamp(5px, 2.5vw, 20px)`,
-                                // paddingBlock: `clamp(1px, 1vw, 4px)`,
                                 gap: `clamp(4px, 8vw, 8px)`,
                                 justifyContent: 'space-between',
                             }}
@@ -113,15 +154,10 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                                                 margin: 0,
                                                 color: 'black',
                                                 '&.Mui-disabled': {
-                                                    '&.Mui-checked': {
-                                                        opacity: 0.6,
-                                                    },
+                                                    '&.Mui-checked': { opacity: 0.6 },
                                                     opacity: 0.6,
                                                     backgroundColor: 'grey.200',
                                                 },
-                                                // '&.Mui-checked': {
-                                                //     color: '#00c04b',
-                                                // },
                                             }}
                                             icon={<CheckBoxWithDay date={date} isToday={isToday} isDisabled={isDisabled} />}
                                             // Checked icon

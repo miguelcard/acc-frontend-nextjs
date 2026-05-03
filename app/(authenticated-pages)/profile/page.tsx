@@ -8,6 +8,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import toast from 'react-hot-toast';
 import ChangeUserAvatarModal from '@/components/profile/ChangeUserAvatarModal/change-user-avatar-modal';
 import ChangeUserFields from '@/components/profile/ChangeUserFields/change-user-fields';
+import XPCard from '@/components/profile/XPCard/xp-card';
 import { useUser } from '@/lib/hooks/queries';
 import QueryError from '@/components/shared/QueryError/query-error';
 
@@ -78,6 +79,11 @@ export default function Profile() {
                     >
                         {user.email}
                     </Typography>
+
+                    {/* XP & level card */}
+                    <Box width='100%' display='flex' justifyContent='center' px={2} pt={3}>
+                        <XPCard />
+                    </Box>
 
                     <ChangeUserFields user={user} />
                     

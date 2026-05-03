@@ -166,8 +166,12 @@ export function useAddCheckmark(spaceId: number) {
         mutationFn: (checkmark: { habit: number; status: string; date: string; client_date: string }) =>
             addCheckmark(checkmark),
         onSuccess: () => {
-            // Invalidate all checkmark queries for this space
+            // Invalidate the space query so space_habits (with embedded checkmarks) are refreshed on next mount
+            qc.invalidateQueries({ queryKey: queryKeys.space(spaceId) });
             qc.invalidateQueries({ queryKey: queryKeys.spaceCheckmarks(spaceId) });
+            // Also invalidate recurrentHabits so "All Habits" page reflects the change
+            // on next visit, and streak badges are refreshed.
+            qc.invalidateQueries({ queryKey: queryKeys.recurrentHabits });
         },
     });
 }
@@ -177,7 +181,12 @@ export function useDeleteCheckmark(spaceId: number) {
     return useMutation({
         mutationFn: (checkmark: CheckMarkT) => deleteCheckmark(checkmark),
         onSuccess: () => {
+            // Invalidate the space query so space_habits (with embedded checkmarks) are refreshed on next mount
+            qc.invalidateQueries({ queryKey: queryKeys.space(spaceId) });
             qc.invalidateQueries({ queryKey: queryKeys.spaceCheckmarks(spaceId) });
+            // Also invalidate recurrentHabits so "All Habits" page reflects the change
+            // on next visit, and streak badges are refreshed.
+            qc.invalidateQueries({ queryKey: queryKeys.recurrentHabits });
         },
     });
 }

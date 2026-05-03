@@ -4,6 +4,7 @@
 //       error state, retries, and isError properly.
 import { authenticatedFetch } from '@/lib/authenticated-fetch';
 import { getErrorMessage } from '@/lib/utils/utils';
+import { XPStatsT } from '@/lib/types-and-constants';
 
 
 // ----- Spaces -----
@@ -127,4 +128,26 @@ function getRandomUserOrderingQueryValue(): string {
     const field: string = Math.random() < 0.5 ? 'updated_at' : 'username';
 
     return orderDirection + field;
+}
+
+
+// ----- XP Stats -----
+
+/**
+ * Fetches the authenticated user's XP stats (total XP, level, streak, heatmap).
+ * Also triggers lazy reconciliation of any missed XP on the backend.
+ */
+export async function getXPStats(): Promise<XPStatsT> {
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/user/xp-stats/`;
+
+    const res = await authenticatedFetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(getErrorMessage(data) || 'Failed to fetch XP stats');
+    }
+    return data as XPStatsT;
 }

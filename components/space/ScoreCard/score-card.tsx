@@ -11,6 +11,7 @@ import { ubuntu } from '@/styles/fonts/fonts';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
 import ContentCard from '@/components/shared/ContentCard/content-card';
 import { useHabitScorecard } from '@/lib/hooks/useHabitScorecard';
+import { MemberLeaderboard } from './MemberLeaderboard/member-leaderboard';
 
 type ScoreCardPropsT = {
     currentUser: UserT;
@@ -63,6 +64,14 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
 
     return (
         <Box mb={9}>
+            <Box mt={2}>
+                <MemberLeaderboard
+                    members={members}
+                    spaceHabits={spaceHabits}
+                    checkedDates={checkedDates}
+                    currentUserId={currentUser.id}
+                />
+            </Box>
             <DatesRangeSelector dates={dates} setDates={setDates} updateCheckedDates={handleDateRangeUpdate} />
             {orderedMembers.map((member) => {
                 const ownerHabits = spaceHabits?.filter((habit) => habit.owner === member.id);

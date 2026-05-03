@@ -64,6 +64,8 @@ export type HabitT = {
     owner: number;
     spaces: number[];
     error?: string;
+    /** Optional streak data returned by the backend. Absent = no badge shown. */
+    streak?: { count: number; unit: 'W' | 'M' };
 };
 
 /**
@@ -138,4 +140,26 @@ export type MemberT = {
     about: any;
     is_active: boolean;
     spacerole?: SpaceRoleT;
+};
+
+/**
+ * XP heatmap entry — one cell per period with total XP earned.
+ */
+export type XPHeatmapEntryT = {
+    period_start: string; // ISO date string e.g. '2025-04-28'
+    xp: number;
+};
+
+/**
+ * Full XP stats payload returned by GET /api/v1/user/xp-stats/
+ */
+export type XPStatsT = {
+    total_xp: number;
+    level: number;
+    xp_into_level: number;     // XP accumulated since reaching this level
+    xp_for_level: number;      // XP gap to advance to next level
+    pct_to_next: number;       // 0.0–1.0
+    longest_streak: number;    // in completed periods
+    completed_periods: number;
+    heatmap: XPHeatmapEntryT[];
 };
