@@ -1,4 +1,4 @@
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Left-edge vertical fill bar per habit
 For each habit row in the ScoreCard, the system SHALL display a 4px-wide vertical fill bar anchored to the left edge of the habit card showing the ratio of checkmarks completed in the **viewed period** vs. the habit's goal (`times`), where "viewed period" is defined by the habit's `time_frame` and the **currently displayed date range** (the Mon–Sun week that contains the first displayed date for `W`, and the calendar month that contains the first displayed date for `M`).

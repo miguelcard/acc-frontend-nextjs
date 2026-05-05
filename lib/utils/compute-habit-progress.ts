@@ -1,42 +1,51 @@
 import { CheckedDatesT, HabitT } from '@/lib/types-and-constants';
 
 /**
- * Returns the start of the current week (Monday 00:00:00).
+ * Returns the start of the week (Monday 00:00:00) containing `anchor`.
  */
-function getWeekStart(): Date {
-    const now = new Date();
-    const day = now.getDay(); // 0=Sun, 1=Mon...
+function getWeekStart(anchor: Date): Date {
+    const day = anchor.getDay(); // 0=Sun, 1=Mon...
     const diff = (day === 0 ? -6 : 1 - day); // shift to Monday
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + diff);
+    const monday = new Date(anchor);
+    monday.setDate(anchor.getDate() + diff);
     monday.setHours(0, 0, 0, 0);
     return monday;
 }
 
 /**
- * Returns the start of the current calendar month (1st 00:00:00).
+ * Returns the start of the calendar month (1st 00:00:00) containing `anchor`.
  */
-function getMonthStart(): Date {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+function getMonthStart(anchor: Date): Date {
+    return new Date(anchor.getFullYear(), anchor.getMonth(), 1, 0, 0, 0, 0);
 }
 
 /**
- * Computes the completion ratio (0–1) for a single habit in its current period.
- * - For time_frame "W": counts checkmarks in the current Mon–Sun week.
- * - For time_frame "M": counts checkmarks in the current calendar month.
+ * Computes the completion ratio (0–1) for a single habit in the period that
+ * contains `viewDate` (defaults to today when omitted).
+ * - For time_frame "W": counts checkmarks in the Mon–Sun week of `viewDate`.
+ * - For time_frame "M": counts checkmarks in the calendar month of `viewDate`.
  * Capped at 1.0.
  */
-export function computeHabitProgress(habit: HabitT, checkedDates: CheckedDatesT): number {
+export function computeHabitProgress(habit: HabitT, checkedDates: CheckedDatesT, viewDate?: Date): number {
     if (!habit.times || habit.times <= 0) return 0;
 
-    const periodStart = habit.time_frame === 'M' ? getMonthStart() : getWeekStart();
-    const now = new Date();
+    const anchor = viewDate ?? new Date();
+    const periodStart = habit.time_frame === 'M' ? getMonthStart(anchor) : getWeekStart(anchor);
+    // Period end: end of the week/month containing the anchor
+    let periodEnd: Date;
+    if (habit.time_frame === 'M') {
+        periodEnd = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0, 23, 59, 59, 999);
+    } else {
+        const weekStart = getWeekStart(anchor);
+        periodEnd = new Date(weekStart);
+        periodEnd.setDate(weekStart.getDate() + 6);
+        periodEnd.setHours(23, 59, 59, 999);
+    }
 
     let count = 0;
     for (const dateStr of Object.keys(checkedDates)) {
         const dateObj = new Date(dateStr);
-        if (dateObj >= periodStart && dateObj <= now) {
+        if (dateObj >= periodStart && dateObj <= periodEnd) {
             if (checkedDates[dateStr][habit.id]) {
                 count++;
             }
@@ -49,10 +58,11 @@ export function computeHabitProgress(habit: HabitT, checkedDates: CheckedDatesT)
 /**
  * Computes the average completion score (0–1) for a member's habits.
  * Each habit is capped at 1.0 before averaging.
+ * Pass `viewDate` to scope the calculation to the period containing that date.
  */
-export function computeMemberScore(habits: HabitT[], checkedDates: CheckedDatesT): number {
+export function computeMemberScore(habits: HabitT[], checkedDates: CheckedDatesT, viewDate?: Date): number {
     if (!habits || habits.length === 0) return 0;
-    const total = habits.reduce((sum, habit) => sum + computeHabitProgress(habit, checkedDates), 0);
+    const total = habits.reduce((sum, habit) => sum + computeHabitProgress(habit, checkedDates, viewDate), 0);
     return total / habits.length;
 }
 

@@ -54,7 +54,8 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                     >
                         {/* ============================= Left-edge fill bar ========= */}
                         {(() => {
-                            const ratio = computeHabitProgress(habit, checkedDates);
+                            const viewDate = dates.length > 0 ? dates[0] : undefined;
+                            const ratio = computeHabitProgress(habit, checkedDates, viewDate);
                             const fillColor = habitProgressGreen(ratio);
                             return (
                                 <Box sx={{
