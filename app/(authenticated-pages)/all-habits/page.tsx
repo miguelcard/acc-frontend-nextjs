@@ -11,6 +11,7 @@ import { groupHabitsBySpace } from '@/lib/utils/group-habits-by-space';
 import Typography from '@mui/material/Typography';
 import { useAllRecurrentHabits, useUserSpaces } from '@/lib/hooks/queries';
 import QueryError from '@/components/shared/QueryError/query-error';
+import { getAllUserRecurrentHabitsForDateRange } from '@/lib/fetch-queries';
 
 export default function AllHabitsOverview() {
   const { data: habitsPaginated, isLoading: habitsLoading, isError: habitsError, refetch: refetchHabits } = useAllRecurrentHabits();
@@ -56,7 +57,11 @@ export default function AllHabitsOverview() {
         <Typography fontSize='1.3em' fontWeight={800} pb={1} pt={2} >
           All my Habits by Space
         </Typography>
-        <AllUserHabitsView userHabitsGroupedBySpace={groupedHabits} hasSpaces={hasSpaces} ></AllUserHabitsView>
+        <AllUserHabitsView
+          userHabitsGroupedBySpace={groupedHabits}
+          hasSpaces={hasSpaces}
+          onDateRangeChange={getAllUserRecurrentHabitsForDateRange}
+        ></AllUserHabitsView>
       </Box>
     </Container>
   )

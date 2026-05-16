@@ -75,6 +75,8 @@ export function usePatchHabit(spaceId: number) {
             qc.invalidateQueries({ queryKey: queryKeys.space(spaceId) });
             qc.invalidateQueries({ queryKey: queryKeys.recurrentHabits });
             qc.invalidateQueries({ queryKey: queryKeys.spaceCheckmarks(spaceId) });
+            // Config changes trigger XP settlement — refresh the Profile XP display.
+            qc.invalidateQueries({ queryKey: queryKeys.xpStats });
         },
     });
 }
@@ -172,6 +174,8 @@ export function useAddCheckmark(spaceId: number) {
             // Also invalidate recurrentHabits so "All Habits" page reflects the change
             // on next visit, and streak badges are refreshed.
             qc.invalidateQueries({ queryKey: queryKeys.recurrentHabits });
+            // Invalidate XP stats so the Profile page reflects newly awarded XP immediately.
+            qc.invalidateQueries({ queryKey: queryKeys.xpStats });
         },
     });
 }
@@ -187,6 +191,8 @@ export function useDeleteCheckmark(spaceId: number) {
             // Also invalidate recurrentHabits so "All Habits" page reflects the change
             // on next visit, and streak badges are refreshed.
             qc.invalidateQueries({ queryKey: queryKeys.recurrentHabits });
+            // Invalidate XP stats so the Profile page reflects XP changes immediately.
+            qc.invalidateQueries({ queryKey: queryKeys.xpStats });
         },
     });
 }

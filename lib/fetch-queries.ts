@@ -4,7 +4,7 @@
 //       error state, retries, and isError properly.
 import { authenticatedFetch } from '@/lib/authenticated-fetch';
 import { getErrorMessage } from '@/lib/utils/utils';
-import { XPStatsT } from '@/lib/types-and-constants';
+import { HabitT, XPStatsT } from '@/lib/types-and-constants';
 
 
 // ----- Spaces -----
@@ -101,7 +101,7 @@ export async function getUsersFromSpace(spaceId: number, resultsNumber: number) 
  * This function gets logged-in user's recurrent habits
  */
 export async function getAllUserRecurrentHabits() {
-    const url = `${process.env.NEXT_PUBLIC_API}/v1/habits/recurrent/?page=1&page_size=100&ordering=-spaces__id`; // TODO user wont be able too see more results than the page size at the moment, possible bug
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/habits/recurrent/?page=1&page_size=100&ordering=-spaces__id`;
 
     const res = await authenticatedFetch(url, {
         method: 'GET',
@@ -112,6 +112,24 @@ export async function getAllUserRecurrentHabits() {
         throw new Error(getErrorMessage(habits) || 'Failed to fetch habits');
     }
     return habits;
+}
+
+/**
+ * Fetches all logged-in user's recurrent habits for a specific date range (for checkmark pagination).
+ * @param dateString string containing cm_to_date and cm_from_date query params
+ */
+export async function getAllUserRecurrentHabitsForDateRange(dateString: string) {
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/habits/recurrent/?page=1&page_size=100&ordering=-spaces__id&${dateString}`;
+
+    const res = await authenticatedFetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const habits = await res.json();
+    if (!res.ok) {
+        throw new Error(getErrorMessage(habits) || 'Failed to fetch habits for date range');
+    }
+    return habits.results as HabitT[];
 }
 
 
