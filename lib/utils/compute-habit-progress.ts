@@ -20,27 +20,62 @@ function getMonthStart(anchor: Date): Date {
 }
 
 /**
+ * Returns the last moment of the period (week or month) containing `anchor`.
+ * - 'W': Sunday 23:59:59.999 of the week containing `anchor`
+ * - 'M': Last day 23:59:59.999 of the month containing `anchor`
+ * Used to resolve the historically-correct config for a whole period, so that a
+ * config change mid-week/mid-month applies to the entire period it falls in.
+ */
+export function getPeriodEnd(anchor: Date, timeFrame: string): Date {
+    if (timeFrame === 'M') {
+        return new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0, 23, 59, 59, 999);
+    }
+    const weekStart = getWeekStart(anchor);
+    const sunday = new Date(weekStart);
+    sunday.setDate(weekStart.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+    return sunday;
+}
+
+/**
+ * Returns the historically-correct `{ times, time_frame }` for a given date by
+ * consulting `config_history` (sorted ascending by effective_from).
+ * Falls back to `habit.times` / `habit.time_frame` when the field is absent,
+ * empty, or no entry predates `date`.
+ */
+export function configForDate(habit: HabitT, date: Date): { times: number; time_frame: string } {
+    const history = habit.config_history;
+    if (!history || history.length === 0) return { times: habit.times, time_frame: habit.time_frame };
+    let result = { times: habit.times, time_frame: habit.time_frame };
+    for (const entry of history) {
+        if (new Date(entry.effective_from) <= date) {
+            result = { times: entry.times, time_frame: entry.time_frame };
+        } else {
+            break;
+        }
+    }
+    return result;
+}
+
+/**
  * Computes the completion ratio (0–1) for a single habit in the period that
  * contains `viewDate` (defaults to today when omitted).
  * - For time_frame "W": counts checkmarks in the Mon–Sun week of `viewDate`.
  * - For time_frame "M": counts checkmarks in the calendar month of `viewDate`.
+ * Uses `config_history` to resolve the historically-correct target for the period,
+ * so that changing `times` today does not retroactively distort past progress bars.
  * Capped at 1.0.
  */
 export function computeHabitProgress(habit: HabitT, checkedDates: CheckedDatesT, viewDate?: Date): number {
-    if (!habit.times || habit.times <= 0) return 0;
-
     const anchor = viewDate ?? new Date();
+
+    // Resolve config using the period END so that a mid-period config change
+    // applies to the entire period it falls in (mirrors backend behaviour).
+    const periodEnd = getPeriodEnd(anchor, habit.time_frame);
+    const { times: requiredTimes } = configForDate(habit, periodEnd);
+    if (!requiredTimes || requiredTimes <= 0) return 0;
+
     const periodStart = habit.time_frame === 'M' ? getMonthStart(anchor) : getWeekStart(anchor);
-    // Period end: end of the week/month containing the anchor
-    let periodEnd: Date;
-    if (habit.time_frame === 'M') {
-        periodEnd = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0, 23, 59, 59, 999);
-    } else {
-        const weekStart = getWeekStart(anchor);
-        periodEnd = new Date(weekStart);
-        periodEnd.setDate(weekStart.getDate() + 6);
-        periodEnd.setHours(23, 59, 59, 999);
-    }
 
     let count = 0;
     for (const dateStr of Object.keys(checkedDates)) {
@@ -52,7 +87,7 @@ export function computeHabitProgress(habit: HabitT, checkedDates: CheckedDatesT,
         }
     }
 
-    return Math.min(count / habit.times, 1);
+    return Math.min(count / requiredTimes, 1);
 }
 
 /**

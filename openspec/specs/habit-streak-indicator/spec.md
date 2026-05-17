@@ -1,3 +1,6 @@
+## Purpose
+Display a streak badge inline with every habit title in the ScoreCard, showing consecutive periods in which the user met their habit goal, computed server-side using historically-correct targets.
+
 ## Requirements
 
 ### Requirement: Streak badge inline with habit title

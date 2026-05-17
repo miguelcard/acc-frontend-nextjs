@@ -1,25 +1,18 @@
-## Purpose
-Display a per-habit left-edge vertical fill bar in the ScoreCard that accurately reflects the user's progress for any viewed period, using the historically-correct goal target for that period.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Left-edge vertical fill bar per habit
 For each habit row in the ScoreCard, the system SHALL display a 4px-wide vertical fill bar anchored to the left edge of the habit card showing the ratio of checkmarks completed in the **viewed period** vs. the habit's goal for that period, where "viewed period" is defined by the habit's `time_frame` and the **currently displayed date range** (the Mon–Sun week that contains the first displayed date for `W`, and the calendar month that contains the first displayed date for `M`).
 
-The goal (denominator) MUST be the `times` value that was **in effect during the viewed period**, resolved from the habit's `config_history` array using the **last day of the viewed period** as the lookup date. The resolver SHALL find the latest `config_history` entry whose `effective_from` date is on or before the last day of the viewed period (Sunday for weekly, last day of month for monthly), so that a config change mid-period applies to the entire period it falls in. If `config_history` is absent or empty, the system SHALL fall back to the current live `habit.times` value.
+The goal (denominator) MUST be the `times` value that was **in effect during the viewed period**, resolved from the habit's `config_history` array. The resolver SHALL find the latest `config_history` entry whose `effective_from` date is on or before the first date of the viewed period. If `config_history` is absent or empty, the system SHALL fall back to the current live `habit.times` value.
 
 The bar SHALL fill from **bottom to top** as progress increases (0% = empty track, 100% = fully filled).
-
 The bar color SHALL use a single continuous green scale (`habitProgressGreen(ratio)`) — a transparent-to-solid shade of `#2dc38c` — where:
 - ratio 0 → near-transparent green (alpha ~0.08)
 - ratio 1 → full `#2dc38c`
 
 No red or yellow is used. The track background is a faint grey (`rgba(150,150,150,0.15)`).
-
 Border-radius: rounded at the bottom corners at all times; all four corners rounded only when 100% complete.
-
 Progress SHALL be capped at 100% visually even if checkmarks exceed the goal. Height and color SHALL animate with `transition: 0.4s ease` on every checkbox toggle.
-
 The bar is implemented as an absolutely-positioned child element inside the habit row `Box` (which has `position: relative`, `overflow: hidden`, `borderRadius: 8px`, and extra `paddingLeft` to preserve content spacing away from the bar).
 
 #### Scenario: Habit with no checkmarks in the viewed week
@@ -45,3 +38,15 @@ The bar is implemented as an absolutely-positioned child element inside the habi
 #### Scenario: Progress visible for all members
 - **WHEN** any member of a space views the ScoreCard
 - **THEN** they SHALL see the left-edge fill bar for all members' habits (not only their own), reflecting the viewed week/month
+
+#### Scenario: Past week progress uses historically-correct goal
+- **WHEN** a habit had `times=3` two weeks ago and the user has since changed it to `times=1`, and the user navigates to that past week where they completed it 1 time
+- **THEN** the bar SHALL show approximately 33% fill (1 of 3), NOT 100% fill (1 of 1)
+
+#### Scenario: Current week progress uses current goal
+- **WHEN** a habit currently has `times=1` and the user has completed it once this week
+- **THEN** the bar SHALL show 100% fill using the current target of 1
+
+#### Scenario: config_history absent — graceful fallback
+- **WHEN** a habit does not include a `config_history` field in the API response
+- **THEN** the bar SHALL compute progress using `habit.times` (current live value) as it did before, with no error

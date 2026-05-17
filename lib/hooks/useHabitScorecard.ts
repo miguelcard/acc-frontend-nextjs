@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { CheckedDatesT, HabitT } from '@/lib/types-and-constants';
-import { checkedDatesMap, createWeekUUID, generateWeekDays } from '@/lib/client-utils';
+import { checkedDatesMap, createWeekUUID, generateWeekDays, isWithinLast7Days } from '@/lib/client-utils';
 
 /**
  * Custom hook to manage habit scorecard state and logic
@@ -43,6 +43,14 @@ export function useHabitScorecard(initialHabits: HabitT[]) {
                 // emits an empty entry to signal "nothing here any more".
                 const cleaned: CheckedDatesT = {};
                 for (const [date, habitsForDate] of Object.entries(prev)) {
+                    // Only clean dates within the current 7-day window — that's what
+                    // initialHabits actually covers. Past-week pagination data falls
+                    // outside this window and must be preserved as-is; wiping it would
+                    // make past checkmarks disappear after a mutation triggers a refetch.
+                    if (!isWithinLast7Days(new Date(date))) {
+                        cleaned[date] = habitsForDate;
+                        continue;
+                    }
                     const kept = Object.fromEntries(
                         Object.entries(habitsForDate).filter(([hId]) => !refreshedHabitIds.has(hId))
                     );

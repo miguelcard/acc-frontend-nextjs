@@ -1,7 +1,7 @@
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
 import { CheckedDatesT, HabitT, UserT } from '@/lib/types-and-constants';
 import { Box, Checkbox, Typography } from '@mui/material';
-import { computeHabitProgress, habitProgressGreen } from '@/lib/utils/compute-habit-progress';
+import { computeHabitProgress, configForDate, getPeriodEnd, habitProgressGreen } from '@/lib/utils/compute-habit-progress';
 import styles from './habit-score-card.module.css';
 import { HabitOptionsMenu } from './HabitOptionsMenu/habit-options-menu';
 import { toggleCheckmark } from './checkmark-toggle';
@@ -40,7 +40,11 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
         >
             {ownerHabits
                 .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-                .map((habit, index) => (
+                .map((habit, index) => {
+                    const viewDate = dates.length > 0 ? dates[0] : undefined;
+                    const periodEnd = getPeriodEnd(viewDate ?? new Date(), habit.time_frame);
+                    const { times: viewTimes, time_frame: viewTimeFrame } = configForDate(habit, periodEnd);
+                    return (
                     <Box
                         key={index}
                         sx={{
@@ -54,7 +58,6 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                     >
                         {/* ============================= Left-edge fill bar ========= */}
                         {(() => {
-                            const viewDate = dates.length > 0 ? dates[0] : undefined;
                             const ratio = computeHabitProgress(habit, checkedDates, viewDate);
                             const fillColor = habitProgressGreen(ratio);
                             return (
@@ -95,7 +98,7 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                                             fontSize='0.7em'
                                             sx={{ marginLeft: '8px' }}
                                         >
-                                            {`(${habit.times}x/${timeLetterToWord(habit.time_frame)})`}
+                                            {`(${viewTimes}x/${timeLetterToWord(viewTimeFrame)})`}
                                         </Typography>
                                         {/* ======= Streak badge (from backend) ======= */}
                                         {habit.streak && habit.streak.count > 0 && (
@@ -178,7 +181,8 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                             })}
                         </Box>
                     </Box>
-                ))}
+                    );
+                })}
         </Box>
     );
 };

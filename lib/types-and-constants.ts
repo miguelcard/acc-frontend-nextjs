@@ -66,6 +66,9 @@ export type HabitT = {
     error?: string;
     /** Optional streak data returned by the backend. Absent = no badge shown. */
     streak?: { count: number; unit: 'W' | 'M' };
+    /** Historical config changes, sorted ascending by effective_from. Used to resolve the
+     *  correct `times` target for past periods without retroactive distortion. */
+    config_history?: { effective_from: string; times: number; time_frame: string }[];
 };
 
 /**
