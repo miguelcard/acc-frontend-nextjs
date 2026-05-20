@@ -1,12 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import Skeleton from '@mui/material/Skeleton';
 import Divider from '@mui/material/Divider';
+import Tooltip from '@mui/material/Tooltip';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { alpha } from '@mui/material/styles';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useXPStats } from '@/lib/hooks/queries';
 
@@ -62,6 +66,7 @@ function StatPill({
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function XPCard() {
     const { data: stats, isLoading } = useXPStats();
+    const [xpTooltipOpen, setXpTooltipOpen] = useState(false);
 
     if (isLoading || !stats) {
         return (
@@ -101,7 +106,7 @@ export default function XPCard() {
             <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1.5}>
                 <Box>
                     <Typography
-                        fontSize="0.75rem"
+                        fontSize="0.88rem"
                         fontWeight={600}
                         color="secondary"
                         letterSpacing={0.8}
@@ -114,9 +119,29 @@ export default function XPCard() {
                     </Typography>
                 </Box>
                 <Box textAlign="right">
-                    <Typography fontSize="0.72rem" color="text.secondary">
-                        Total XP
-                    </Typography>
+                    <Box display="flex" alignItems="center" justifyContent="flex-end" gap={0.4}>
+                        <Typography fontSize="0.85rem" color="text.secondary">
+                            Total XP
+                        </Typography>
+                        <ClickAwayListener onClickAway={() => setXpTooltipOpen(false)}>
+                            <Tooltip
+                                title="XP is awarded at the end of each week. Stay consistent to earn more!"
+                                open={xpTooltipOpen}
+                                onClose={() => setXpTooltipOpen(false)}
+                                disableFocusListener
+                                disableHoverListener
+                                disableTouchListener
+                                arrow
+                                placement="left"
+                                componentsProps={{ tooltip: { sx: { fontSize: '0.82rem' } } }}
+                            >
+                                <InfoOutlinedIcon
+                                    onClick={() => setXpTooltipOpen((v) => !v)}
+                                    sx={{ fontSize: '1.05rem', color: 'text.disabled', cursor: 'pointer' }}
+                                />
+                            </Tooltip>
+                        </ClickAwayListener>
+                    </Box>
                     <Typography fontSize="1.25rem" fontWeight={800} color="secondary.main">
                         {total_xp.toLocaleString()}
                     </Typography>
