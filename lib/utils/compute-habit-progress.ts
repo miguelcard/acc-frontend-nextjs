@@ -69,13 +69,17 @@ export function configForDate(habit: HabitT, date: Date): { times: number; time_
 export function computeHabitProgress(habit: HabitT, checkedDates: CheckedDatesT, viewDate?: Date): number {
     const anchor = viewDate ?? new Date();
 
-    // Resolve config using the period END so that a mid-period config change
-    // applies to the entire period it falls in (mirrors backend behaviour).
-    const periodEnd = getPeriodEnd(anchor, habit.time_frame);
-    const { times: requiredTimes } = configForDate(habit, periodEnd);
+    // Resolve the historically-correct config at the anchor date first so we
+    // get both the correct time_frame AND times for that point in history.
+    // Using the anchor (period start) rather than period end mirrors the backend
+    // which resolves config at period_start. This ensures that when a habit was
+    // W-based in past weeks, the period is bounded as a week (Mon–Sun), not
+    // expanded to the current month after a W→M change.
+    const { times: requiredTimes, time_frame: historicalTimeFrame } = configForDate(habit, anchor);
     if (!requiredTimes || requiredTimes <= 0) return 0;
 
-    const periodStart = habit.time_frame === 'M' ? getMonthStart(anchor) : getWeekStart(anchor);
+    const periodEnd = getPeriodEnd(anchor, historicalTimeFrame);
+    const periodStart = historicalTimeFrame === 'M' ? getMonthStart(anchor) : getWeekStart(anchor);
 
     let count = 0;
     for (const dateStr of Object.keys(checkedDates)) {
