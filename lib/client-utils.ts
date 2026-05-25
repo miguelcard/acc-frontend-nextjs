@@ -34,7 +34,7 @@ export function isWithinLast7Days(date: Date): boolean {
     const dateToCheck = new Date(date);
     const currentDate = new Date();
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(currentDate.getDate() - 6);
+    sevenDaysAgo.setDate(currentDate.getDate() - 7);
 
     // Set hours, minutes, seconds, and milliseconds to 0 for both dates
     currentDate.setHours(0, 0, 0, 0);

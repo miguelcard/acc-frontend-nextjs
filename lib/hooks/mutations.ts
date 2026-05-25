@@ -20,7 +20,7 @@ import {
     deleteCheckmark,
 } from '@/lib/fetch-mutations';
 import { FormikValues } from 'formik';
-import { CreateHabitT, CheckMarkT, HabitT } from '@/lib/types-and-constants';
+import { CreateHabitT, CheckMarkT, HabitT, SpaceT } from '@/lib/types-and-constants';
 
 // ────────────────────────────────────────────────────────────
 // Spaces
@@ -71,7 +71,23 @@ export function usePatchHabit(spaceId: number) {
     return useMutation({
         mutationFn: ({ newHabitData, id }: { newHabitData: any; id: number }) =>
             patchHabit(newHabitData, id),
-        onSuccess: () => {
+        onSuccess: (updatedHabit: HabitT & { error?: string }) => {
+            // Optimistic update: splice the returned habit into the cached space
+            // immediately so the scorecard re-renders without waiting for the
+            // background refetch (avoids the 1–2 s stale-display window).
+            // Guard: skip when the server returned an error object instead of a habit.
+            if (updatedHabit && !updatedHabit.error && updatedHabit.id) {
+                qc.setQueryData(queryKeys.space(spaceId), (old: SpaceT | undefined) => {
+                    if (!old || !old.space_habits) return old;
+                    return {
+                        ...old,
+                        space_habits: old.space_habits.map((h) =>
+                            h.id === updatedHabit.id ? updatedHabit : h
+                        ),
+                    };
+                });
+            }
+            // Background refetch to reconcile any other stale state.
             qc.invalidateQueries({ queryKey: queryKeys.space(spaceId) });
             qc.invalidateQueries({ queryKey: queryKeys.recurrentHabits });
             qc.invalidateQueries({ queryKey: queryKeys.spaceCheckmarks(spaceId) });

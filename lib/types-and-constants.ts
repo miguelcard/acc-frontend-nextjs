@@ -69,6 +69,13 @@ export type HabitT = {
     /** Historical config changes, sorted ascending by effective_from. Used to resolve the
      *  correct `times` target for past periods without retroactive distortion. */
     config_history?: { effective_from: string; times: number; time_frame: string }[];
+    /** Only present on a PATCH response when time_frame was changed. Indicates when the
+     *  new time_frame takes effect so the UI can show a transition snackbar. */
+    config_transition?: {
+        old_time_frame: 'W' | 'M';
+        new_time_frame: 'W' | 'M';
+        new_effective_from: string; // ISO date e.g. "2025-06-01"
+    };
 };
 
 /**

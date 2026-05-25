@@ -1,9 +1,12 @@
 'use client';
 import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/formik-stepper';
+import { buildTransitionSnackbarMessage, getTimeframeChangeHint } from '@/lib/utils/timeframe-hint-utils';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Field, FormikValues } from 'formik';
+import { Field, FormikConsumer, FormikValues } from 'formik';
 import React from 'react';
+import toast from 'react-hot-toast';
 import { number, object, string } from 'yup';
 import { usePatchHabit } from '@/lib/hooks/mutations';
 import { HabitT, timeFrames } from '@/lib/types-and-constants';
@@ -37,21 +40,24 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
             return;
         }
 
+        if (updatedHabit?.config_transition) {
+            toast(buildTransitionSnackbarMessage(updatedHabit.config_transition), { duration: 6000 });
+        }
+
         handleCloseDialog?.();
     }
 
     return (
-        <>
-            <FormikStepper
-                initialValues={{
-                    description: habit.description,
-                    times: habit.times,
-                    time_frame: habit.time_frame,
-                }}
-                onSubmit={async (values) => submitEditHabit(values, habit.id)}
-                step={0}
-                setStep={() => console.info('setStep is undefined')}
-            >
+        <FormikStepper
+            initialValues={{
+                description: habit.description,
+                times: habit.times,
+                time_frame: habit.time_frame,
+            }}
+            onSubmit={async (values) => submitEditHabit(values, habit.id)}
+            step={0}
+            setStep={() => console.info('setStep is undefined')}
+        >
                 {/* =================== Discriptions */}
                 <FormikStep
                     validationSchema={object({
@@ -113,6 +119,17 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                                     </MenuItem>
                                 ))}
                             </Field>
+                            {/* Inline hint when user changes time_frame */}
+                            <FormikConsumer>
+                                {({ values }) => {
+                                    const hint = getTimeframeChangeHint(habit, values.time_frame as string, new Date());
+                                    return hint ? (
+                                        <Alert severity="info" sx={{ mt: 1, fontSize: '0.8rem' }}>
+                                            {hint}
+                                        </Alert>
+                                    ) : null;
+                                }}
+                            </FormikConsumer>
                         </Box>
                         {/* =================== habits recurrence in time frame */}
                         <Box
@@ -132,7 +149,6 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                         </Box>
                     </Box>
                 </FormikStep>
-            </FormikStepper>
-        </>
+        </FormikStepper>
     );
 }

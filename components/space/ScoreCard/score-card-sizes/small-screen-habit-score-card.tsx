@@ -1,7 +1,7 @@
 import { isWithinLast7Days, setMaxStringLength } from '@/lib/client-utils';
 import { CheckedDatesT, HabitT, UserT } from '@/lib/types-and-constants';
 import { Box, Checkbox, Typography } from '@mui/material';
-import { computeHabitProgress, configForDate, getPeriodEnd, habitProgressGreen } from '@/lib/utils/compute-habit-progress';
+import { computeHabitProgress, configForDate, habitProgressGreen } from '@/lib/utils/compute-habit-progress';
 import styles from './habit-score-card.module.css';
 import { HabitOptionsMenu } from './HabitOptionsMenu/habit-options-menu';
 import { toggleCheckmark } from './checkmark-toggle';
@@ -42,8 +42,10 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                 .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
                 .map((habit, index) => {
                     const viewDate = dates.length > 0 ? dates[0] : undefined;
-                    const periodEnd = getPeriodEnd(viewDate ?? new Date(), habit.time_frame);
-                    const { times: viewTimes, time_frame: viewTimeFrame } = configForDate(habit, periodEnd);
+                    // Resolve historical config at the anchor date first (same order as
+                    // computeHabitProgress) so the label matches the progress bar even
+                    // after a W↔M time_frame change.
+                    const { times: viewTimes, time_frame: viewTimeFrame } = configForDate(habit, viewDate ?? new Date());
                     return (
                     <Box
                         key={index}
@@ -115,8 +117,8 @@ export const SmallScreenHabitScoreCard = (props: SmallScreenHabitScoreCardsProps
                                 childrenTitle={habit.title}
                                 childrenBody={<HabitsInformationModalBody
                                     description={habit.description}
-                                    times={habit.times}
-                                    time_frame={habit.time_frame}
+                                    times={viewTimes}
+                                    time_frame={viewTimeFrame}
                                 />}
                             />
                             {isCurrentUser(habit) && <HabitOptionsMenu habit={habit} />}
