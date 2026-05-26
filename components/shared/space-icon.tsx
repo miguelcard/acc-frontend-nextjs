@@ -5,5 +5,5 @@ import React from 'react';
 
 
 export const SpaceIconLogic = ({ iconAlias, size }: { iconAlias: string | undefined; size?: SizeProp; }) => (
-    <FontAwesomeIcon icon={stringIconMapper[iconAlias || 'rocket']} size={size} />
+    <FontAwesomeIcon icon={stringIconMapper[iconAlias || 'rocket'] ?? stringIconMapper['rocket']} size={size} />
 );
