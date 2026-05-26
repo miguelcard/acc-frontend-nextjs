@@ -34,7 +34,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                 initialValues={{
                     title: '',
                     description: '',
-                    times: 0,
+                    times: '',
                     time_frame: 'W',
                 }}
                 onSubmit={async (values, action) => {
@@ -93,6 +93,7 @@ export default function CreateHabitForm({ step, setStep, spaceId, handleCloseDia
                 <FormikStep
                     validationSchema={object({
                         times: number()
+                            .typeError('Times is required')
                             .integer()
                             .min(1)
                             .max(istimeFrameWeekly ? 7 : 31)
