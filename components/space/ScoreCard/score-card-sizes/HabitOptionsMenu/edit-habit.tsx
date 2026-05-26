@@ -66,7 +66,11 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                         times: number()
                             .integer()
                             .min(1)
-                            .max(habit.time_frame === 'W' ? 7 : 31)
+                            .when('time_frame', {
+                                is: 'W',
+                                then: (schema) => schema.max(7, 'Times must be ≤ 7 for a weekly habit'),
+                                otherwise: (schema) => schema.max(31, 'Times must be ≤ 31 for a monthly habit'),
+                            })
                             .required('Times is required'),
                     })}
                 >
@@ -100,24 +104,37 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                     <Box component={'div'} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                         {/* =================== Time frame */}
                         <Box component={'div'} sx={{ width: { xs: '100%', sm: '48%' } }}>
-                            <Field
-                                fullWidth
-                                select
-                                name="time_frame"
-                                label="Time Frame"
-                                defaultValue="W"
-                                helperText="Please select time frame for the habit"
-                                variant="standard"
-                                component={TextFieldFormikMui}
-                            >
-                                {timeFrames.map((option, index) => (
-                                    <MenuItem
-                                        key={index}
-                                        value={option.value}
+                            <Field name="time_frame">
+                                {({ field, form, meta }: any) => (
+                                    <TextField
+                                        {...field}
+                                        select
+                                        fullWidth
+                                        label="Time Frame"
+                                        variant="standard"
+                                        helperText="Please select time frame for the habit"
+                                        error={meta.touched && Boolean(meta.error)}
+                                        onChange={(e) => {
+                                            // Use setFieldValue directly (not field.onChange) so
+                                            // the new time_frame is committed to Formik state before
+                                            // we trigger validation. field.onChange enqueues an update
+                                            // that may not be flushed by the time a bare validateField
+                                            // runs in setTimeout, causing a race condition.
+                                            form.setFieldValue('time_frame', e.target.value, false);
+                                            // After one tick the new time_frame value is committed.
+                                            // setFieldTouched with shouldValidate=true both marks
+                                            // 'times' as touched (so the error becomes visible) and
+                                            // runs full validation against the updated time_frame.
+                                            setTimeout(() => form.setFieldTouched('times', true, true), 0);
+                                        }}
                                     >
-                                        {option.label}
-                                    </MenuItem>
-                                ))}
+                                        {timeFrames.map((option, index) => (
+                                            <MenuItem key={index} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                )}
                             </Field>
                             {/* Inline hint when user changes time_frame */}
                             <FormikConsumer>
@@ -157,17 +174,22 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                         <Box
                             component={'div'}
                             sx={{ width: { xs: '100%', sm: '48%' } }}
-                            >
-                            <Field
-                                fullWidth
-                                name="times"
-                                label={`Times per ${habit.time_frame === 'W' ? 'week' : 'month'}`}
-                                type="number"
-                                variant="standard"
-                                min={1}
-                                max={habit.time_frame === 'W' ? 7 : 31}
-                                component={TextFieldFormikMui}
-                            />
+                        >
+                            <FormikConsumer>
+                                {({ values }) => {
+                                    const isWeekly = values.time_frame === 'W';
+                                    return (
+                                        <Field
+                                            fullWidth
+                                            name="times"
+                                            label={`Times per ${isWeekly ? 'week' : 'month'}`}
+                                            type="number"
+                                            variant="standard"
+                                            component={TextFieldFormikMui}
+                                        />
+                                    );
+                                }}
+                            </FormikConsumer>
                         </Box>
                     </Box>
                 </FormikStep>
