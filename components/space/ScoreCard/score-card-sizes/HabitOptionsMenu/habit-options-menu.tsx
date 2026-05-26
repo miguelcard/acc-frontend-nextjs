@@ -104,7 +104,7 @@ export const HabitOptionsMenu = ({ habit }: { habit: HabitT }) => {
                             }
                             childrenTitle={option.name}
                             childrenBody={option.childrenBody}
-                            keyboardLift={0.6}
+                            keyboardLift={1}
                         />
                     ) : (
                         <Box key={option.name}>
