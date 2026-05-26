@@ -1,6 +1,6 @@
 'use client';
 import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/formik-stepper';
-import { buildTransitionSnackbarMessage, getTimeframeChangeHint } from '@/lib/utils/timeframe-hint-utils';
+import { buildPendingTransitionAlertMessage, buildTransitionSnackbarMessage, getPendingTransition, getTimeframeChangeHint } from '@/lib/utils/timeframe-hint-utils';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -122,12 +122,34 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                             {/* Inline hint when user changes time_frame */}
                             <FormikConsumer>
                                 {({ values }) => {
-                                    const hint = getTimeframeChangeHint(habit, values.time_frame as string, new Date());
-                                    return hint ? (
-                                        <Alert severity="info" sx={{ mt: 1, fontSize: '0.8rem' }}>
-                                            {hint}
-                                        </Alert>
-                                    ) : null;
+                                    const today = new Date();
+                                    const hint = getTimeframeChangeHint(habit, values.time_frame as string, today);
+                                    // Show the pending-transition alert only when the dropdown still
+                                    // matches the saved habit.time_frame (i.e. the user hasn't changed
+                                    // it yet). This correctly suppresses the alert in the revert case
+                                    // (e.g. W→M saved, user selects W again) where getTimeframeChangeHint
+                                    // also returns null — using !hint alone would conflate that case
+                                    // with "no change" and show a stale pending message.
+                                    const pending = values.time_frame === habit.time_frame
+                                        ? getPendingTransition(habit, today)
+                                        : null;
+                                    const pendingMsg = pending
+                                        ? buildPendingTransitionAlertMessage(pending)
+                                        : null;
+                                    return (
+                                        <>
+                                            {hint && (
+                                                <Alert severity="info" sx={{ mt: 1, fontSize: '0.8rem' }}>
+                                                    {hint}
+                                                </Alert>
+                                            )}
+                                            {pendingMsg && (
+                                                <Alert severity="info" sx={{ mt: 1, fontSize: '0.8rem' }}>
+                                                    {pendingMsg}
+                                                </Alert>
+                                            )}
+                                        </>
+                                    );
                                 }}
                             </FormikConsumer>
                         </Box>

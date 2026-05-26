@@ -1,5 +1,7 @@
 import {
+    buildPendingTransitionAlertMessage,
     buildTransitionSnackbarMessage,
+    getPendingTransition,
     getTimeframeChangeHint,
 } from '@/lib/utils/timeframe-hint-utils';
 import { HabitT } from '@/lib/types-and-constants';
@@ -162,5 +164,110 @@ describe('buildTransitionSnackbarMessage', () => {
         });
         expect(result).toContain('Sunday May 24');
         expect(result).toContain('Monday May 25');
+    });
+});
+
+// ---------------------------------------------------------------------------
+// getPendingTransition
+// ---------------------------------------------------------------------------
+
+describe('getPendingTransition', () => {
+    test('returns null when config_history is empty', () => {
+        const habit = makeHabit('W', 3, []);
+        expect(getPendingTransition(habit, new Date('2026-05-25'))).toBeNull();
+    });
+
+    test('returns null when all entries are in the past or today', () => {
+        const habit = makeHabit('W', 3, [
+            { effective_from: '2026-01-01', times: 3, time_frame: 'W' },
+            { effective_from: '2026-05-25', times: 3, time_frame: 'W' }, // today == not future
+        ]);
+        expect(getPendingTransition(habit, new Date(2026, 4, 25))).toBeNull();
+    });
+
+    test('returns the future entry when a pending W→M transition exists', () => {
+        const habit = makeHabit('M', 3, [
+            { effective_from: '2026-01-01', times: 3, time_frame: 'W' },
+            { effective_from: '2026-06-01', times: 3, time_frame: 'M' },
+        ]);
+        const result = getPendingTransition(habit, new Date(2026, 4, 25));
+        expect(result).not.toBeNull();
+        expect(result?.effective_from).toBe('2026-06-01');
+        expect(result?.time_frame).toBe('M');
+    });
+
+    test('returns the future entry when a pending M→W transition exists', () => {
+        const habit = makeHabit('W', 5, [
+            { effective_from: '2026-01-01', times: 5, time_frame: 'M' },
+            { effective_from: '2026-06-02', times: 5, time_frame: 'W' },
+        ]);
+        const result = getPendingTransition(habit, new Date(2026, 4, 25));
+        expect(result).not.toBeNull();
+        expect(result?.effective_from).toBe('2026-06-02');
+        expect(result?.time_frame).toBe('W');
+    });
+
+    test('today exactly equal to effective_from is NOT considered future', () => {
+        const habit = makeHabit('M', 3, [
+            { effective_from: '2026-01-01', times: 3, time_frame: 'W' },
+            { effective_from: '2026-05-25', times: 3, time_frame: 'M' }, // exactly today
+        ]);
+        expect(getPendingTransition(habit, new Date(2026, 4, 25))).toBeNull();
+    });
+
+    test('uses local calendar date (not UTC) for the boundary check', () => {
+        // Simulate a user in UTC+2: at 23:00 local on May 31, toISOString() would
+        // give June 1 UTC, but the local date is still May 31.
+        // We construct a Date that represents "May 31 local 23:00" by using the
+        // local Date constructor, which is what the real call site does.
+        const localMay31 = new Date(2026, 4, 31, 23, 0, 0); // month is 0-indexed
+        const habit = makeHabit('M', 3, [
+            { effective_from: '2026-01-01', times: 3, time_frame: 'W' },
+            { effective_from: '2026-06-01', times: 3, time_frame: 'M' },
+        ]);
+        // June 1 entry is still in the future relative to local May 31 — must be returned.
+        const result = getPendingTransition(habit, localMay31);
+        expect(result).not.toBeNull();
+        expect(result?.effective_from).toBe('2026-06-01');
+    });
+});
+
+// ---------------------------------------------------------------------------
+// buildPendingTransitionAlertMessage
+// ---------------------------------------------------------------------------
+
+describe('buildPendingTransitionAlertMessage', () => {
+    test('W→M pending shows correct monthly goal and start date', () => {
+        const result = buildPendingTransitionAlertMessage({
+            effective_from: '2026-06-01',
+            times: 3,
+            time_frame: 'M',
+        });
+        expect(result).toContain('3x/month');
+        expect(result).toContain('June 1, 2026');
+        expect(result).toContain('weekly goal is still active');
+        expect(result).not.toContain('monthly goal is still active');
+    });
+
+    test('M→W pending shows correct weekly goal and start date', () => {
+        const result = buildPendingTransitionAlertMessage({
+            effective_from: '2026-06-02',
+            times: 5,
+            time_frame: 'W',
+        });
+        expect(result).toContain('5x/week');
+        expect(result).toContain('June 2, 2026');
+        expect(result).toContain('monthly goal is still active');
+        expect(result).not.toContain('weekly goal is still active');
+    });
+
+    test('correctly formats a January date (year boundary)', () => {
+        const result = buildPendingTransitionAlertMessage({
+            effective_from: '2027-01-01',
+            times: 4,
+            time_frame: 'M',
+        });
+        expect(result).toContain('January 1, 2027');
+        expect(result).toContain('4x/month');
     });
 });

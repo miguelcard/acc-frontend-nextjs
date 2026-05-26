@@ -62,6 +62,53 @@ export function getTimeframeChangeHint(
 }
 
 /**
+ * Returns the first config_history entry whose effective_from is strictly in
+ * the future (after today), representing a saved-but-not-yet-active timeframe
+ * transition.  Returns null when no such entry exists.
+ *
+ * config_history is expected to be sorted ascending by effective_from (as the
+ * backend always returns it).  We use a simple string compare against the ISO
+ * date because YYYY-MM-DD lexicographic order equals chronological order.
+ */
+export function getPendingTransition(
+    habit: HabitT,
+    today: Date,
+): { effective_from: string; times: number; time_frame: string } | null {
+    if (!habit.config_history?.length) return null;
+    // Use local calendar date (not UTC) so the boundary aligns with how the
+    // backend anchors period starts — midnight in the user's local timezone.
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${y}-${m}-${d}`;
+    return habit.config_history.find(c => c.effective_from > todayStr) ?? null;
+}
+
+/**
+ * Builds the informational alert message shown inside the edit modal when a
+ * saved timeframe transition is pending (the new frame hasn't started yet).
+ * The pending entry's time_frame tells us the incoming frame; the "old" frame
+ * is inferred from context (opposite of new).
+ */
+export function buildPendingTransitionAlertMessage(
+    pending: { effective_from: string; times: number; time_frame: string },
+): string {
+    const d = new Date(`${pending.effective_from}T00:00:00`);
+    const dateStr = `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+
+    if (pending.time_frame === 'M') {
+        return (
+            `Your new monthly goal (${pending.times}x/month) begins ${dateStr}. ` +
+            `Until then, your weekly goal is still active.`
+        );
+    }
+    return (
+        `Your new weekly goal (${pending.times}x/week) begins ${dateStr}. ` +
+        `Until then, your monthly goal is still active.`
+    );
+}
+
+/**
  * Builds the post-save snackbar message from the API's config_transition object.
  * Uses the authoritative server date rather than recalculating client-side.
  *
