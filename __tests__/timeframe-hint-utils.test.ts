@@ -2,6 +2,7 @@ import {
     buildPendingTransitionAlertMessage,
     buildTransitionSnackbarMessage,
     getPendingTransition,
+    getStreakResetWarning,
     getTimeframeChangeHint,
 } from '@/lib/utils/timeframe-hint-utils';
 import { HabitT } from '@/lib/types-and-constants';
@@ -55,11 +56,12 @@ describe('getTimeframeChangeHint', () => {
         expect(result).not.toContain('streak is preserved');
     });
 
-    test('W→M on 1st May returns on-the-1st copy with streak notice', () => {
+    test('W→M on 1st May returns on-the-1st copy without streak-preserved clause', () => {
         const result = getTimeframeChangeHint(makeHabit('W'), 'M', new Date('2026-05-01'));
         expect(result).toContain('through all of May');
         expect(result).toContain('Monthly XP starts June 1');
-        expect(result).toContain('streak is preserved through May');
+        // Streak-preserved copy was removed — streak now resets on time_frame change.
+        expect(result).not.toContain('streak is preserved');
     });
 
     test('W→M on 1st December correctly shows January in copy', () => {
@@ -101,6 +103,66 @@ describe('getTimeframeChangeHint', () => {
         ]);
         const result = getTimeframeChangeHint(habit, 'W', new Date('2026-05-25'));
         expect(result).toContain('Monthly tracking continues through this week');
+    });
+});
+
+// ---------------------------------------------------------------------------
+// getStreakResetWarning
+// ---------------------------------------------------------------------------
+
+describe('getStreakResetWarning', () => {
+    function makeHabitWithStreak(
+        time_frame: string,
+        streakCount: number,
+        streakUnit: 'W' | 'M',
+    ): HabitT {
+        return {
+            ...makeHabit(time_frame),
+            streak: { count: streakCount, unit: streakUnit },
+        };
+    }
+
+    test('returns null when time_frame is unchanged (W→W)', () => {
+        expect(getStreakResetWarning(makeHabitWithStreak('W', 5, 'W'), 'W')).toBeNull();
+    });
+
+    test('returns null when time_frame is unchanged (M→M)', () => {
+        expect(getStreakResetWarning(makeHabitWithStreak('M', 3, 'M'), 'M')).toBeNull();
+    });
+
+    test('returns null when streak count is 0', () => {
+        expect(getStreakResetWarning(makeHabitWithStreak('W', 0, 'W'), 'M')).toBeNull();
+    });
+
+    test('returns null when habit has no streak field', () => {
+        expect(getStreakResetWarning(makeHabit('W'), 'M')).toBeNull();
+    });
+
+    test('W→M with active weekly streak returns warning with count and unit', () => {
+        const result = getStreakResetWarning(makeHabitWithStreak('W', 8, 'W'), 'M');
+        expect(result).not.toBeNull();
+        expect(result).toContain('🔥 8w');
+        expect(result).toContain('weekly streak');
+        expect(result).toContain('reset');
+    });
+
+    test('M→W with active monthly streak returns warning with count and unit', () => {
+        const result = getStreakResetWarning(makeHabitWithStreak('M', 3, 'M'), 'W');
+        expect(result).not.toBeNull();
+        expect(result).toContain('🔥 3m');
+        expect(result).toContain('monthly streak');
+        expect(result).toContain('reset');
+        expect(result).not.toContain('XP bonuses');
+    });
+
+    test('W→M warning mentions switching to monthly', () => {
+        const result = getStreakResetWarning(makeHabitWithStreak('W', 4, 'W'), 'M');
+        expect(result).toContain('monthly');
+    });
+
+    test('M→W warning mentions switching to weekly', () => {
+        const result = getStreakResetWarning(makeHabitWithStreak('M', 2, 'M'), 'W');
+        expect(result).toContain('weekly');
     });
 });
 

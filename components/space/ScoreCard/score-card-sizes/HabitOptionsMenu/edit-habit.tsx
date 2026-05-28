@@ -1,6 +1,6 @@
 'use client';
 import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/formik-stepper';
-import { buildPendingTransitionAlertMessage, buildTransitionSnackbarMessage, getPendingTransition, getTimeframeChangeHint } from '@/lib/utils/timeframe-hint-utils';
+import { buildPendingTransitionAlertMessage, buildTransitionSnackbarMessage, getPendingTransition, getStreakResetWarning, getTimeframeChangeHint } from '@/lib/utils/timeframe-hint-utils';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -141,6 +141,7 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                                 {({ values }) => {
                                     const today = new Date();
                                     const hint = getTimeframeChangeHint(habit, values.time_frame as string, today);
+                                    const streakWarning = getStreakResetWarning(habit, values.time_frame as string);
                                     // Show the pending-transition alert only when the dropdown still
                                     // matches the saved habit.time_frame (i.e. the user hasn't changed
                                     // it yet). This correctly suppresses the alert in the revert case
@@ -155,6 +156,11 @@ export function EditHabit({ habit, handleCloseDialog }: EditHabitProps) {
                                         : null;
                                     return (
                                         <>
+                                            {streakWarning && (
+                                                <Alert severity="warning" sx={{ mt: 1, fontSize: '0.8rem' }}>
+                                                    {streakWarning}
+                                                </Alert>
+                                            )}
                                             {hint && (
                                                 <Alert severity="info" sx={{ mt: 1, fontSize: '0.8rem' }}>
                                                     {hint}

@@ -44,8 +44,7 @@ export function getTimeframeChangeHint(
         if (today.getDate() === 1) {
             return (
                 `Weekly tracking continues through all of ${monthName}. ` +
-                `Monthly XP starts ${nextMonthName} 1. ` +
-                `(Your current weekly streak is preserved through ${monthName}.)`
+                `Monthly XP starts ${nextMonthName} 1.`
             );
         }
         return (
@@ -59,6 +58,27 @@ export function getTimeframeChangeHint(
     }
 
     return null;
+}
+
+/**
+ * Returns a warning string when changing time_frame would reset an active streak,
+ * so the user can be informed before saving. Returns null when there is no streak
+ * or the time_frame is not actually changing.
+ */
+export function getStreakResetWarning(
+    habit: HabitT,
+    newFrame: string,
+): string | null {
+    if (habit.time_frame === newFrame) return null;
+    const count = habit.streak?.count ?? 0;
+    if (count <= 0) return null;
+
+    const unit = habit.streak!.unit === 'M' ? 'm' : 'w';
+    const label = unit === 'm' ? 'monthly' : 'weekly';
+    const newLabel = newFrame === 'M' ? 'monthly' : 'weekly';
+    return (
+        `Your current ${label} streak (\uD83D\uDD25 ${count}${unit}) will reset when switching to ${newLabel}.`
+    );
 }
 
 /**
