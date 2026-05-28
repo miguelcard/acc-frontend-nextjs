@@ -7,6 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Avatar from '@mui/material/Avatar';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options-menu';
 import { Paper } from '@mui/material';
 import CreateHabitAndInviteMembersModals from '@/components/space/CreateHabitModal/create-habit-modal';
@@ -91,9 +92,31 @@ export default function SingleSpaceClient() {
                 flexDirection="column"
                 width="100%"
             >
-                {/* Enclosing box for space header */}
+                {/* Thin portal-rendered strip that covers only the status bar zone.
+                    Portaled onto document.body so it is never inside the PullToRefresh
+                    transform tree and always stays viewport-fixed regardless of pull.
+                    Has no content — just extends the glass background into the OS bar. */}
+                {ReactDOM.createPortal(
+                    <Box sx={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: 'var(--safe-area-inset-top)',
+                        zIndex: 1201,
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        bgcolor: 'rgba(255, 255, 255, 0.45)',
+                        pointerEvents: 'none',
+                    }} />,
+                    document.body
+                )}
+
+                {/* Space header — position:relative so it moves naturally with the
+                    pull-to-refresh gesture. Negative top margin pulls it up into the
+                    status bar zone (safe-area-inset-top) while pt pushes the content
+                    row back down below the OS icons. */}
                 <Paper
-                    // elevation={2}
                     variant="elevation"
                     square
                     sx={{
@@ -104,14 +127,13 @@ export default function SingleSpaceClient() {
                         marginRight: '-50vw',
                         position: 'relative',
                         px: 1,
-                        // Extend background into the safe area (status bar / notch)
-                        // so the glassmorphism fills up to the top edge of the screen
                         mt: 'calc(var(--safe-area-inset-top) * -1)',
                         pt: 'var(--safe-area-inset-top)',
                         backdropFilter: 'blur(12px)',
                         WebkitBackdropFilter: 'blur(12px)',
                         bgcolor: 'rgba(255, 255, 255, 0.45)',
-                        border: '1.5px solid rgba(255, 255, 255, 0.9)',
+                        border: 'none',
+                        borderBottom: '1.5px solid rgba(255, 255, 255, 0.9)',
                         boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
                     }}
                 >

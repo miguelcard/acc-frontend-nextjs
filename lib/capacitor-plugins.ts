@@ -39,13 +39,12 @@ export async function hideSplash() {
 export async function configureStatusBar() {
   if (!isNative) return;
   try {
-    // Light content (white icons) over the primary colour background
+    // Style.Light = dark/black icons, for light backgrounds (counterintuitive naming:
+    // the style describes the background, not the icon color).
     await StatusBar.setStyle({ style: Style.Light });
-    // Only Android supports setBackgroundColor
-    if (Capacitor.getPlatform() === 'android') {
-      await StatusBar.setBackgroundColor({ color: '#84cec1' });
-    }
-    await StatusBar.setOverlaysWebView({ overlay: false });
+    // Overlay mode: web content extends behind the status bar icons.
+    // NOTE: overlaysWebView has no effect on Android 15+.
+    await StatusBar.setOverlaysWebView({ overlay: true });
   } catch {
     // Graceful no-op
   }

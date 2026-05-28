@@ -11,7 +11,7 @@ export default function AuthenticatedLayout({children,}: {children: React.ReactN
                     bgcolor: '#f5f5f5',
                     minHeight: '100vh',
                     position: 'static',
-                    overflow: 'hidden',
+                    overflowX: 'hidden', // only clip horizontal (blob overflow); allow vertical so space header negative-margin can bleed into status bar zone
                 }}
             >
                 <BlurredBlobBackground />

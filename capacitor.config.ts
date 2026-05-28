@@ -40,10 +40,11 @@ const config: CapacitorConfig = {
       style: KeyboardStyle.Light,
     },
     StatusBar: {
-      // Match the primary/navbar color for a seamless look
-      backgroundColor: '#84cec1',
-      style: StatusBarStyle.Light,    // light text on the status bar
-      overlaysWebView: false,
+      // Overlay mode: web content extends behind the status bar icons.
+      // The space page header fills this area with its glassmorphism background.
+      // Other pages are already padded via --safe-area-inset-top.
+      style: StatusBarStyle.Light,    // dark/black icons for light backgrounds
+      overlaysWebView: true,
     },
   },
 };
