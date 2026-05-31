@@ -88,7 +88,7 @@ export default function XPCard() {
         );
     }
 
-    const { total_xp, level, xp_into_level, xp_for_level, pct_to_next, longest_streak, completed_periods } = stats;
+    const { total_xp, level, xp_into_level, xp_for_level, pct_to_next, longest_streak, longest_streak_unit, completed_periods } = stats;
     const progressPct = Math.round(pct_to_next * 100);
 
     return (
@@ -172,7 +172,7 @@ export default function XPCard() {
                 <StatPill
                     icon={<WhatshotIcon sx={{ fontSize: '0.85rem' }} />}
                     label="Longest streak"
-                    value={`${longest_streak}w`}
+                    value={`${longest_streak}${longest_streak_unit.toLowerCase()}`}
                 />
                 <Divider orientation="vertical" flexItem sx={{ opacity: 0.4 }} />
                 <StatPill

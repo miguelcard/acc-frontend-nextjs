@@ -169,7 +169,8 @@ export type XPStatsT = {
     xp_into_level: number;     // XP accumulated since reaching this level
     xp_for_level: number;      // XP gap to advance to next level
     pct_to_next: number;       // 0.0–1.0
-    longest_streak: number;    // in completed periods
+    longest_streak: number;         // in completed periods
+    longest_streak_unit: 'W' | 'M'; // timeframe of the longest streak row
     completed_periods: number;
     heatmap: XPHeatmapEntryT[];
 };
