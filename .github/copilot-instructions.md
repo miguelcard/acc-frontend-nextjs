@@ -57,6 +57,21 @@ npm run dev:emulator
 # Keep the Next.js dev server running; changes appear on save
 ```
 
+### Full static build → Android device (API at 192.168.0.128:8000)
+```bash
+npm run cap:android-device
+# Runs: NEXT_PUBLIC_API=http://192.168.0.128:8000/api next build && cap sync && cap open android
+# Press Run ▶ in Android Studio to install on connected device
+```
+
+### Live reload on device (changes appear without rebuild)
+```bash
+npm run dev:device
+# Runs: CAP_LIVE_RELOAD=true cap sync && cap open android && next dev
+# Capacitor shell points at device IP (192.168.0.128:3000)
+# Keep the Next.js dev server running; changes appear on save
+```
+
 ### iOS
 ```bash
 npm run cap:ios      # next build && cap sync && cap open ios
