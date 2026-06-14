@@ -174,3 +174,18 @@ export type XPStatsT = {
     completed_periods: number;
     heatmap: XPHeatmapEntryT[];
 };
+
+/**
+ * Public XP stats for any user — returned by GET /api/v1/users/:id/public-stats/
+ * Same shape as XPStatsT but without the private heatmap field.
+ */
+export type MemberPublicStatsT = {
+    level: number;
+    total_xp: number;
+    xp_into_level: number;
+    xp_for_level: number;
+    pct_to_next: number;
+    longest_streak: number;
+    longest_streak_unit: 'W' | 'M';
+    completed_periods: number;
+};

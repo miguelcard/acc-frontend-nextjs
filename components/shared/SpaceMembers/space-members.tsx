@@ -1,12 +1,13 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { MemberT } from '@/lib/types-and-constants';
 import AvatarGroup from '@mui/material/AvatarGroup';
-import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { Box, List, ListItemAvatar, ListItemButton, ListItemText, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
 import { MembersListEditable } from './members-list-editable';
 import { useSpaceMembers, useUser } from '@/lib/hooks/queries';
+import { MemberProfileModal } from './member-profile-modal';
 
 /**
  * Group of avatars from users fetched from a specific space
@@ -41,10 +42,12 @@ export function AvatarsGroup({ spaceId }: {spaceId: number}) {
 
 /**
  * Detailed list of all members in a space showing avatar, username, and name.
+ * Tapping a row opens a modal with that member's public XP profile.
  */
 export function MembersList({ spaceId }: { spaceId: number }) {
     const maxMembersShown: number = 20;
     const { data: response, isLoading } = useSpaceMembers(spaceId, maxMembersShown);
+    const [selectedMember, setSelectedMember] = useState<MemberT | null>(null);
 
     if (isLoading) {
         return <Box py={2} display="flex" justifyContent="center"><CircularProgress size={24} /></Box>;
@@ -67,7 +70,11 @@ export function MembersList({ spaceId }: { spaceId: number }) {
             </Typography>
             <List sx={{ width: '100%', bgcolor: 'background.paper', maxHeight: 300, overflow: 'auto' }}>
                 {response.results.map((member: MemberT) => (
-                    <ListItem key={member.id} alignItems="flex-start" sx={{ px: 0, py: 0.5 }}>
+                    <ListItemButton
+                        key={member.id}
+                        onClick={() => setSelectedMember(member)}
+                        sx={{ px: 0, py: 0.5, borderRadius: 1 }}
+                    >
                         <ListItemAvatar>
                             <UserAvatar user={member} circleDiameter={40} />
                         </ListItemAvatar>
@@ -83,9 +90,14 @@ export function MembersList({ spaceId }: { spaceId: number }) {
                                 </Typography>
                             }
                         />
-                    </ListItem>
+                    </ListItemButton>
                 ))}
             </List>
+            <MemberProfileModal
+                member={selectedMember}
+                open={!!selectedMember}
+                onClose={() => setSelectedMember(null)}
+            />
         </Box>
     );
 }

@@ -7,6 +7,7 @@ import { computeMemberScore } from '@/lib/utils/compute-habit-progress';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
 import ContentCard from '@/components/shared/ContentCard/content-card';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { MemberProfileModal } from '@/components/shared/SpaceMembers/member-profile-modal';
 
 type MemberLeaderboardProps = {
     members: MemberT[];
@@ -111,6 +112,7 @@ function CompletionRing({ score }: { score: number }) {
 
 export function MemberLeaderboard({ members, spaceHabits, checkedDates, currentUserId }: MemberLeaderboardProps) {
     const [expanded, setExpanded] = useState(true);
+    const [selectedMember, setSelectedMember] = useState<MemberT | null>(null);
 
     const memberScores = members
         .map((member) => {
@@ -153,7 +155,11 @@ export function MemberLeaderboard({ members, spaceHabits, checkedDates, currentU
                         const isCurrentUser = member.id === currentUserId;
 
                         return (
-                            <Box key={member.id} sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
+                            <ButtonBase
+                                key={member.id}
+                                onClick={() => setSelectedMember(member)}
+                                sx={{ display: 'flex', alignItems: 'center', gap: 1.2, width: '100%', borderRadius: 1 }}
+                            >
                                 {/* Avatar */}
                                 <UserAvatar user={member} circleDiameter={26} initialsFontSize='0.8rem' initialsFontWeight={500} />
 
@@ -170,11 +176,17 @@ export function MemberLeaderboard({ members, spaceHabits, checkedDates, currentU
 
                                 {/* Completion ring */}
                                 <CompletionRing score={score} />
-                            </Box>
+                            </ButtonBase>
                         );
                     })}
                 </Box>
             </Collapse>
+
+            <MemberProfileModal
+                member={selectedMember}
+                open={!!selectedMember}
+                onClose={() => setSelectedMember(null)}
+            />
         </ContentCard>
     );
 }

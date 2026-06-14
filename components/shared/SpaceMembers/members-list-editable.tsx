@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { MemberT } from '@/lib/types-and-constants';
-import { Box, Chip, Dialog, DialogContent, DialogTitle, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Menu, MenuItem, Typography, IconButton } from '@mui/material';
+import { Box, ButtonBase, Chip, Dialog, DialogContent, DialogTitle, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Menu, MenuItem, Typography, IconButton } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import CloseIcon from '@mui/icons-material/Close';
 import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
@@ -12,6 +12,7 @@ import AddModeratorIcon from '@mui/icons-material/AddModerator';
 import RemoveModeratorIcon from '@mui/icons-material/RemoveModerator';
 import { CustomSnackbar } from '@/components/shared/Snackbar/snackbar';
 import { WarningConfirmationForm } from '@/components/shared/WarningConfirmationForm/warning-confirmation-form';
+import { MemberProfileModal } from './member-profile-modal';
 
 interface MembersListEditableProps {
     members: MemberT[];
@@ -33,6 +34,7 @@ export function MembersListEditable({ members, totalCount, spaceId, currentUserI
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [menuMemberId, setMenuMemberId] = useState<number | null>(null);
     const [confirmRemoveMember, setConfirmRemoveMember] = useState<MemberT | null>(null);
+    const [selectedMember, setSelectedMember] = useState<MemberT | null>(null);
 
     const removeUserMutation = useRemoveUserFromSpace(spaceId);
     const updateRoleMutation = useUpdateSpaceRole(spaceId);
@@ -160,6 +162,10 @@ export function MembersListEditable({ members, totalCount, spaceId, currentUserI
                             ) : undefined
                         }
                     >
+                        <ButtonBase
+                            onClick={() => setSelectedMember(member)}
+                            sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0, textAlign: 'left', borderRadius: 1 }}
+                        >
                         <ListItemAvatar>
                             <UserAvatar user={member} circleDiameter={40} />
                         </ListItemAvatar>
@@ -190,9 +196,16 @@ export function MembersListEditable({ members, totalCount, spaceId, currentUserI
                                 </Typography>
                             }
                         />
+                        </ButtonBase>
                     </ListItem>
                 ))}
             </List>
+
+            <MemberProfileModal
+                member={selectedMember}
+                open={!!selectedMember}
+                onClose={() => setSelectedMember(null)}
+            />
 
             {/* Confirmation dialog for removing a member */}
             <Dialog

@@ -4,7 +4,7 @@
 //       error state, retries, and isError properly.
 import { authenticatedFetch } from '@/lib/authenticated-fetch';
 import { getErrorMessage } from '@/lib/utils/utils';
-import { HabitT, XPStatsT } from '@/lib/types-and-constants';
+import { HabitT, MemberPublicStatsT, XPStatsT } from '@/lib/types-and-constants';
 
 
 // ----- Spaces -----
@@ -168,4 +168,23 @@ export async function getXPStats(): Promise<XPStatsT> {
         throw new Error(getErrorMessage(data) || 'Failed to fetch XP stats');
     }
     return data as XPStatsT;
+}
+
+/**
+ * Fetches a public summary of any user's XP stats by user ID.
+ * Returns level, XP, streak, and completed periods — no heatmap.
+ */
+export async function getMemberPublicStats(userId: number): Promise<MemberPublicStatsT> {
+    const url = `${process.env.NEXT_PUBLIC_API}/v1/users/${userId}/public-stats/`;
+
+    const res = await authenticatedFetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(getErrorMessage(data) || 'Failed to fetch member public stats');
+    }
+    return data as MemberPublicStatsT;
 }

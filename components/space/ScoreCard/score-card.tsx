@@ -12,6 +12,7 @@ import UserAvatar from '@/components/shared/UserAvatar/user-avatar';
 import ContentCard from '@/components/shared/ContentCard/content-card';
 import { useHabitScorecard } from '@/lib/hooks/useHabitScorecard';
 import { MemberLeaderboard } from './MemberLeaderboard/member-leaderboard';
+import { MemberProfileModal } from '@/components/shared/SpaceMembers/member-profile-modal';
 
 type ScoreCardPropsT = {
     currentUser: UserT;
@@ -28,6 +29,7 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
         
     // ============================= Collapse state (specific to this view)
     const [collapsedOwners, setCollapsedOwners] = useState<number[]>([]);
+    const [selectedMember, setSelectedMember] = useState<MemberT | null>(null);
 
     const handleCollapseMemberScoreCard = (memberId: number) => {
         if (collapsedOwners.includes(memberId)) {
@@ -92,24 +94,26 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
                             }}
                         >
                             {/* avatar picture or initials of the user in his scorecard */}
-                            <Box mx={1}>
+                            <ButtonBase onClick={() => setSelectedMember(member)} sx={{ mx: 1, borderRadius: '50%' }}>
                                 <UserAvatar user={member} circleDiameter={28} initialsFontSize="0.9rem" initialsFontWeight={500} />
-                            </Box>
+                            </ButtonBase>
                             {/* username on top of the scorecard */}
-                            <Typography
-                                className={ubuntu.className}
-                                // color= {member.id === currentUser.id ? 'secondary' : 'grey.600'}
-                                onClick={() => handleCollapseMemberScoreCard(member.id)}
-                                sx={{
-                                    fontSize: `clamp(1rem, 2.5vw, 1.6rem)`,
-                                    fontWeight: 500,
-                                    letterSpacing: -0.4,
-                                    cursor: 'pointer',
-                                }}
+                            <ButtonBase
+                                onClick={() => setSelectedMember(member)}
+                                sx={{ borderRadius: 1 }}
                             >
-                                {member.username}
-                                {member.id === currentUser.id && ' (you)'}
-                            </Typography>
+                                <Typography
+                                    className={ubuntu.className}
+                                    sx={{
+                                        fontSize: `clamp(1rem, 2.5vw, 1.6rem)`,
+                                        fontWeight: 500,
+                                        letterSpacing: -0.4,
+                                    }}
+                                >
+                                    {member.username}
+                                    {member.id === currentUser.id && ' (you)'}
+                                </Typography>
+                            </ButtonBase>
                             {/* ======== Collapse arrow button ====== */}
                             <ButtonBase
                                 onClick={() => handleCollapseMemberScoreCard(member.id)}
@@ -158,6 +162,11 @@ export function ScoreCard({ currentUser, spaceHabits, members, spaceId }: ScoreC
                     </Box>
                 );
             })}
+            <MemberProfileModal
+                member={selectedMember}
+                open={!!selectedMember}
+                onClose={() => setSelectedMember(null)}
+            />
         </Box>
     );
 }

@@ -27,4 +27,7 @@ export const queryKeys = {
 
     // ---- XP Stats ----
     xpStats: ['user', 'xp-stats'] as const,
+
+    // ---- Member public stats ----
+    memberPublicStats: (userId: number) => ['user', userId, 'public-stats'] as const,
 };

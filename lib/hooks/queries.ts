@@ -5,7 +5,7 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import { getUser, getSpace, getUserSpaces, getUsersFromSpace, getAllUserRecurrentHabits, getXPStats } from '@/lib/fetch-queries';
+import { getUser, getSpace, getUserSpaces, getUsersFromSpace, getAllUserRecurrentHabits, getXPStats, getMemberPublicStats } from '@/lib/fetch-queries';
 import { getAllHabitsAndCheckmarksFromSpace } from '@/lib/fetch-mutations';
 import { useAuth } from '@/lib/auth/auth-context';
 
@@ -94,5 +94,18 @@ export function useXPStats() {
         queryFn: getXPStats,
         enabled: !authLoading && !!firebaseUser,
         staleTime: 5 * 60 * 1000, // 5 minutes — reconciliation is cheap but no need to spam
+    });
+}
+
+// ────────────────────────────────────────────────────────────
+// Member public stats
+// ────────────────────────────────────────────────────────────
+export function useMemberPublicStats(userId: number | null) {
+    const { user: firebaseUser, loading: authLoading } = useAuth();
+    return useQuery({
+        queryKey: queryKeys.memberPublicStats(userId ?? 0),
+        queryFn: () => getMemberPublicStats(userId!),
+        enabled: !!userId && !authLoading && !!firebaseUser,
+        staleTime: 5 * 60 * 1000,
     });
 }

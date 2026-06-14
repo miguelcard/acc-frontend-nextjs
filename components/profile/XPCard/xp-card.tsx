@@ -13,6 +13,7 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useXPStats } from '@/lib/hooks/queries';
+import { MemberPublicStatsT, XPStatsT } from '@/lib/types-and-constants';
 
 // ─── Level label mapping ──────────────────────────────────────────────────────
 const LEVEL_LABELS: Record<number, string> = {
@@ -63,30 +64,9 @@ function StatPill({
     );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
-export default function XPCard() {
-    const { data: stats, isLoading } = useXPStats();
+// ─── Presentational card (accepts stats from either self or a member) ─────────
+export function XPCardContent({ stats }: { stats: XPStatsT | MemberPublicStatsT }) {
     const [xpTooltipOpen, setXpTooltipOpen] = useState(false);
-
-    if (isLoading || !stats) {
-        return (
-            <Box
-                sx={{
-                    width: '100%',
-                    maxWidth: 420,
-                    borderRadius: 3,
-                    p: 2.5,
-                    bgcolor: (t) => alpha(t.palette.secondary.main, 0.06),
-                    border: (t) => `1px solid ${alpha(t.palette.secondary.main, 0.18)}`,
-                }}
-            >
-                <Skeleton variant="text" width="50%" height={28} />
-                <Skeleton variant="rectangular" height={10} sx={{ my: 1.5, borderRadius: 5 }} />
-                <Skeleton variant="text" width="35%" height={20} />
-                <Skeleton variant="text" width="70%" sx={{ mt: 2 }} />
-            </Box>
-        );
-    }
 
     const { total_xp, level, xp_into_level, xp_for_level, pct_to_next, longest_streak, longest_streak_unit, completed_periods } = stats;
     const progressPct = Math.round(pct_to_next * 100);
@@ -183,4 +163,31 @@ export default function XPCard() {
             </Box>
         </Box>
     );
+}
+
+// ─── Self-profile card (fetches own stats) ────────────────────────────────────
+export default function XPCard() {
+    const { data: stats, isLoading } = useXPStats();
+
+    if (isLoading || !stats) {
+        return (
+            <Box
+                sx={{
+                    width: '100%',
+                    maxWidth: 420,
+                    borderRadius: 3,
+                    p: 2.5,
+                    bgcolor: (t) => alpha(t.palette.secondary.main, 0.06),
+                    border: (t) => `1px solid ${alpha(t.palette.secondary.main, 0.18)}`,
+                }}
+            >
+                <Skeleton variant="text" width="50%" height={28} />
+                <Skeleton variant="rectangular" height={10} sx={{ my: 1.5, borderRadius: 5 }} />
+                <Skeleton variant="text" width="35%" height={20} />
+                <Skeleton variant="text" width="70%" sx={{ mt: 2 }} />
+            </Box>
+        );
+    }
+
+    return <XPCardContent stats={stats} />;
 }
