@@ -116,10 +116,18 @@ export async function createSpaceRole(formData: FormikValues, spaceId: number) {
         });
 
         if (!res.ok) {
-            const errorResp = await res.json();
+            let errorResp: any;
+            try {
+                errorResp = await res.json();
+            } catch {
+                // Non-JSON response (e.g. 500 HTML page) — return the invite-specific fallback
+                return { error: 'Unable to invite user, please check that the username or email are correct or try again later.' };
+            }
             console.warn('createSpaceRole Error: ' + getErrorMessage(errorResp));
             console.warn(JSON.stringify(errorResp));
-            const customErrorMessageIfExists: string | undefined = extractCustomErrorMessageIfExists(errorResp);
+            // Handle DRF field-level ValidationError: {"username_email": "No user found..."}
+            const fieldError: string | undefined = typeof errorResp?.username_email === 'string' ? errorResp.username_email : undefined;
+            const customErrorMessageIfExists: string | undefined = fieldError ?? extractCustomErrorMessageIfExists(errorResp);
             return { error: customErrorMessageIfExists ?? 'Unable to invite user, please check that the username or email are correct or try again later.' };
         }
 

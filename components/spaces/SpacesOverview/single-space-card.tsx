@@ -9,8 +9,6 @@ import { MoreOptionsMenu } from '@/components/space/MoreOptionsMenu/more-options
 import { SpaceDetailed } from '@/lib/types-and-constants';
 import { setMaxStringLength } from '@/lib/client-utils';
 import ContentCard from '@/components/shared/ContentCard/content-card';
-import { InviteMembersModalWithFeedback } from '@/components/space/MoreOptionsMenu/invite-members-modal-with-feedback';
-import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import { SpaceIconLogic } from '@/components/shared/space-icon';
 
 
@@ -61,14 +59,12 @@ interface CustomCardProps {
     space: SpaceDetailed;
     defaultDescription: React.ReactNode;
     children: React.ReactNode;
-    membersOverview?: React.ReactNode;
 }
 
 export const CustomCard = ({
     space,
     defaultDescription,
     children,
-    membersOverview
 }: CustomCardProps) => {
     const router = useRouter();
     const maxDescLength: number = 77;
@@ -120,19 +116,14 @@ export const CustomCard = ({
                     </Box>
                     {/* this is the invite members button */}
                     <Box alignSelf='center' marginLeft='auto' flexShrink={0} onClick={(e) => e.stopPropagation()}>
-                        <DialogModal
-                            button={
-                                <Button
-                                    sx={styles.invite_button}
-                                    variant={'contained'}
-                                    color={'secondary'}
-                                >
-                                    {'Invite Members +'}
-                                </Button>
-                            }
-                            childrenTitle={'Invite Members'}
-                            childrenBody={<InviteMembersModalWithFeedback spaceId={space.id}>{membersOverview}</InviteMembersModalWithFeedback>}
-                        />
+                        <Button
+                            sx={styles.invite_button}
+                            variant={'contained'}
+                            color={'secondary'}
+                            onClick={() => router.push(`/spaces/${space.id}/members`)}
+                        >
+                            {'Invite Members +'}
+                        </Button>
                     </Box>
                 </Box>
             </ContentCard>

@@ -108,6 +108,8 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, chi
                 step={0}
                 setStep={() => {}} // empty function, not needed
                 submitButtonText="Invite"
+                validateOnBlur={false}
+                validateOnChange={false}
             >
                 {/* or just an error shown if a non existent one is tried to be inputed */}
                 <FormikStep

@@ -46,7 +46,7 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
             {isNative ? (
                 <PullToRefresh
                     onRefresh={handleRefresh}
-                    // pullingContent={<p style={{ textAlign: 'center', margin: 0 }}>Pull to refresh</p>}
+                    pullingContent={''}
                 >
                     <>{children}</>
                 </PullToRefresh>

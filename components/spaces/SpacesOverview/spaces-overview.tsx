@@ -41,7 +41,6 @@ export default function SpacesOverview() {
                             <CustomCard
                                 space={space}
                                 defaultDescription={<SpaceDefaultDescription spaceId={space.id} />}
-                                membersOverview={<MembersList spaceId={space.id} />}
                             >
                                 <ClickableAvatarsGroup membersOverview={<MembersList spaceId={space.id} />}>
                                     <AvatarsGroup spaceId={space.id} />
