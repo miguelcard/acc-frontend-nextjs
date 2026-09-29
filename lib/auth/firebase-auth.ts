@@ -2,14 +2,11 @@ import {
     signInAnonymously,
     onAuthStateChanged as firebaseOnAuthStateChanged,
     signOut as firebaseSignOut,
+    signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
+    linkWithCredential,
+    EmailAuthProvider,
     User,
     NextOrObserver,
-    // Future: uncomment these for social login account linking
-    // linkWithPopup,
-    // linkWithCredential,
-    // GoogleAuthProvider,
-    // OAuthProvider,
-    // EmailAuthProvider,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
@@ -69,32 +66,35 @@ export async function signOutUser(): Promise<void> {
     await firebaseSignOut(auth);
 }
 
+/**
+ * Upgrades the current anonymous Firebase session to an email/password account.
+ * The Firebase UID stays the same — no data is lost on the backend.
+ *
+ * Throws `auth/email-already-in-use` if an account with that email already exists.
+ * In that case call `signInWithEmail` instead.
+ */
+export async function linkWithEmail(email: string, password: string): Promise<User> {
+    const user = auth.currentUser;
+    if (!user) throw new Error('No user session to upgrade');
+    const credential = EmailAuthProvider.credential(email, password);
+    const result = await linkWithCredential(user, credential);
+    // Force-refresh the token so the next API call carries the new email/password provider info.
+    await result.user.getIdToken(true);
+    return result.user;
+}
+
+/**
+ * Signs in with an existing email/password Firebase account.
+ * Used when `linkWithEmail` fails with `auth/email-already-in-use`.
+ */
+export async function signInWithEmail(email: string, password: string): Promise<User> {
+    const result = await firebaseSignInWithEmailAndPassword(auth, email, password);
+    return result.user;
+}
+
 // ============================================================
-// Future: Account Linking (Phase 2)
+// Future: Account Linking (Phase 2 — social providers)
 // ============================================================
 //
-// When implementing "Save your account" / social login:
-//
-// export async function linkWithGoogle(): Promise<User> {
-//     const user = auth.currentUser;
-//     if (!user) throw new Error('No user to link');
-//     const provider = new GoogleAuthProvider();
-//     const result = await linkWithPopup(user, provider);
-//     return result.user;
-// }
-//
-// export async function linkWithApple(): Promise<User> {
-//     const user = auth.currentUser;
-//     if (!user) throw new Error('No user to link');
-//     const provider = new OAuthProvider('apple.com');
-//     const result = await linkWithPopup(user, provider);
-//     return result.user;
-// }
-//
-// export async function linkWithEmail(email: string, password: string): Promise<User> {
-//     const user = auth.currentUser;
-//     if (!user) throw new Error('No user to link');
-//     const credential = EmailAuthProvider.credential(email, password);
-//     const result = await linkWithCredential(user, credential);
-//     return result.user;
-// }
+// export async function linkWithGoogle(): Promise<User> { ... }
+// export async function linkWithApple(): Promise<User> { ... }

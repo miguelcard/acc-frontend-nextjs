@@ -14,6 +14,7 @@ interface InviteMembersModalWithFeedbackProps {
  */
 export function InviteMembersModalWithFeedback({ spaceId, children }: InviteMembersModalWithFeedbackProps) {
     const [openToast, setOpenToast] = useState<boolean>(false);
+    const [toastText, setToastText] = useState<string>('Invitation email sent!');
 
     const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -22,7 +23,8 @@ export function InviteMembersModalWithFeedback({ spaceId, children }: InviteMemb
         setOpenToast(false);
     };
 
-    const handleToastOpen = () => {
+    const handleToastOpen = (message?: string) => {
+        setToastText(message ?? 'Invitation email sent!');
         setOpenToast(true);
     };
 
@@ -47,7 +49,7 @@ export function InviteMembersModalWithFeedback({ spaceId, children }: InviteMemb
             <CustomSnackbar
                 isOpen={openToast}
                 handleCloseToast={handleToastClose}
-                text="Member invited successfully!"
+                text={toastText}
             />
         </>
     );

@@ -44,7 +44,7 @@ export function InviteMembersWithFeedback({ spaceId }: InviteMembersWithFeedback
             <CustomSnackbar
                 isOpen={openToast}
                 handleCloseToast={handleToastClose}
-                text="Member invited successfully!"
+                text="Invitation email sent!"
             />
         </>
     );

@@ -138,6 +138,48 @@ export async function createSpaceRole(formData: FormikValues, spaceId: number) {
     }
 }
 
+// ----- Invite flow for new (non-existing) users -----
+
+/**
+ * Fetches the details of a pending invite token.
+ * Returns the masked email and space name so the signup page can show context to the user.
+ */
+export async function getInviteDetails(token: string): Promise<{ space_name?: string; masked_email?: string; error?: string }> {
+    const url = `${API}/v1/invites/details/?token=${encodeURIComponent(token)}`;
+    try {
+        const res = await authenticatedFetch(url, { method: 'GET' });
+        if (!res.ok) {
+            const errorResp = await res.json().catch(() => ({}));
+            return { error: (errorResp as any)?.detail ?? 'Invalid or expired invite link.' };
+        }
+        return await res.json();
+    } catch {
+        return { error: 'Invalid or expired invite link.' };
+    }
+}
+
+/**
+ * Accepts a pending invite after the user has created their account.
+ * The backend validates that request.user.email matches the invite email.
+ */
+export async function acceptInvite(token: string): Promise<{ detail?: string; space_id?: number; error?: string }> {
+    const url = `${API}/v1/invites/accept/`;
+    try {
+        const res = await authenticatedFetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+        });
+        if (!res.ok) {
+            const errorResp = await res.json().catch(() => ({}));
+            return { error: (errorResp as any)?.detail ?? GENERIC_ERROR_MESSAGE };
+        }
+        return await res.json();
+    } catch {
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
 
 /**
  * Server action to call the delete Spacerole endpoint.

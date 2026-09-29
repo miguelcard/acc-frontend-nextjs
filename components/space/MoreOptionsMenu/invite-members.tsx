@@ -16,7 +16,7 @@ import { FormikAutocompleteInput } from './formik-autocomplete-input';
 interface InviteMembersProps {
     spaceId: number;
     handleCloseDialog?: () => void;
-    handleToastOpen?: () => void;
+    handleToastOpen?: (message?: string) => void;
     children?: React.ReactNode;
 }
 
@@ -86,7 +86,12 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, chi
             return;
         }
 
-        handleToastOpen?.();
+        // Backend distinguishes between adding an existing user immediately (SpaceRole object,
+        // no `invited` flag) and creating a pending invite for an unregistered email (`invited: true`).
+        const toastMessage = createdSpaceRole?.invited
+            ? 'Invitation email sent! They can join once they create an account.'
+            : 'Member added to the space!';
+        handleToastOpen?.(toastMessage);
         handleCloseDialog?.();
     }
 

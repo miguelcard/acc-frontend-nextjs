@@ -8,6 +8,8 @@ import {
     onAuthStateChanged,
     getIdToken as getFirebaseIdToken,
     signOutUser,
+    linkWithEmail,
+    signInWithEmail,
 } from '@/lib/auth/firebase-auth';
 
 // ---- Loading Screen ----
@@ -39,7 +41,13 @@ interface AuthContextType {
     getIdToken: (forceRefresh?: boolean) => Promise<string | null>;
     /** Signs out the current user */
     signOut: () => Promise<void>;
-    // Future: add linkWithGoogle, linkWithApple, linkWithEmail here
+    /**
+     * Upgrades the anonymous session to email/password (same Firebase UID — no data loss).
+     * Throws `auth/email-already-in-use` if an account with that email already exists.
+     */
+    linkWithEmail: (email: string, password: string) => Promise<User>;
+    /** Signs in with an existing email/password account (different UID from anonymous). */
+    signInWithEmail: (email: string, password: string) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -99,6 +107,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isAnonymous: user?.isAnonymous ?? null,
         getIdToken,
         signOut,
+        linkWithEmail,
+        signInWithEmail,
     };
 
     return (
