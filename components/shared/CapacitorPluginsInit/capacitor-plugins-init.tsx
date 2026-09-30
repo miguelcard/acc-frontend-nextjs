@@ -8,6 +8,7 @@ import {
   registerKeyboardListeners,
   markNativePlatform,
 } from '@/lib/capacitor-plugins';
+import { useDeepLinkHandler } from '@/lib/hooks/useDeepLinkHandler';
 
 /**
  * Invisible component that bootstraps all Capacitor native plugins.
@@ -17,6 +18,8 @@ import {
  * so this is a harmless no-op when running in a normal browser.
  */
 export default function CapacitorPluginsInit() {
+  useDeepLinkHandler();
+
   useEffect(() => {
     // Add CSS class marker for native platform (enables safe area styles)
     markNativePlatform();

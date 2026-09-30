@@ -9,7 +9,7 @@ const config = {
     // Only run files under __tests__ or matching .test.ts(x)
     testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx'],
     transform: {
-        '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react' } }],
+        '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx', esModuleInterop: true } }],
     },
 };
 

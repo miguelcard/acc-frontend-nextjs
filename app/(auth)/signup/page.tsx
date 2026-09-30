@@ -24,7 +24,11 @@ type Mode = 'signup' | 'signin';
 function SignUpContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { linkWithEmail, signInWithEmail } = useAuth();
+    const { linkWithEmail, signInWithEmail, isAnonymous } = useAuth();
+
+    // A registered (non-anonymous) user opening an invite link, e.g. via a deep link,
+    // must not go through linking again: Firebase would reject it.
+    const alreadyRegistered = isAnonymous === false;
 
     const token = searchParams.get('invite') ?? '';
 
@@ -63,12 +67,16 @@ function SignUpContent() {
         setSubmitting(true);
 
         try {
-            if (mode === 'signup') {
-                // Upgrade anonymous session → email/password (same Firebase UID)
-                await linkWithEmail(email, password);
-            } else {
-                // Sign in with existing account
-                await signInWithEmail(email, password);
+            // Registered users already have an email account; the backend verifies
+            // it matches the invite, so only anonymous users need linking / sign-in.
+            if (!alreadyRegistered) {
+                if (mode === 'signup') {
+                    // Upgrade anonymous session → email/password (same Firebase UID)
+                    await linkWithEmail(email, password);
+                } else {
+                    // Sign in with existing account
+                    await signInWithEmail(email, password);
+                }
             }
 
             // Backend syncs email automatically on next request (authentication.py).
@@ -134,7 +142,7 @@ function SignUpContent() {
             >
                 <Box sx={{ mb: 1 }}>
                     <Typography variant="h5" fontWeight={700} gutterBottom>
-                        {mode === 'signup' ? 'Create your account' : 'Sign in to accept invite'}
+                        {alreadyRegistered ? 'Join space' : mode === 'signup' ? 'Create your account' : 'Sign in to accept invite'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                         You&apos;ve been invited to join <strong>{spaceName}</strong>.
@@ -144,6 +152,17 @@ function SignUpContent() {
 
                 {formError && <Alert severity={mode === 'signin' ? 'info' : 'error'}>{formError}</Alert>}
 
+                {alreadyRegistered ? (
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        disabled={submitting}
+                        sx={{ py: 1.5, fontWeight: 700 }}
+                    >
+                        {submitting ? <CircularProgress size={22} color="inherit" /> : 'Join space'}
+                    </Button>
+                ) : (<>
                 <TextField
                     label="Email"
                     type="email"
@@ -190,6 +209,7 @@ function SignUpContent() {
                         </Button>
                     </Typography>
                 )}
+                </>)}
             </Box>
         </Box>
     );
