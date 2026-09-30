@@ -1,6 +1,6 @@
 'use client';
 import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/formik-stepper';
-import { Field, FormikValues } from 'formik';
+import { FormikValues } from 'formik';
 import React, { useState } from 'react';
 import { SpaceT } from '@/lib/types-and-constants';
 import { EmojiSelector } from '../EmojiSelector/emoji-selector';

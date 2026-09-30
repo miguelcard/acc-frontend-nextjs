@@ -30,7 +30,7 @@ export function LogoutFormikStepper() {
             <FormikStepper
                 initialValues={{
                 }}
-                onSubmit={async (values) => submitLogout()}
+                onSubmit={async () => submitLogout()}
                 step={0}
                 setStep={() => {}}
                 submitButtonText="Log out"

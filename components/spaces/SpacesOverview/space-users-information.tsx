@@ -1,5 +1,5 @@
 'use client';
-import { MemberT, PaginatedResponse } from '@/lib/types-and-constants';
+import { MemberT } from '@/lib/types-and-constants';
 import { useSpaceMembers } from '@/lib/hooks/queries';
 
 // Re-export shared components for backwards compatibility

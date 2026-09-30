@@ -7,7 +7,6 @@ import UserFieldButton from './user-field-button';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import BadgeIcon from '@mui/icons-material/Badge';
-import LogoutIcon from '@mui/icons-material/Logout';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import IconButton from '@mui/material/IconButton';
 import toast from 'react-hot-toast';
@@ -16,7 +15,6 @@ import Divider from "@mui/material/Divider";
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import React from 'react';
 import { ChangeNameFormikStepper } from './change-name-formik-stepper';
-import { LogoutFormikStepper } from './logout-formik-stepper';
 
 interface Props {
     user: UserT;

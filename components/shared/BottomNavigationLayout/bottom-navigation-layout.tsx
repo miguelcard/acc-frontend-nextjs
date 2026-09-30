@@ -1,5 +1,5 @@
 'use client'
-import { faEarthEurope, faRocket, faUserAstronaut, faCheckDouble } from '@fortawesome/free-solid-svg-icons';
+import { faRocket, faUserAstronaut, faCheckDouble } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Typography } from '@mui/material';
 import BottomNavigation from '@mui/material/BottomNavigation';

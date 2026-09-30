@@ -11,6 +11,7 @@ export function FormikAutocompleteInput({ params }: { params: any }) {
     const { errors, setFieldValue }: FormikContextType<FormikValues> = useFormikContext();
 
     const keyProp = `${params.InputLabelProps.htmlFor}-${params.id}`;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- omitted from the spread on purpose
     const { InputLabelProps, id, ...inputProps } = params;
 
     return (

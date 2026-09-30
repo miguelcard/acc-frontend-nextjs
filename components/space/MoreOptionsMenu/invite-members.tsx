@@ -2,15 +2,13 @@
 import { FormikStep, FormikStepper } from '@/components/shared/FormikStepper/formik-stepper';
 import Box from '@mui/material/Box';
 import { Autocomplete } from 'formik-mui';
-import { Field, FormikContextType, FormikValues } from 'formik';
+import { Field, FormikValues } from 'formik';
 import React, { useState } from 'react';
 import { object, string } from 'yup';
 import { getUsernameEmailSuggestions } from '@/lib/fetch-mutations';
 import { useCreateSpaceRole } from '@/lib/hooks/mutations';
 import { PaginatedResponse } from '@/lib/types-and-constants';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete';
 import { FormikAutocompleteInput } from './formik-autocomplete-input';
 
 interface InviteMembersProps {

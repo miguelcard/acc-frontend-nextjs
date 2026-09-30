@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Button, IconButton, Typography } from '@mui/material';
+import { Box, Button, IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import ExpandCircleDownOutlinedIcon from '@mui/icons-material/ExpandCircleDownOutlined';
 import { format } from 'date-fns';

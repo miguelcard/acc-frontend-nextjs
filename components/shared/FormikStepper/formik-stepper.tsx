@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Button, { ButtonPropsColorOverrides } from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Form, Formik, FormikConfig, FormikTouched, FormikValues, setNestedObjectValues } from 'formik';
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import IconButton from '@mui/material/IconButton';
 import { OverridableStringUnion } from '@mui/types';
@@ -28,7 +28,6 @@ interface FormikStepperProps extends FormikConfig<FormikValues> {
 export function FormikStepper({ children, step, setStep, submitButtonText, buttonColorVariant = 'info', buttonShade = 'main', ...props }: FormikStepperProps) {
     const childrenArray = React.Children.toArray(children as ReactNode) as React.ReactElement<FormikStepProps>[];
     const currentChild = childrenArray[step];
-    const [completed, setCompleted] = useState(false);
     const lastStepButtonText: string = submitButtonText === undefined ? "Save" : submitButtonText;
     const stepContentRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +59,6 @@ export function FormikStepper({ children, step, setStep, submitButtonText, butto
 
                 if (isLastStep()) {
                     await props.onSubmit(values, helpers);
-                    setCompleted(true);
                     setStep(0);
                     helpers.resetForm();
                 } else {

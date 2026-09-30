@@ -23,12 +23,12 @@ export default function UserAvatarSelector({ user }: UserAvatarSelectorProps) {
 
     const [seed, setSeed] = useState<string>(user.avatar_seed ?? '');
     const defferedSeed: string = useDeferredValue(seed);
-    const formikCtx = useFormikContext();
+    const { setFieldValue } = useFormikContext();
     
     useEffect(() => {
         // This effect will run only when deferredValue updates (i.e. after seed stops changing quickly)
-        formikCtx.setFieldValue('avatar_seed', seed);
-    }, [defferedSeed]);
+        setFieldValue('avatar_seed', defferedSeed);
+    }, [defferedSeed, setFieldValue]);
 
     
     return (

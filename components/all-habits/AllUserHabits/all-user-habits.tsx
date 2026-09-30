@@ -2,7 +2,7 @@
 
 import { HabitT } from '@/lib/types-and-constants';
 import { Avatar, Box, Button, ButtonBase, Chip, Divider, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
-import React, { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import DatesRangeSelector from '@/components/space/ScoreCard/dates-range-selector';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ContentCard from '@/components/shared/ContentCard/content-card';
@@ -33,8 +33,6 @@ export function AllUserHabitsView({
     hasSpaces,
     onDateRangeChange
 }: UserAllHabitsViewPropsT) {
-
-    const router = useRouter();
 
     // Flatten all habits from all spaces for initial state
     const allUserHabits = useMemo(() =>

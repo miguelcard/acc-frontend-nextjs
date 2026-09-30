@@ -57,7 +57,7 @@ export function isJsonString(str: string): boolean {
     try {
         const parsedJson = JSON.parse(str);
         return typeof parsedJson === 'object' && parsedJson !== null;
-    } catch (e) {
+    } catch {
         return false;
     }
 }
