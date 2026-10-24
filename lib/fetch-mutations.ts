@@ -182,6 +182,40 @@ export async function acceptInvite(token: string): Promise<{ detail?: string; sp
 
 
 /**
+ * Registers (upserts) this device's push token for the authenticated user.
+ * Best effort: failures are swallowed, push is non-critical.
+ */
+export async function registerDeviceToken(token: string, platform: 'android' | 'ios'): Promise<boolean> {
+    try {
+        const res = await authenticatedFetch(`${API}/v1/devices/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, platform }),
+        });
+        return res.ok;
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Removes this device's push token from the authenticated user. Best effort.
+ */
+export async function unregisterDeviceToken(token: string): Promise<boolean> {
+    try {
+        const res = await authenticatedFetch(`${API}/v1/devices/`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+        });
+        return res.ok;
+    } catch {
+        return false;
+    }
+}
+
+
+/**
  * Server action to call the delete Spacerole endpoint.
  * Unlinks a user from a space by deleting the space role associated with 
  * it also changes the user role to another user, if the one leaving was the creator of the space

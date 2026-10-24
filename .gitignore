@@ -28,6 +28,10 @@ firebase-debug.log*
 # local env files
 .env*.local
 
+# Firebase native app config (per-developer / per-environment)
+google-services.json
+GoogleService-Info.plist
+
 # vercel
 .vercel
 

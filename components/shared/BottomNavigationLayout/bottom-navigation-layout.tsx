@@ -13,6 +13,7 @@ import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import PullToRefresh from 'react-simple-pull-to-refresh';
+import { usePushRegistration } from '@/lib/hooks/usePushRegistration';
 
 const isNative = Capacitor.isNativePlatform();
 
@@ -20,6 +21,7 @@ export const BottomNavigationLayout = ({ children }: { children: React.ReactNode
 
     const pathname: string  = usePathname();
     const queryClient = useQueryClient();
+    usePushRegistration();
 
     const handleRefresh = async (): Promise<void> => {
         await queryClient.invalidateQueries();

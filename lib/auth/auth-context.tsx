@@ -11,6 +11,7 @@ import {
     linkWithEmail,
     signInWithEmail,
 } from '@/lib/auth/firebase-auth';
+import { unregisterPush } from '@/lib/push-notifications';
 
 // ---- Loading Screen ----
 
@@ -97,6 +98,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }, []);
 
     const signOut = useCallback(async (): Promise<void> => {
+        // Must run while still authenticated; never throws, so it cannot block sign-out.
+        await unregisterPush();
         await signOutUser();
         setUser(null);
     }, []);
