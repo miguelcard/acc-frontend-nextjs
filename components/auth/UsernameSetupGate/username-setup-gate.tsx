@@ -173,10 +173,11 @@ export function UsernameSetupGate({ children }: UsernameSetupGateProps) {
                             autoComplete="off"
                             spellCheck={false}
                             value={formik.values.username}
-                            onChange={formik.handleChange}
+                            onChange={(e) => formik.setFieldValue('username', e.target.value.toLowerCase())}
                             onBlur={formik.handleBlur}
                             error={formik.touched.username && Boolean(formik.errors.username)}
-                            helperText={formik.touched.username && formik.errors.username}
+                            helperText={(formik.touched.username && formik.errors.username) || 'Usernames are lowercase'}
+                            slotProps={{ htmlInput: { autoCapitalize: 'none', autoCorrect: 'off' } }}
                             autoFocus
                         />
                         {apiError && (

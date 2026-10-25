@@ -46,7 +46,7 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, chi
 
         // Make a request to the backend to fetch the possible values based on value
         const pageLength: number = 5;
-        const paginatedUsersList: PaginatedResponse<UsernameResult> = await getUsernameEmailSuggestions(value, pageLength);
+        const paginatedUsersList: PaginatedResponse<UsernameResult> = await getUsernameEmailSuggestions(value.trim(), pageLength);
 
         if (paginatedUsersList?.error) {
             console.log('error getting user suggestions: ', paginatedUsersList.error);
@@ -57,10 +57,12 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, chi
         const suggestedUsersResult: UsernameResult[] = paginatedUsersList.results;
 
         // Loop of the results and add the usernames or emails that match the value to a list
+        // (usernames are case-insensitive, so the match must be too)
         const autocompleteOptionsList: string[] = [];
+        const lowercasedValue: string = value.trim().toLowerCase();
 
         suggestedUsersResult?.forEach((result) => {
-            if (result.username.includes(value)) {
+            if (result.username.toLowerCase().includes(lowercasedValue)) {
                 autocompleteOptionsList.push(result.username);
             }
         });

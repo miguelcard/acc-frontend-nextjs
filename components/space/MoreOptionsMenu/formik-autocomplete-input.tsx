@@ -19,6 +19,7 @@ export function FormikAutocompleteInput({ params }: { params: any }) {
             name="input"
             key={keyProp}
             {...inputProps}
+            inputProps={{ ...inputProps.inputProps, autoCapitalize: 'none', autoCorrect: 'off' }}
             label="Username or Email"
             error={Boolean(errors.username_email)}
             helperText={errors.username_email || ''}

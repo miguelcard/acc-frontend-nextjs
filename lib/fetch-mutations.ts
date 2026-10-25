@@ -321,7 +321,7 @@ export async function updateSpaceRole(spaceroleId: number, role: string, spaceId
  * @returns list of users who match either that username or email
  */
 export async function getUsernameEmailSuggestions(member: string, resultsNumber: number) {
-    const getUsernameEmailSuggestionsUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/users/usernames-emails/?search=${member}&page_size=${resultsNumber}`;
+    const getUsernameEmailSuggestionsUrl: string = `${process.env.NEXT_PUBLIC_API}/v1/users/usernames-emails/?search=${encodeURIComponent(member)}&page_size=${resultsNumber}`;
 
     try {
         const res = await authenticatedFetch(getUsernameEmailSuggestionsUrl, {
