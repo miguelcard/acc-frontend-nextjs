@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Pre-launch checklist
+
+Deep links for invitations (iOS Universal Links / Android App Links) are implemented but use placeholders. Find them all with `grep -r YOUR_ --exclude-dir=node_modules --exclude-dir=.next .`
+
+- [ ] **Production domain:** replace `YOUR_PRODUCTION_DOMAIN` in `android/app/src/main/AndroidManifest.xml` and `ios/App/App/App.entitlements`, and set `FRONTEND_URL` in production.
+- [ ] **Apple Team ID:** replace `YOUR_TEAM_ID` in `public/.well-known/apple-app-site-association`.
+- [ ] **SHA-256 fingerprints:** replace `YOUR_DEBUG_SHA256_FINGERPRINT` and `YOUR_RELEASE_SHA256_FINGERPRINT` in `public/.well-known/assetlinks.json`. The release one is the Play App Signing certificate (Play Console > App Integrity), not the upload key.
+- [ ] Make sure the host serves `/.well-known/*` over HTTPS without redirects or 404s.
+- [ ] Test on real signed builds (TestFlight / Play internal track); emulators are unreliable for link verification.

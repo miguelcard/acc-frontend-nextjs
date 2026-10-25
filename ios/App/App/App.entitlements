@@ -2,6 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- TODO(deploy): replace YOUR_PRODUCTION_DOMAIN with the production domain (see README "Pre-launch checklist") -->
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:YOUR_PRODUCTION_DOMAIN</string>
