@@ -22,7 +22,7 @@ export const metadata = {
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <head>
                 {/* Enable safe area insets for devices with notches/camera islands.
                     viewport-fit=cover allows the webview to extend into the safe areas,

@@ -10,6 +10,10 @@ import {
     signOutUser,
     linkWithEmail,
     signInWithEmail,
+    sendPasswordReset,
+    sendVerificationEmail,
+    reloadCurrentUser,
+    reauthenticateWithPassword,
 } from '@/lib/auth/firebase-auth';
 import { unregisterPush } from '@/lib/push-notifications';
 
@@ -49,6 +53,21 @@ interface AuthContextType {
     linkWithEmail: (email: string, password: string) => Promise<User>;
     /** Signs in with an existing email/password account (different UID from anonymous). */
     signInWithEmail: (email: string, password: string) => Promise<User>;
+    /** Emails a password reset link. Resolves even if the email has no account (no enumeration). */
+    sendPasswordReset: (email: string) => Promise<void>;
+    /** Whether the current user's email is verified (false for anonymous users, null while unknown). */
+    isEmailVerified: boolean | null;
+    /** Emails a verification link to the current user's address. */
+    sendVerificationEmail: () => Promise<void>;
+    /** Reloads the user from Firebase and re-renders consumers. Resolves to the fresh `emailVerified` value. */
+    reloadUser: () => Promise<boolean>;
+    /** Confirms the current email/password user's identity again (needed before deleting the account). */
+    reauthenticate: (password: string) => Promise<void>;
+    /**
+     * Re-renders consumers after the current Firebase user was mutated in place
+     * (e.g. `linkWithEmail` keeps the same User object, so `isAnonymous` would otherwise stay stale).
+     */
+    refreshUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -68,6 +87,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [, setAuthVersion] = useState(0);
 
     useEffect(() => {
         // Listen for auth state changes (fires on sign-in, sign-out, token refresh)
@@ -104,6 +124,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(null);
     }, []);
 
+    const refreshUser = useCallback(() => setAuthVersion((v) => v + 1), []);
+
+    const reloadUser = useCallback(async (): Promise<boolean> => {
+        const reloaded = await reloadCurrentUser();
+        setAuthVersion((v) => v + 1);
+        return reloaded.emailVerified;
+    }, []);
+
     const value: AuthContextType = {
         user,
         loading,
@@ -112,6 +140,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         signOut,
         linkWithEmail,
         signInWithEmail,
+        sendPasswordReset,
+        isEmailVerified: user ? user.emailVerified : null,
+        sendVerificationEmail,
+        reloadUser,
+        reauthenticate: reauthenticateWithPassword,
+        refreshUser,
     };
 
     return (

@@ -18,10 +18,14 @@ jest.mock('next/navigation', () => ({
 
 const mockLinkWithEmail = jest.fn();
 const mockSignInWithEmail = jest.fn();
+const mockSignOut = jest.fn();
+const mockReloadUser = jest.fn();
 jest.mock('@/lib/auth/auth-context', () => ({
     useAuth: () => ({
         linkWithEmail: mockLinkWithEmail,
         signInWithEmail: mockSignInWithEmail,
+        signOut: mockSignOut,
+        reloadUser: mockReloadUser,
         isAnonymous: mockIsAnonymous,
     }),
 }));
@@ -36,7 +40,7 @@ jest.mock('@/lib/fetch-mutations', () => ({
 async function fillAndSubmit(buttonName: RegExp) {
     const user = userEvent.setup();
     await user.type(screen.getByLabelText(/email/i), 'me@example.com');
-    await user.type(screen.getByLabelText(/password/i), 'secret123');
+    await user.type(screen.getByLabelText(/^password/i), 'secret123');
     await user.click(screen.getByRole('button', { name: buttonName }));
 }
 
@@ -112,6 +116,82 @@ describe('SignUp page (invite flow)', () => {
 
         expect(await screen.findByText('Email does not match invite')).toBeTruthy();
         expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it('rejects a mistyped email BEFORE linking it to the account', async () => {
+        render(<SignUp />);
+        await screen.findByText('Gym Crew');
+        mockGetInviteDetails.mockResolvedValueOnce({ email_matches: false });
+        await fillAndSubmit(/create account/i);
+
+        expect(await screen.findByText(/invite was sent to m\*\*\*@example\.com/i)).toBeTruthy();
+        expect(mockGetInviteDetails).toHaveBeenLastCalledWith('tok-123', 'me@example.com');
+        expect(mockLinkWithEmail).not.toHaveBeenCalled();
+        expect(mockAcceptInvite).not.toHaveBeenCalled();
+    });
+
+    it('can retry with the right email after a rejected typo', async () => {
+        mockLinkWithEmail.mockResolvedValue({});
+        render(<SignUp />);
+        await screen.findByText('Gym Crew');
+        mockGetInviteDetails.mockResolvedValueOnce({ email_matches: false });
+        const user = userEvent.setup();
+        await user.type(screen.getByLabelText(/email/i), 'typo@example.com');
+        await user.type(screen.getByLabelText(/^password/i), 'secret123');
+        await user.click(screen.getByRole('button', { name: /create account/i }));
+        await screen.findByText(/invite was sent to/i);
+
+        await user.clear(screen.getByLabelText(/email/i));
+        await user.type(screen.getByLabelText(/email/i), 'me@example.com');
+        await user.click(screen.getByRole('button', { name: /create account/i }));
+
+        await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/spaces'));
+        expect(mockLinkWithEmail).toHaveBeenCalledTimes(1);
+        expect(mockLinkWithEmail).toHaveBeenCalledWith('me@example.com', 'secret123');
+    });
+
+    it('offers to start over when the session already has an account with another email', async () => {
+        mockLinkWithEmail.mockRejectedValue(new FirebaseError('auth/provider-already-linked', 'linked'));
+        mockSignOut.mockResolvedValue(undefined);
+        render(<SignUp />);
+        await screen.findByText('Gym Crew');
+        await fillAndSubmit(/create account/i);
+
+        expect(await screen.findByText(/already signed in to an account with a different email/i)).toBeTruthy();
+        await userEvent.setup().click(screen.getByRole('button', { name: /use a different account/i }));
+
+        expect(mockSignOut).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(screen.queryByText(/already signed in/i)).toBeNull());
+    });
+
+    it('lets a registered user switch account instead of being stuck', async () => {
+        mockIsAnonymous = false;
+        mockSignOut.mockResolvedValue(undefined);
+        render(<SignUp />);
+        await screen.findByText('Gym Crew');
+        await userEvent.setup().click(screen.getByRole('button', { name: /use a different account/i }));
+        expect(mockSignOut).toHaveBeenCalledTimes(1);
+    });
+    it('reloads the user after accepting so the invited email shows as verified', async () => {
+        mockLinkWithEmail.mockResolvedValue({});
+        mockReloadUser.mockResolvedValue(true);
+        render(<SignUp />);
+        await screen.findByText('Gym Crew');
+        await fillAndSubmit(/create account/i);
+
+        await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/spaces'));
+        expect(mockReloadUser).toHaveBeenCalledTimes(1);
+        expect(mockAcceptInvite.mock.invocationCallOrder[0]).toBeLessThan(mockReloadUser.mock.invocationCallOrder[0]);
+    });
+
+    it('still joins the space when the reload fails', async () => {
+        mockLinkWithEmail.mockResolvedValue({});
+        mockReloadUser.mockRejectedValue(new Error('offline'));
+        render(<SignUp />);
+        await screen.findByText('Gym Crew');
+        await fillAndSubmit(/create account/i);
+
+        await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/spaces'));
     });
 
     it('lets an already-registered user accept the invite without linking or signing in', async () => {

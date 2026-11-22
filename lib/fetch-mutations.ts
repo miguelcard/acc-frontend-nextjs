@@ -125,6 +125,10 @@ export async function createSpaceRole(formData: FormikValues, spaceId: number) {
             }
             console.warn('createSpaceRole Error: ' + getErrorMessage(errorResp));
             console.warn(JSON.stringify(errorResp));
+            // The backend sends a user-friendly `detail` when invitation emails can't be delivered
+            if (res.status >= 500 && typeof errorResp?.detail === 'string') {
+                return { error: errorResp.detail };
+            }
             // Handle DRF field-level ValidationError: {"username_email": "No user found..."}
             const fieldError: string | undefined = typeof errorResp?.username_email === 'string' ? errorResp.username_email : undefined;
             const customErrorMessageIfExists: string | undefined = fieldError ?? extractCustomErrorMessageIfExists(errorResp);
@@ -144,8 +148,12 @@ export async function createSpaceRole(formData: FormikValues, spaceId: number) {
  * Fetches the details of a pending invite token.
  * Returns the masked email and space name so the signup page can show context to the user.
  */
-export async function getInviteDetails(token: string): Promise<{ space_name?: string; masked_email?: string; error?: string }> {
-    const url = `${API}/v1/invites/details/?token=${encodeURIComponent(token)}`;
+export async function getInviteDetails(
+    token: string,
+    email?: string,
+): Promise<{ space_name?: string; masked_email?: string; email_matches?: boolean; error?: string }> {
+    const emailParam = email ? `&email=${encodeURIComponent(email)}` : '';
+    const url = `${API}/v1/invites/details/?token=${encodeURIComponent(token)}${emailParam}`;
     try {
         const res = await authenticatedFetch(url, { method: 'GET' });
         if (!res.ok) {
@@ -242,6 +250,39 @@ export async function deleteSpaceRole(spaceId: number) {
         return {}; // empty body as the delete response has no body to parse
     } catch (error) {
         console.warn('deleteSpaceRole server action Error: ', getErrorMessage(error));
+        return { error: GENERIC_ERROR_MESSAGE };
+    }
+}
+
+/**
+ * Permanently deletes the signed-in user's account (backend also deletes the Firebase user).
+ * The caller must re-authenticate registered users first, the backend rejects stale logins.
+ * @returns `{}` on success, or `{ error }` with a message safe to show the user
+ */
+export async function deleteAccount(): Promise<{ error?: string }> {
+    const url: string = `${process.env.NEXT_PUBLIC_API}/v1/user/`;
+
+    try {
+        const res = await authenticatedFetch(url, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!res.ok) {
+            let detail: string | undefined;
+            try {
+                const body = await res.json();
+                detail = typeof body?.detail === 'string' ? body.detail : undefined;
+            } catch {
+                // non-JSON error body: fall back to the generic message
+            }
+            console.warn('deleteAccount Error: status ' + res.status);
+            return { error: detail ?? GENERIC_ERROR_MESSAGE };
+        }
+
+        return {}; // 204 No Content
+    } catch (error) {
+        console.warn('deleteAccount Error: ', getErrorMessage(error));
         return { error: GENERIC_ERROR_MESSAGE };
     }
 }

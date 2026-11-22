@@ -5,6 +5,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { Typography } from "@mui/material";
+import NextLink from "next/link";
 
 
 interface UserFieldButtonProps {
@@ -12,15 +13,17 @@ interface UserFieldButtonProps {
     text: string;
     isEnabled?: boolean;
     valueToShow?: string;
+    /** When set, the row navigates to this route instead of being used as a modal trigger. */
+    href?: string;
 }
 
 /**
  * Individual button from the user profile to edit his information
  */
-export default function UserFieldButton({icon, text, isEnabled = true, valueToShow, ...rest} : UserFieldButtonProps) {
+export default function UserFieldButton({icon, text, isEnabled = true, valueToShow, href, ...rest} : UserFieldButtonProps) {
     return (
         <ListItem disablePadding {...rest} >
-            <ListItemButton>
+            <ListItemButton {...(href ? { component: NextLink, href } : {})}>
                 <ListItemIcon sx={{minWidth:'40px'}}>
                     {icon}
                 </ListItemIcon>

@@ -18,13 +18,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { useAuth } from '@/lib/auth/auth-context';
 import { getInviteDetails, acceptInvite } from '@/lib/fetch-mutations';
+import { ForgotPasswordButton } from '@/components/auth/ForgotPasswordButton/forgot-password-button';
+import { PasswordField } from '@/components/auth/PasswordField/password-field';
 
 type Mode = 'signup' | 'signin';
 
 function SignUpContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { linkWithEmail, signInWithEmail, isAnonymous } = useAuth();
+    const { linkWithEmail, signInWithEmail, signOut, reloadUser, isAnonymous } = useAuth();
 
     // A registered (non-anonymous) user opening an invite link, e.g. via a deep link,
     // must not go through linking again: Firebase would reject it.
@@ -42,6 +44,16 @@ function SignUpContent() {
     const [mode, setMode] = useState<Mode>('signup');
     const [submitting, setSubmitting] = useState(false);
     const [formError, setFormError] = useState('');
+    // This session already has an account that can't be used for the invite (e.g. an earlier attempt
+    // linked a mistyped email): the only way forward is to start over with a fresh guest session.
+    const [stuck, setStuck] = useState(false);
+
+    async function handleStartOver() {
+        await signOut();
+        setStuck(false);
+        setFormError('');
+        setMode('signup');
+    }
 
     // Validate the invite token on mount
     useEffect(() => {
@@ -70,12 +82,24 @@ function SignUpContent() {
             // Registered users already have an email account; the backend verifies
             // it matches the invite, so only anonymous users need linking / sign-in.
             if (!alreadyRegistered) {
+                const trimmedEmail = email.trim();
+
+                // Linking an email to the Firebase account cannot be undone from this page, so make
+                // sure it is the invited address BEFORE touching the account (a typo here would
+                // otherwise leave the user stuck with a registered account that can't use the invite).
+                const check = await getInviteDetails(token, trimmedEmail);
+                if (check.email_matches === false) {
+                    setFormError(`This invite was sent to ${maskedEmail || 'a different email address'}. Please use that email.`);
+                    setSubmitting(false);
+                    return;
+                }
+
                 if (mode === 'signup') {
                     // Upgrade anonymous session → email/password (same Firebase UID)
-                    await linkWithEmail(email, password);
+                    await linkWithEmail(trimmedEmail, password);
                 } else {
                     // Sign in with existing account
-                    await signInWithEmail(email, password);
+                    await signInWithEmail(trimmedEmail, password);
                 }
             }
 
@@ -86,6 +110,14 @@ function SignUpContent() {
                 setFormError(result.error);
                 setSubmitting(false);
                 return;
+            }
+
+            // The backend marked the invited email as verified in Firebase: reload so no "verify your
+            // email" nudge shows. Best-effort, the invite is already accepted.
+            try {
+                await reloadUser();
+            } catch {
+                // ignore
             }
 
             router.push('/spaces');
@@ -100,6 +132,9 @@ function SignUpContent() {
                     setFormError('Password must be at least 6 characters.');
                 } else if (err.code === 'auth/invalid-email') {
                     setFormError('Please enter a valid email address.');
+                } else if (err.code === 'auth/provider-already-linked' || err.code === 'auth/credential-already-in-use') {
+                    setStuck(true);
+                    setFormError('This device is already signed in to an account with a different email.');
                 } else {
                     setFormError('Something went wrong. Please try again.');
                 }
@@ -152,6 +187,12 @@ function SignUpContent() {
 
                 {formError && <Alert severity={mode === 'signin' ? 'info' : 'error'}>{formError}</Alert>}
 
+                {(stuck || alreadyRegistered) && (
+                    <Button variant="outlined" onClick={handleStartOver} sx={{ textTransform: 'none' }}>
+                        Use a different account
+                    </Button>
+                )}
+
                 {alreadyRegistered ? (
                     <Button
                         type="submit"
@@ -172,9 +213,8 @@ function SignUpContent() {
                     fullWidth
                     autoComplete="email"
                 />
-                <TextField
+                <PasswordField
                     label="Password"
-                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -182,6 +222,8 @@ function SignUpContent() {
                     autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                     helperText={mode === 'signup' ? 'Minimum 6 characters' : undefined}
                 />
+
+                {mode === 'signin' && <ForgotPasswordButton email={email} />}
 
                 <Button
                     type="submit"

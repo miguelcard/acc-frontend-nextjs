@@ -11,6 +11,8 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
+import NextLink from 'next/link';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -67,15 +69,16 @@ interface UsernameSetupGateProps {
  */
 export function UsernameSetupGate({ children }: UsernameSetupGateProps) {
     const { user } = useAuth();
+    const uid = user?.uid;
     const [needsSetup, setNeedsSetup] = useState<boolean | null>(null); // null = checking
     const [submitting, setSubmitting] = useState(false);
     const [apiError, setApiError] = useState<string | null>(null);
     const patchUserMutation = usePatchUser();
 
     useEffect(() => {
-        if (!user) return;
+        if (!uid) return;
 
-        const flagKey = getLocalStorageKey(user.uid);
+        const flagKey = getLocalStorageKey(uid);
 
         // Fast path: already configured
         if (localStorage.getItem(flagKey) === 'true') {
@@ -83,23 +86,33 @@ export function UsernameSetupGate({ children }: UsernameSetupGateProps) {
             return;
         }
 
+        // A different user may have just signed in (e.g. a fresh guest after deleting the account):
+        // go back to "checking" so the app is not rendered yet. Otherwise its parallel first requests
+        // race with this one while the backend is still creating the new user.
+        setNeedsSetup(null);
+        let cancelled = false;
+
         // Slow path: check backend
-        getUser().then((res) => {
-            if (res.error) {
-                // Can't determine — let them through rather than blocking
-                setNeedsSetup(false);
-                return;
-            }
-            const backendUser: UserT = res;
-            if (backendUser.username.startsWith(AUTO_USERNAME_PREFIX)) {
-                setNeedsSetup(true);
-            } else {
-                // Username was already personalized (e.g. set on a previous device)
-                localStorage.setItem(flagKey, 'true');
-                setNeedsSetup(false);
-            }
-        });
-    }, [user]);
+        getUser()
+            .then((backendUser: UserT) => {
+                if (cancelled) return;
+                if (backendUser.username?.startsWith(AUTO_USERNAME_PREFIX)) {
+                    setNeedsSetup(true);
+                } else {
+                    // Username was already personalized (e.g. set on a previous device)
+                    localStorage.setItem(flagKey, 'true');
+                    setNeedsSetup(false);
+                }
+            })
+            .catch(() => {
+                // Can't determine, let them through rather than blocking
+                if (!cancelled) setNeedsSetup(false);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [uid]);
 
     const formik = useFormik({
         initialValues: { username: '' },
@@ -195,6 +208,12 @@ export function UsernameSetupGate({ children }: UsernameSetupGateProps) {
                         >
                             {submitting ? <CircularProgress size={24} color="inherit" /> : 'Continue'}
                         </Button>
+                        <Typography variant="body1" color="text.primary" fontWeight={600} mt={4} textAlign="center">
+                            Already have an account?{' '}
+                            <Link component={NextLink} href="/login" underline="always" color="secondary" fontWeight={700}>
+                                Log in
+                            </Link>
+                        </Typography>
                     </Box>
                 </Box>
             </Container>

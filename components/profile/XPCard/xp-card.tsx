@@ -65,7 +65,7 @@ function StatPill({
 }
 
 // ─── Presentational card (accepts stats from either self or a member) ─────────
-export function XPCardContent({ stats }: { stats: XPStatsT | MemberPublicStatsT }) {
+export function XPCardContent({ stats, embedded = false }: { stats: XPStatsT | MemberPublicStatsT; embedded?: boolean }) {
     const [xpTooltipOpen, setXpTooltipOpen] = useState(false);
 
     const { total_xp, level, xp_into_level, xp_for_level, pct_to_next, longest_streak, longest_streak_unit, completed_periods } = stats;
@@ -73,7 +73,7 @@ export function XPCardContent({ stats }: { stats: XPStatsT | MemberPublicStatsT 
 
     return (
         <Box
-            sx={{
+            sx={embedded ? { width: '100%' } : {
                 width: '100%',
                 maxWidth: 420,
                 borderRadius: 3,

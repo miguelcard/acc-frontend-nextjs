@@ -3,6 +3,9 @@ import {
     onAuthStateChanged as firebaseOnAuthStateChanged,
     signOut as firebaseSignOut,
     signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
+    sendPasswordResetEmail as firebaseSendPasswordResetEmail,
+    sendEmailVerification as firebaseSendEmailVerification,
+    reauthenticateWithCredential,
     linkWithCredential,
     EmailAuthProvider,
     User,
@@ -90,6 +93,59 @@ export async function linkWithEmail(email: string, password: string): Promise<Us
 export async function signInWithEmail(email: string, password: string): Promise<User> {
     const result = await firebaseSignInWithEmailAndPassword(auth, email, password);
     return result.user;
+}
+
+/**
+ * Asks Firebase to email a password reset link to the given address.
+ * Firebase sends the email and hosts the reset page, no backend involved.
+ *
+ * Resolves silently when no account exists for the email (`auth/user-not-found`), so callers
+ * can show one generic message and the UI never reveals which emails are registered.
+ * Other errors (e.g. `auth/invalid-email`, `auth/too-many-requests`) are rethrown.
+ */
+export async function sendPasswordReset(email: string): Promise<void> {
+    try {
+        await firebaseSendPasswordResetEmail(auth, email.trim());
+    } catch (error) {
+        if ((error as { code?: string })?.code === 'auth/user-not-found') return;
+        throw error;
+    }
+}
+
+/**
+ * Sends a verification link to the current user's email address.
+ * Throws if there is no user, or if the user is anonymous / has no email (nothing to verify).
+ * Firebase may throw `auth/too-many-requests` when called repeatedly.
+ */
+export async function sendVerificationEmail(): Promise<void> {
+    const user = auth.currentUser;
+    if (!user) throw new Error('No user session');
+    if (user.isAnonymous || !user.email) throw new Error('The current user has no email to verify');
+    await firebaseSendEmailVerification(user);
+}
+
+/**
+ * Re-authenticates the current email/password user and refreshes the ID token, so the new token
+ * carries a fresh `auth_time`. Needed before sensitive actions such as deleting the account.
+ * Throws Firebase errors (e.g. `auth/invalid-credential` for a wrong password).
+ */
+export async function reauthenticateWithPassword(password: string): Promise<void> {
+    const user = auth.currentUser;
+    if (!user) throw new Error('No user session');
+    if (!user.email) throw new Error('The current user has no email to re-authenticate with');
+    await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
+    await user.getIdToken(true);
+}
+
+/**
+ * Re-fetches the current user from Firebase so `emailVerified` reflects a link that
+ * was clicked after sign-in (the client-side User object does not update by itself).
+ */
+export async function reloadCurrentUser(): Promise<User> {
+    const user = auth.currentUser;
+    if (!user) throw new Error('No user session');
+    await user.reload();
+    return user;
 }
 
 // ============================================================

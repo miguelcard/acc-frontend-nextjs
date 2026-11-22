@@ -15,6 +15,15 @@ import Divider from "@mui/material/Divider";
 import DialogModal from '@/components/shared/DialogModal/dialog-modal';
 import React from 'react';
 import { ChangeNameFormikStepper } from './change-name-formik-stepper';
+import { LogoutFormikStepper } from './logout-formik-stepper';
+import { AccountAuthForm } from './account-auth-form';
+import { useAuth } from '@/lib/auth/auth-context';
+import { getDisplayEmail } from '@/lib/utils/email';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { DeleteAccountForm } from './delete-account-form';
 
 interface Props {
     user: UserT;
@@ -22,10 +31,14 @@ interface Props {
 
 export default function ChangeUserFields({user} : Props) {
 
+    const { isAnonymous } = useAuth();
+
     interface UserFieldModal {
         button: React.ReactElement;
         modalTitle?: React.ReactElement;
         modalBody?: React.ReactElement;
+        /** Plain navigation row: rendered without a modal. */
+        isLink?: boolean;
     }
 
     const userFieldModals : UserFieldModal[] = [
@@ -34,11 +47,12 @@ export default function ChangeUserFields({user} : Props) {
             modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >What&apos;s your name?</Typography>,
             modalBody: <ChangeNameFormikStepper user={user} />
         },
-        {
+        // Guests only have a generated placeholder email, so there is nothing meaningful to show.
+        ...(getDisplayEmail(user.email) ? [{
             button: <UserFieldButton icon={<EmailIcon />} text={'Email'} isEnabled={false} valueToShow={user.email}/>,
             modalTitle: <Typography fontSize={'0.9em'} fontWeight={600} >Your email is</Typography>,
             modalBody: <Typography fontSize={'0.9em'} fontWeight={500} textAlign={'center'} sx={{ wordBreak: 'break-all' }}>{user.email}</Typography>
-        },
+        }] : []),
         {
             button: <UserFieldButton icon={<BadgeIcon />} text={'Username'} isEnabled={false} valueToShow={user.username}/>,
             modalTitle: <Typography fontSize={'0.9em'} fontWeight={600} >Your username is</Typography>,
@@ -58,13 +72,30 @@ export default function ChangeUserFields({user} : Props) {
                 </Box>
             )
         },
-        // Hidden for now: logout destroys anonymous accounts permanently.
-        // Re-enable when account linking (Phase 2) is implemented.
-        // {
-        //     button: <UserFieldButton icon={<LogoutIcon />} text={'Log out'} />,
-        //     modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >Log out?</Typography>,
-        //     modalBody: <LogoutFormikStepper />
-        // }
+        // Anonymous users can save their account; registered users can log out
+        // (logging out an anonymous user would destroy the account permanently).
+        isAnonymous === false
+            ? {
+                button: <UserFieldButton icon={<LogoutIcon />} text={'Log out'} />,
+                modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >Log out?</Typography>,
+                modalBody: <LogoutFormikStepper />
+            }
+            : {
+                button: <UserFieldButton icon={<PersonAddIcon />} text={'Save your account'} />,
+                modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >Save your account</Typography>,
+                modalBody: <AccountAuthForm />
+            },
+        // Returning users (e.g. after a reinstall) need a way back into their existing account.
+        ...(isAnonymous === false ? [] : [{
+            button: <UserFieldButton icon={<LoginIcon />} text={'Log in to an existing account'} href="/login" />,
+            isLink: true,
+        }]),
+        // Available to everyone: guests also have personal data stored on the server.
+        {
+            button: <UserFieldButton icon={<DeleteForeverIcon />} text={'Delete account'} />,
+            modalTitle: <Typography fontSize={'1.1em'} fontWeight={600} >Delete your account?</Typography>,
+            modalBody: <DeleteAccountForm />
+        },
     ];
 
     return (
@@ -79,11 +110,13 @@ export default function ChangeUserFields({user} : Props) {
                 <List>
                     {userFieldModals.map((modal, index) =>
                         <React.Fragment key={index}>
-                            <DialogModal
-                                button={modal.button}
-                                childrenTitle={modal.modalTitle}
-                                childrenBody={modal.modalBody}
-                            />
+                            {modal.isLink ? modal.button : (
+                                <DialogModal
+                                    button={modal.button}
+                                    childrenTitle={modal.modalTitle}
+                                    childrenBody={modal.modalBody}
+                                />
+                            )}
                             {index < userFieldModals.length - 1 && <Divider variant="middle" component="li" />}
                         </React.Fragment>
                     )}

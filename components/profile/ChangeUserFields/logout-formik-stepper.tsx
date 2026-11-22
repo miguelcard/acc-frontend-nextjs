@@ -3,6 +3,7 @@ import { FormikStep, FormikStepper } from "@/components/shared/FormikStepper/for
 import { useAuth } from "@/lib/auth/auth-context";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -11,6 +12,7 @@ export function LogoutFormikStepper() {
     const [errorMessage, setErrorMessage] = useState<string>();
     const router = useRouter();
     const { signOut } = useAuth();
+    const queryClient = useQueryClient();
 
     /**
      * Signs out the current Firebase user and redirects to login
@@ -18,6 +20,8 @@ export function LogoutFormikStepper() {
     async function submitLogout() {
         try {
             await signOut();
+            // Drop the previous user's cached data; the app signs in a fresh anonymous user.
+            queryClient.clear();
             router.push(`/login`);
         } catch (error) {
             setErrorMessage('Unable to log out, please try again later.');
@@ -46,7 +50,7 @@ export function LogoutFormikStepper() {
                             </Typography>
                         ) :
                             <Typography color={'black'} fontSize={'0.9em'} align='left' >
-                                Are you sure you want to log out?
+                                Are you sure you want to log out? You can sign back in with your email and password.
                             </Typography>}
                     </Box>
                 </FormikStep>

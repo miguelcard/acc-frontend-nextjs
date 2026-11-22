@@ -8,7 +8,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
-import { alpha } from '@mui/material/styles';
+import { lighten } from '@mui/material/styles';
 import { MemberT } from '@/lib/types-and-constants';
 import { useMemberPublicStats } from '@/lib/hooks/queries';
 import { XPCardContent } from '@/components/profile/XPCard/xp-card';
@@ -24,7 +24,16 @@ export function MemberProfileModal({ member, open, onClose }: MemberProfileModal
     const { data: stats, isLoading, isError } = useMemberPublicStats(member?.id ?? null);
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" scroll="paper">
+        <Dialog
+            open={open}
+            onClose={onClose}
+            fullWidth
+            maxWidth="sm"
+            scroll="paper"
+            // The modal itself takes the XP card's tint, so the card blends in instead of
+            // looking like a coloured box floating inside a white dialog.
+            slotProps={{ paper: { sx: { bgcolor: (t) => lighten(t.palette.secondary.main, 0.94) } } }}
+        >
             <DialogTitle sx={{ m: 0, pt: 2 }} textAlign="center">
                 {member && (
                     <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
@@ -56,15 +65,7 @@ export function MemberProfileModal({ member, open, onClose }: MemberProfileModal
             </IconButton>
             <DialogContent sx={{ px: 3, pb: 3 }}>
                 {isLoading && (
-                    <Box
-                        sx={{
-                            width: '100%',
-                            borderRadius: 3,
-                            p: 2.5,
-                            bgcolor: (t) => alpha(t.palette.secondary.main, 0.06),
-                            border: (t) => `1px solid ${alpha(t.palette.secondary.main, 0.18)}`,
-                        }}
-                    >
+                    <Box sx={{ width: '100%' }}>
                         <Skeleton variant="text" width="50%" height={28} />
                         <Skeleton variant="rectangular" height={10} sx={{ my: 1.5, borderRadius: 5 }} />
                         <Skeleton variant="text" width="35%" height={20} />
@@ -76,7 +77,7 @@ export function MemberProfileModal({ member, open, onClose }: MemberProfileModal
                         Could not load stats for this member.
                     </Typography>
                 )}
-                {stats && <XPCardContent stats={stats} />}
+                {stats && <XPCardContent stats={stats} embedded />}
             </DialogContent>
         </Dialog>
     );

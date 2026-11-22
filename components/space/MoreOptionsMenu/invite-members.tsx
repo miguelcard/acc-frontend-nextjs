@@ -9,6 +9,9 @@ import { getUsernameEmailSuggestions } from '@/lib/fetch-mutations';
 import { useCreateSpaceRole } from '@/lib/hooks/mutations';
 import { PaginatedResponse } from '@/lib/types-and-constants';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Popover from '@mui/material/Popover';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { FormikAutocompleteInput } from './formik-autocomplete-input';
 
 interface InviteMembersProps {
@@ -32,6 +35,7 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, chi
     
     const [autocompleteOptions, setAutocompleteOptions] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>();
+    const [helpAnchorEl, setHelpAnchorEl] = useState<HTMLElement | null>(null);
     const createSpaceRoleMutation = useCreateSpaceRole(spaceId);
 
     /**
@@ -102,9 +106,30 @@ export function InviteMembers({ spaceId, handleCloseDialog, handleToastOpen, chi
                     {children}
                 </Box>
             )}
-            <Typography variant="subtitle2" fontWeight={600} pb={1}>
-                Invite New Member
-            </Typography>
+            <Box display="flex" alignItems="center" pb={1}>
+                <Typography variant="subtitle2" fontWeight={600}>
+                    Invite New Member
+                </Typography>
+                <IconButton
+                    size="small"
+                    aria-label="What does this do?"
+                    onClick={(event) => setHelpAnchorEl(event.currentTarget)}
+                    sx={{ ml: 0.5 }}
+                >
+                    <HelpOutlineIcon fontSize="small" />
+                </IconButton>
+                <Popover
+                    open={Boolean(helpAnchorEl)}
+                    anchorEl={helpAnchorEl}
+                    onClose={() => setHelpAnchorEl(null)}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                >
+                    <Typography variant="body2" sx={{ p: 2, maxWidth: 280 }}>
+                        Add someone by username or email. If they don&apos;t have an account yet, we&apos;ll email
+                        them an invitation to sign up.
+                    </Typography>
+                </Popover>
+            </Box>
             <FormikStepper
                 initialValues={{
                     username_email: '',

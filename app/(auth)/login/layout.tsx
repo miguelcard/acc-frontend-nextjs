@@ -10,11 +10,8 @@ export default function LoginLayout({
     return (
         <>
             <CssBaseline/>
-            <AuthNavbar
-                actionMessage={`Don't have an account?`}
-                buttonLinkTo={'/signup'}
-                buttonKey={'signup'}
-                buttonText={'Sign up'} />
+            {/* No "Sign up" button: signup is invite-only (reached through an invite link). */}
+            <AuthNavbar />
             {children}
         </>
     );

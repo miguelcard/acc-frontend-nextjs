@@ -9,6 +9,8 @@ import toast from 'react-hot-toast';
 import ChangeUserAvatarModal from '@/components/profile/ChangeUserAvatarModal/change-user-avatar-modal';
 import ChangeUserFields from '@/components/profile/ChangeUserFields/change-user-fields';
 import XPCard from '@/components/profile/XPCard/xp-card';
+import VerifyEmailNotice from '@/components/profile/VerifyEmailNotice/verify-email-notice';
+import { getDisplayEmail } from '@/lib/utils/email';
 import { useUser } from '@/lib/hooks/queries';
 import QueryError from '@/components/shared/QueryError/query-error';
 
@@ -65,20 +67,24 @@ export default function Profile() {
                             </IconButton>
                         </Box>
                     </Box>
-                    <Typography
-                        fontSize='1em'
-                        fontWeight={500}
-                        pt={3}
-                        sx={{
-                            maxWidth: '100%',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            px: 2,
-                        }}
-                    >
-                        {user.email}
-                    </Typography>
+                    {getDisplayEmail(user.email) && (
+                        <Typography
+                            fontSize='1em'
+                            fontWeight={500}
+                            pt={3}
+                            sx={{
+                                maxWidth: '100%',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                px: 2,
+                            }}
+                        >
+                            {user.email}
+                        </Typography>
+                    )}
+
+                    <VerifyEmailNotice />
 
                     {/* XP & level card */}
                     <Box width='100%' display='flex' justifyContent='center' px={2} pt={3}>
