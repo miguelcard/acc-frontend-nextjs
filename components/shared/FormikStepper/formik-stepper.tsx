@@ -58,7 +58,11 @@ export function FormikStepper({ children, step, setStep, submitButtonText, butto
             onSubmit={async (values, helpers) => {
 
                 if (isLastStep()) {
-                    await props.onSubmit(values, helpers);
+                    const result = await props.onSubmit(values, helpers);
+                    // An onSubmit returning `false` opts out of the automatic step/form reset
+                    // (e.g. a failed submit that should keep the user's input, or a submit
+                    // that is already closing/navigating away).
+                    if (result === false) return;
                     setStep(0);
                     helpers.resetForm();
                 } else {

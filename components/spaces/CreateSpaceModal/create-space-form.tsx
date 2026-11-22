@@ -12,26 +12,34 @@ import Typography from '@mui/material/Typography';
 import { EmojiSelector } from '@/components/space/EmojiSelector/emoji-selector';
 import Link from '@mui/material/Link';
 import NextLink from 'next/link';
+import { GENERIC_ERROR_MESSAGE } from '@/lib/types-and-constants';
 
 interface CreateSpaceFormProps {
     step?: number | undefined;
     setStep?: undefined | React.Dispatch<React.SetStateAction<number>>;
+    handleCloseDialog?: () => void;
 }
 
-export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps) {
+export default function CreateSpaceForm({ step, setStep, handleCloseDialog }: CreateSpaceFormProps) {
     const router = useRouter();
     const [errorMessage, setErrorMessage] = useState<string>();
     const createSpaceMutation = useCreateSpace();
 
     async function submitCreateSpace(values: FormikValues) {
+        setErrorMessage(undefined);
         const space = await createSpaceMutation.mutateAsync(values);
-        if (space?.error) {
-            setErrorMessage(space.error);
-            console.log('error message: ', space.error);
-            return;
+        if (space?.error || space?.id === undefined) {
+            setErrorMessage(space?.error ?? GENERIC_ERROR_MESSAGE);
+            console.log('error message: ', space?.error);
+            // keep the modal open on the last step with the user's input
+            return false;
         }
 
+        // Close the modal right away so it doesn't linger (or reset to step 1) while the
+        // space page loads, and so the submit button can't be pressed twice.
         router.push(`/spaces/${space.id}`);
+        handleCloseDialog?.();
+        return false;
     }
 
     return (
@@ -46,7 +54,7 @@ export default function CreateSpaceForm({ step, setStep }: CreateSpaceFormProps)
                     icon_alias: null,
                     description: '',
                 }}
-                onSubmit={async (values) => submitCreateSpace(values)}
+                onSubmit={submitCreateSpace}
                 step={step === undefined ? 0 : step}
                 setStep={setStep === undefined ? () => console.warn('setStep is undefined!') : setStep}
             >
