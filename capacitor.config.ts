@@ -18,7 +18,8 @@ const config: CapacitorConfig = {
 
     // Live-reload: point the app at your Next.js dev server.
     // Automatically set by `npm run cap:live-reload`.
-    ...(liveReload ? { url: 'http://10.0.2.2:3000', cleartext: true } : {}),
+    // Override with CAP_SERVER_URL for a real device (e.g. http://192.168.0.128:3000).
+    ...(liveReload ? { url: process.env.CAP_SERVER_URL ?? 'http://10.0.2.2:3000', cleartext: true } : {}),
   },
   plugins: {
     SplashScreen: {

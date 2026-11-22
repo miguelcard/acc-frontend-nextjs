@@ -13,7 +13,7 @@
     "cap:android": "next build && npx cap sync && npx cap open android",
     "cap:android-emulator": "cross-env NEXT_PUBLIC_API=http://10.0.2.2:8000/api next build && npx cap sync && npx cap open android",
     "cap:android-device": "cross-env NEXT_PUBLIC_API=http://192.168.0.128:8000/api next build && npx cap sync && npx cap open android",
-    "dev:device": "cross-env CAP_LIVE_RELOAD=true npx cap sync && npx cap open android && cross-env NEXT_PUBLIC_API=http://192.168.0.128:8000/api next dev --turbopack",
+    "dev:device": "cross-env CAP_LIVE_RELOAD=true CAP_SERVER_URL=http://192.168.0.128:3000 npx cap sync && npx cap open android && cross-env NEXT_PUBLIC_API=http://192.168.0.128:8000/api next dev --turbopack",
     "cap:ios": "next build && npx cap sync && npx cap open ios"
   },
   "dependencies": {
